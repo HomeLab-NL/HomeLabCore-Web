@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-brand="cookfrom">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CookFrom Support — HomeLabCore</title>
   <meta name="description" content="Help with CookFrom: troubleshooting AI recipe generation, ingredient photo recognition, Pro entitlement and purchase restoration, and application data. Contact support@homelabcore.dev.">
   <link rel="canonical" href="https://homelabcore.dev/support/cookfrom">
-  <meta name="theme-color" content="#0b0c0e">
+  <meta name="theme-color" content="#0b0d10">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="HomeLabCore">
@@ -23,10 +23,7 @@
 
   <header class="site-header">
     <div class="container nav">
-      <a class="brand" href="/">
-        <span class="brand__mark" aria-hidden="true"></span>
-        HomeLabCore
-      </a>
+      <a class="brand" href="/">HomeLab<span class="brand__core">Core</span></a>
 
       <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
         <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -34,8 +31,7 @@
       </button>
 
       <ul class="nav__links" id="nav-links">
-        <li><a href="/">HomeLabCore</a></li>
-        <li><a href="/#products">Products</a></li>
+        <li><a href="/">Home</a></li>
         <li><a href="/apps/cookfrom">CookFrom</a></li>
         <li><a href="/privacy/cookfrom">Privacy</a></li>
         <li><a href="/support/cookfrom" aria-current="page">Support</a></li>
@@ -108,30 +104,18 @@
 
   <footer class="site-footer">
     <div class="container">
-      <div class="footer-grid">
+      <div class="footer-inner">
         <div>
-          <h2>HomeLabCore</h2>
-          <p class="muted" style="max-width: 32ch;">Small tools, thoughtfully built and maintained by an independent studio.</p>
+          <p class="footer-brand">HomeLabCore</p>
+          <p class="muted">Small tools. Thoughtfully built.</p>
         </div>
-        <div>
-          <h2>Products</h2>
-          <ul>
-            <li><a href="/apps/cookfrom">CookFrom</a></li>
-          </ul>
-        </div>
-        <div>
-          <h2>CookFrom</h2>
-          <ul>
-            <li><a href="/apps/cookfrom">Overview</a></li>
-            <li><a href="/privacy/cookfrom">Privacy Policy</a></li>
-            <li><a href="/support/cookfrom">Support</a></li>
-          </ul>
-        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="/apps/cookfrom">CookFrom</a>
+          <a href="/privacy/cookfrom">Privacy</a>
+          <a href="/support/cookfrom">Support</a>
+        </nav>
       </div>
-      <div class="footer-bottom">
-        <span class="footer-tag"><span class="brand__mark" aria-hidden="true" style="width:18px;height:18px;"></span> HomeLabCore &middot; <span data-year>2026</span></span>
-        <span>Built as a plain static site.</span>
-      </div>
+      <div class="footer-copy">&copy; <span data-year>2026</span> HomeLabCore</div>
     </div>
   </footer>
 

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-brand="cookfrom">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CookFrom — Cook with what you already have</title>
   <meta name="description" content="CookFrom is a cooking assistant that helps you cook from ingredients you already have: choose or photograph ingredients, get AI-assisted recipes, and manage a pantry, shopping list, and favorites.">
   <link rel="canonical" href="https://homelabcore.dev/apps/cookfrom">
-  <meta name="theme-color" content="#0b0c0e">
+  <meta name="theme-color" content="#0b0d10">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="HomeLabCore">
@@ -23,10 +23,7 @@
 
   <header class="site-header">
     <div class="container nav">
-      <a class="brand" href="/">
-        <span class="brand__mark" aria-hidden="true"></span>
-        HomeLabCore
-      </a>
+      <a class="brand" href="/">HomeLab<span class="brand__core">Core</span></a>
 
       <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
         <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -34,8 +31,7 @@
       </button>
 
       <ul class="nav__links" id="nav-links">
-        <li><a href="/">HomeLabCore</a></li>
-        <li><a href="/#products">Products</a></li>
+        <li><a href="/">Home</a></li>
         <li><a href="/apps/cookfrom" aria-current="page">CookFrom</a></li>
         <li><a href="/privacy/cookfrom">Privacy</a></li>
         <li><a href="/support/cookfrom">Support</a></li>
@@ -45,26 +41,53 @@
 
   <main id="main">
     <section class="hero">
-      <div class="container hero__inner">
-        <p class="eyebrow">A HomeLabCore product</p>
-        <h1>Cook with what you already have.</h1>
-        <p class="lead">CookFrom helps you turn the ingredients in your kitchen into a recipe. Pick what you have or scan it from a photo, and CookFrom drafts an AI-assisted recipe you can adjust, save, and cook from.</p>
-        <div class="btn-row">
-          <a class="btn btn--primary" href="/support/cookfrom">Get support</a>
-          <a class="btn btn--ghost" href="/privacy/cookfrom">Privacy Policy</a>
+      <div class="container hero__grid">
+        <div>
+          <p class="eyebrow">CookFrom · a HomeLabCore product</p>
+          <h1 class="hero__title">Cook with what you already have.</h1>
+          <p class="lead">Pick the ingredients in your kitchen or scan them from a photo. CookFrom drafts an AI-assisted recipe you can adjust, save, and cook from step by step.</p>
+          <div class="btn-row">
+            <a class="btn btn--primary" href="/support/cookfrom">Get support</a>
+            <a class="btn btn--ghost" href="/privacy/cookfrom">Privacy Policy</a>
+          </div>
+        </div>
+
+        <div class="appcard" role="img" aria-label="CookFrom preview: selected ingredients lead to an AI-assisted recipe, then to step-by-step cooking mode.">
+          <div class="appcard__head"><span class="appcard__dot" aria-hidden="true"></span> CookFrom</div>
+          <p class="appcard__label">Ingredients you have</p>
+          <div class="chips" aria-hidden="true">
+            <span class="chip">🍅 Tomato</span>
+            <span class="chip">🧅 Onion</span>
+            <span class="chip">🥚 Eggs</span>
+            <span class="chip">🧀 Cheese</span>
+          </div>
+          <div class="appflow" aria-hidden="true">
+            <span class="appflow__arrow">↓</span>
+            <div class="appstep">
+              <p class="appcard__label" style="margin:0 0 .2rem;">Recipe</p>
+              Tomato &amp; onion frittata · 4 servings
+            </div>
+            <span class="appflow__arrow">↓</span>
+            <div class="appstep appstep--accent">
+              <p class="appcard__label" style="margin:0 0 .2rem;">Cooking mode</p>
+              Step 1 of 6 — Warm the pan
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
-        <p class="eyebrow">How it works</p>
-        <h2>From ingredients to a recipe</h2>
+        <div class="section-head">
+          <p class="eyebrow">How it works</p>
+          <h2>From ingredients to a recipe</h2>
+        </div>
 
-        <div class="grid grid--3" style="margin-top: 2rem;">
+        <div class="grid grid--3">
           <div class="card">
             <h3>1. Choose ingredients</h3>
-            <p class="muted">Select the ingredients you already have. You can also point your camera at them and let CookFrom recognize ingredients from a photo.</p>
+            <p class="muted">Select the ingredients you already have, or point your camera at them and let CookFrom recognize ingredients from a photo.</p>
           </div>
           <div class="card">
             <h3>2. Generate a recipe</h3>
@@ -72,7 +95,7 @@
           </div>
           <div class="card">
             <h3>3. Cook and adjust</h3>
-            <p class="muted">Adjust servings, edit the recipe, and switch to cooking mode to follow the steps while you work.</p>
+            <p class="muted">Adjust servings, edit the recipe, and switch to Cooking Mode to follow the steps while you work.</p>
           </div>
         </div>
       </div>
@@ -80,45 +103,43 @@
 
     <section class="section section--tight">
       <div class="container">
-        <p class="eyebrow">Features</p>
-        <h2>What CookFrom includes</h2>
+        <div class="section-head">
+          <p class="eyebrow">Features</p>
+          <h2>What CookFrom includes</h2>
+        </div>
 
-        <div class="grid grid--2" style="margin-top: 2rem;">
-          <div>
-            <div class="feature">
-              <h3>Ingredients &amp; photo recognition</h3>
-              <p class="muted">Choose ingredients from a list, or recognize ingredients from a photo to build your selection faster.</p>
-            </div>
-            <div class="feature">
-              <h3>AI-assisted recipe generation</h3>
-              <p class="muted">Turn your selected ingredients into a recipe suggestion, then regenerate or refine it.</p>
-            </div>
-            <div class="feature">
-              <h3>Pantry &amp; inventory</h3>
-              <p class="muted">Keep track of what is in your kitchen so recipe suggestions match what you actually have.</p>
-            </div>
-            <div class="feature">
-              <h3>Shopping list</h3>
-              <p class="muted">Collect the items you still need into a shopping list you can take to the store.</p>
-            </div>
+        <div class="grid grid--2">
+          <div class="card">
+            <h3>Ingredients &amp; photo recognition</h3>
+            <p class="muted">Choose ingredients from a list, or recognize ingredients from a photo to build your selection faster.</p>
           </div>
-          <div>
-            <div class="feature">
-              <h3>Favorites &amp; recipe history</h3>
-              <p class="muted">Save recipes you like and look back at ones you generated before.</p>
-            </div>
-            <div class="feature">
-              <h3>Dietary preferences &amp; allergies</h3>
-              <p class="muted">Set dietary preferences, allergies, and dislikes so recipes are drafted with them in mind.</p>
-            </div>
-            <div class="feature">
-              <h3>Servings adjustment &amp; recipe editing</h3>
-              <p class="muted">Scale a recipe up or down for the number of people you are cooking for, and edit the details to suit you.</p>
-            </div>
-            <div class="feature">
-              <h3>Cooking mode</h3>
-              <p class="muted">Follow a recipe step by step in a view designed for use while you cook.</p>
-            </div>
+          <div class="card">
+            <h3>AI-assisted recipe generation</h3>
+            <p class="muted">Turn your selected ingredients into a recipe suggestion, then regenerate or refine it.</p>
+          </div>
+          <div class="card">
+            <h3>Pantry &amp; inventory</h3>
+            <p class="muted">Keep track of what is in your kitchen so recipe suggestions match what you actually have.</p>
+          </div>
+          <div class="card">
+            <h3>Shopping list</h3>
+            <p class="muted">Collect the items you still need into a shopping list you can take to the store.</p>
+          </div>
+          <div class="card">
+            <h3>Favorites &amp; recipe history</h3>
+            <p class="muted">Save recipes you like and look back at ones you generated before.</p>
+          </div>
+          <div class="card">
+            <h3>Dietary preferences &amp; allergies</h3>
+            <p class="muted">Set dietary preferences, allergies, and dislikes so recipes are drafted with them in mind.</p>
+          </div>
+          <div class="card">
+            <h3>Servings adjustment &amp; recipe editing</h3>
+            <p class="muted">Scale a recipe up or down for the number of people you are cooking for, and edit the details to suit you.</p>
+          </div>
+          <div class="card">
+            <h3>Cooking Mode</h3>
+            <p class="muted">Follow a recipe step by step in a view designed for use while you cook.</p>
           </div>
         </div>
       </div>
@@ -126,20 +147,29 @@
 
     <section class="section">
       <div class="container">
-        <div class="product-card">
+        <div class="showcase">
           <div>
-            <span class="product-card__badge">CookFrom Pro</span>
-            <h3 style="font-size: 1.3rem;">A little more, when you need it</h3>
-            <p class="muted">CookFrom Pro is an optional subscription for people who use the AI features more heavily. It is designed to give you room beyond the standard allowance rather than a blank cheque.</p>
-            <ul>
+            <span class="showcase__badge">CookFrom Pro</span>
+            <h3>A little more, when you need it</h3>
+            <p class="showcase__tagline">Optional, not required.</p>
+            <p class="muted">CookFrom Pro is optional. It provides additional AI usage and access to selected premium and experimental AI capabilities.</p>
+            <ul class="tag-list">
               <li>Additional AI usage</li>
               <li>Premium and experimental AI capabilities</li>
             </ul>
-            <p class="muted" style="font-size: 0.9rem;">Pricing is not available yet. Pro is offered as a Google Play subscription; your Pro status is tied to your purchase and verified through Google Play.</p>
+            <p class="muted" style="font-size: 0.9rem;">Pro is offered as a Google Play subscription; your Pro status is tied to your purchase and verified through Google Play.</p>
           </div>
-          <div class="panel" aria-hidden="true">
-            <strong>Optional, not required</strong>
-            <span class="muted">CookFrom's core workflow — choosing ingredients, generating a recipe, and cooking from it — works without Pro.</span>
+          <div class="appcard" role="img" aria-label="CookFrom's core workflow — choosing ingredients, generating a recipe, and cooking from it — works without Pro.">
+            <div class="appcard__head"><span class="appcard__dot" aria-hidden="true"></span> CookFrom</div>
+            <p class="appcard__label">Core workflow</p>
+            <div class="appflow" aria-hidden="true">
+              <div class="appstep">Choose ingredients</div>
+              <span class="appflow__arrow">↓</span>
+              <div class="appstep">Generate a recipe</div>
+              <span class="appflow__arrow">↓</span>
+              <div class="appstep appstep--accent">Cook step by step</div>
+            </div>
+            <p class="muted" style="font-size: 0.82rem; margin: 0.9rem 0 0;">Available without a subscription.</p>
           </div>
         </div>
       </div>
@@ -149,7 +179,7 @@
       <div class="container">
         <div class="card">
           <h3>Availability</h3>
-          <p class="muted">CookFrom is an Android app. Store links will be added here once the listing is public. For help in the meantime, visit <a href="/support/cookfrom">CookFrom Support</a>.</p>
+          <p class="muted">CookFrom is built for Android. Store links will be added here once the listing is public. For help in the meantime, visit <a href="/support/cookfrom">CookFrom Support</a>.</p>
         </div>
       </div>
     </section>
@@ -157,30 +187,18 @@
 
   <footer class="site-footer">
     <div class="container">
-      <div class="footer-grid">
+      <div class="footer-inner">
         <div>
-          <h2>HomeLabCore</h2>
-          <p class="muted" style="max-width: 32ch;">Small tools, thoughtfully built and maintained by an independent studio.</p>
+          <p class="footer-brand">HomeLabCore</p>
+          <p class="muted">Small tools. Thoughtfully built.</p>
         </div>
-        <div>
-          <h2>Products</h2>
-          <ul>
-            <li><a href="/apps/cookfrom">CookFrom</a></li>
-          </ul>
-        </div>
-        <div>
-          <h2>CookFrom</h2>
-          <ul>
-            <li><a href="/apps/cookfrom">Overview</a></li>
-            <li><a href="/privacy/cookfrom">Privacy Policy</a></li>
-            <li><a href="/support/cookfrom">Support</a></li>
-          </ul>
-        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="/apps/cookfrom">CookFrom</a>
+          <a href="/privacy/cookfrom">Privacy</a>
+          <a href="/support/cookfrom">Support</a>
+        </nav>
       </div>
-      <div class="footer-bottom">
-        <span class="footer-tag"><span class="brand__mark" aria-hidden="true" style="width:18px;height:18px;"></span> HomeLabCore &middot; <span data-year>2026</span></span>
-        <span>Built as a plain static site.</span>
-      </div>
+      <div class="footer-copy">&copy; <span data-year>2026</span> HomeLabCore</div>
     </div>
   </footer>
 
