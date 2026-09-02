@@ -22,7 +22,8 @@ serves the repository root directly.
 /assets/js/main.js                             Nav toggle + footer year
 /assets/favicon.svg                            Favicon
 /assets/brand/homelab-logo.png                 Supplied HomeLab logo — original, untouched
-/assets/brand/homelab-logo-web.webp|.png       Web-optimized copies (560x560)
+/assets/brand/homelab-flask.png                 Cropped transparent flask mark (header, hero, footer)
+/assets/brand/homelab-logo-web.webp|.png       Full logo, web copies — used on /about only
 /404.html                                      Not-found page
 /robots.txt  /sitemap.xml                      SEO
 ```
@@ -49,13 +50,12 @@ logo). CookFrom is a product (warm orange). Product pages set
 wordmark keeps its blue "Core" on every page so the studio stays recognisable.
 
 The supplied HomeLab logo lives at `assets/brand/homelab-logo.png` (original,
-untouched). The homepage shows it in full on a light panel via
-`<picture>` — `homelab-logo-web.webp` (~11 KB) with `homelab-logo-web.png`
-(~126 KB) as a fallback, both 560x560, aspect ratio preserved, with explicit
-`width`/`height` to avoid layout shift. The header uses the textual
-`HomeLabCore` wordmark rather than a cropped mark, so the artwork is never
-altered. `/about` and the `/apps/` and `/support/` directories reuse the same
-logo/wordmark treatment.
+untouched). Site chrome uses a compact lockup — a small flask mark
+(`homelab-flask.png`, the flask element cropped from the source and keyed to
+transparent) beside the textual `HomeLabCore` wordmark. This appears in the
+header, the homepage hero (as a small secondary mark, not the full vertical
+logo), and the footer. The full vertical logo still appears once, on `/about`,
+inside its light panel.
 
 ## Local preview
 
