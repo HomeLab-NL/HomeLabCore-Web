@@ -3,10 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Page not found — HomeLabCore</title>
-  <meta name="description" content="The page you were looking for could not be found on HomeLabCore.">
-  <meta name="robots" content="noindex">
+  <title>About — HomeLabCore</title>
+  <meta name="description" content="HomeLabCore is a small independent software studio that builds and maintains a short list of focused apps.">
+  <link rel="canonical" href="https://homelabcore.dev/about">
   <meta name="theme-color" content="#0b0d10">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="HomeLabCore">
+  <meta property="og:title" content="About — HomeLabCore">
+  <meta property="og:description" content="A small independent software studio that builds and maintains a short list of focused apps.">
+  <meta property="og:url" content="https://homelabcore.dev/about">
+  <meta name="twitter:card" content="summary">
+
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
@@ -25,21 +33,39 @@
       <ul class="nav__links" id="nav-links">
         <li><a href="/">Home</a></li>
         <li><a href="/apps/">Apps</a></li>
-        <li><a href="/about">About</a></li>
+        <li><a href="/about" aria-current="page">About</a></li>
         <li><a href="/support/">Support</a></li>
       </ul>
     </div>
   </header>
 
   <main id="main">
-    <section class="hero">
+    <section class="section">
+      <div class="container narrow">
+        <div class="section-head">
+          <p class="eyebrow">About</p>
+          <h1>About HomeLabCore</h1>
+        </div>
+
+        <p>HomeLabCore is a small, independent software studio. It designs, builds, and maintains a short list of focused apps rather than a large catalogue.</p>
+        <p>The aim is straightforward: make practical software for everyday problems, keep it maintained, and be clear about how it handles your data. Every app has its own product page, privacy policy, and support page.</p>
+        <p>HomeLabCore is the name these apps are published under. Questions are welcome at <a href="mailto:privacy@homelabcore.dev">privacy@homelabcore.dev</a> or <a href="mailto:support@homelabcore.dev">support@homelabcore.dev</a>.</p>
+        <p><a href="/apps/">See the apps <span aria-hidden="true">&rarr;</span></a></p>
+      </div>
+    </section>
+
+    <section class="section section--tight">
       <div class="container">
-        <p class="eyebrow">404</p>
-        <h1>Page not found</h1>
-        <p class="lead">The page you were looking for does not exist or has moved.</p>
-        <div class="btn-row">
-          <a class="btn btn--primary" href="/">Go to the homepage</a>
-          <a class="btn btn--ghost" href="/apps/">View apps</a>
+        <div class="brandband">
+          <div class="brandband__logo">
+            <picture>
+              <source srcset="/assets/brand/homelab-logo-web.webp" type="image/webp">
+              <img src="/assets/brand/homelab-logo-web.png" width="560" height="560" alt="HomeLab logo: a laboratory flask with a code symbol, above the wordmark homelab and the tagline we code ideas">
+            </picture>
+          </div>
+          <div class="brandband__text">
+            <p>&ldquo;We code ideas.&rdquo; HomeLabCore builds small, useful software and looks after it.</p>
+          </div>
         </div>
       </div>
     </section>

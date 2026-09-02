@@ -2,18 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://homelabcore.dev/</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://homelabcore.dev/apps/</loc>
+    <lastmod>2026-09-02</lastmod>
   </url>
   <url>
     <loc>https://homelabcore.dev/apps/cookfrom</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-02</lastmod>
   </url>
   <url>
-    <loc>https://homelabcore.dev/privacy/cookfrom</loc>
-    <lastmod>2026-09-01</lastmod>
+    <loc>https://homelabcore.dev/about</loc>
+    <lastmod>2026-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://homelabcore.dev/support/</loc>
+    <lastmod>2026-09-02</lastmod>
   </url>
   <url>
     <loc>https://homelabcore.dev/support/cookfrom</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-02</lastmod>
+  </url>
+  <url>
+    <loc>https://homelabcore.dev/privacy/cookfrom</loc>
+    <lastmod>2026-09-02</lastmod>
   </url>
 </urlset>

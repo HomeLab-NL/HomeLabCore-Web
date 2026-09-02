@@ -3,10 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Page not found — HomeLabCore</title>
-  <meta name="description" content="The page you were looking for could not be found on HomeLabCore.">
-  <meta name="robots" content="noindex">
+  <title>Apps — HomeLabCore</title>
+  <meta name="description" content="Software published by HomeLabCore. CookFrom is the first app, with more in development.">
+  <link rel="canonical" href="https://homelabcore.dev/apps/">
   <meta name="theme-color" content="#0b0d10">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="HomeLabCore">
+  <meta property="og:title" content="Apps — HomeLabCore">
+  <meta property="og:description" content="Software published by HomeLabCore.">
+  <meta property="og:url" content="https://homelabcore.dev/apps/">
+  <meta name="twitter:card" content="summary">
+
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
@@ -24,7 +32,7 @@
 
       <ul class="nav__links" id="nav-links">
         <li><a href="/">Home</a></li>
-        <li><a href="/apps/">Apps</a></li>
+        <li><a href="/apps/" aria-current="page">Apps</a></li>
         <li><a href="/about">About</a></li>
         <li><a href="/support/">Support</a></li>
       </ul>
@@ -32,14 +40,28 @@
   </header>
 
   <main id="main">
-    <section class="hero">
+    <section class="section">
       <div class="container">
-        <p class="eyebrow">404</p>
-        <h1>Page not found</h1>
-        <p class="lead">The page you were looking for does not exist or has moved.</p>
-        <div class="btn-row">
-          <a class="btn btn--primary" href="/">Go to the homepage</a>
-          <a class="btn btn--ghost" href="/apps/">View apps</a>
+        <div class="section-head">
+          <p class="eyebrow">Apps</p>
+          <h1>Apps</h1>
+          <p class="lead">Software published by HomeLabCore.</p>
+        </div>
+
+        <div class="app-grid">
+          <article class="app-card">
+            <div class="app-card__head">
+              <span class="app-card__dot" style="--dot: var(--cf-orange)" aria-hidden="true"></span>
+              <h3>CookFrom</h3>
+            </div>
+            <p>A cooking assistant that helps you cook from ingredients you already have — with AI-assisted recipes, a pantry, shopping list, favorites, and cooking mode.</p>
+            <p class="app-card__meta">Built for Android</p>
+            <a class="app-card__link" href="/apps/cookfrom">View CookFrom <span aria-hidden="true">&rarr;</span></a>
+          </article>
+
+          <div class="app-card app-card--soon">
+            <p>More apps are in development.</p>
+          </div>
         </div>
       </div>
     </section>

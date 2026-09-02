@@ -32,17 +32,34 @@
 
       <ul class="nav__links" id="nav-links">
         <li><a href="/">Home</a></li>
-        <li><a href="/apps/cookfrom">CookFrom</a></li>
-        <li><a href="/privacy/cookfrom">Privacy</a></li>
-        <li><a href="/support/cookfrom" aria-current="page">Support</a></li>
+        <li><a href="/apps/">Apps</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/support/" class="is-section">Support</a></li>
       </ul>
     </div>
   </header>
 
+  <div class="pagebar">
+    <div class="container">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">HomeLabCore</a></li>
+          <li><a href="/apps/">Apps</a></li>
+          <li><a href="/apps/cookfrom">CookFrom</a></li>
+          <li aria-current="page">Support</li>
+        </ol>
+      </nav>
+      <nav class="subnav" aria-label="CookFrom pages">
+        <a href="/apps/cookfrom">Overview</a>
+        <a href="/privacy/cookfrom">Privacy Policy</a>
+        <a href="/support/cookfrom" aria-current="page">Support</a>
+      </nav>
+    </div>
+  </div>
+
   <main id="main">
     <section class="section">
       <div class="container prose">
-        <p class="eyebrow">CookFrom</p>
         <h1>CookFrom Support</h1>
         <p class="lead">Below are answers to the most common questions. If none of them solve your problem, email us and include your device model, Android version, and a short description of what happened.</p>
         <div class="btn-row">
@@ -104,16 +121,30 @@
 
   <footer class="site-footer">
     <div class="container">
-      <div class="footer-inner">
-        <div>
-          <p class="footer-brand">HomeLabCore</p>
-          <p class="muted">Small tools. Thoughtfully built.</p>
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h2>HomeLabCore</h2>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/apps/">Apps</a></li>
+            <li><a href="/about">About</a></li>
+          </ul>
         </div>
-        <nav class="footer-links" aria-label="Footer">
-          <a href="/apps/cookfrom">CookFrom</a>
-          <a href="/privacy/cookfrom">Privacy</a>
-          <a href="/support/cookfrom">Support</a>
-        </nav>
+        <div class="footer-col">
+          <h2>CookFrom</h2>
+          <ul>
+            <li><a href="/apps/cookfrom">Product page</a></li>
+            <li><a href="/privacy/cookfrom">Privacy Policy</a></li>
+            <li><a href="/support/cookfrom">Support</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Contact</h2>
+          <ul>
+            <li><a href="mailto:privacy@homelabcore.dev">privacy@homelabcore.dev</a></li>
+            <li><a href="mailto:support@homelabcore.dev">support@homelabcore.dev</a></li>
+          </ul>
+        </div>
       </div>
       <div class="footer-copy">&copy; <span data-year>2026</span> HomeLabCore</div>
     </div>
