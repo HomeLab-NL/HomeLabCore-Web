@@ -853,20 +853,29 @@ img {
   font-size: 0.9rem;
 }
 
-/* ---------- home hero logo panel ---------- */
+/* ---------- home hero brand mark ---------- */
 
 .hero__logo {
   width: min(320px, 100%);
   margin-inline: auto;
-  background: #ffffff;
-  border-radius: 18px;
-  padding: clamp(1rem, 3.5vw, 1.75rem);
 }
 
 .hero__logo img {
   display: block;
   width: 100%;
   height: auto;
+}
+
+@media (max-width: 980px) {
+  .hero__logo {
+    width: min(264px, 100%);
+  }
+}
+
+@media (max-width: 800px) {
+  .hero__logo {
+    width: min(216px, 62vw);
+  }
 }
 
 /* ---------- utilities ---------- */
