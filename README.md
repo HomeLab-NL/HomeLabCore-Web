@@ -18,6 +18,9 @@ serves the repository root directly.
 /support/                index.html            Support directory
 /support/cookfrom/       index.html            CookFrom Support
 /privacy/cookfrom/       index.html            CookFrom Privacy Policy
+/apps/ops-planner/       index.html            Ops Planner product page
+/support/ops-planner/    index.html            Ops Planner Support
+/privacy/ops-planner/    index.html            Ops Planner Privacy Policy
 /assets/css/styles.css                         Site styles (dual accent system)
 /assets/js/main.js                             Nav toggle + footer year
 /assets/favicon.svg                            Favicon
@@ -45,8 +48,9 @@ three product pages. No navigation or layout changes are required.
 ## Brand
 
 HomeLabCore is the umbrella / studio brand (blue / navy, derived from the
-logo). CookFrom is a product (warm orange). Product pages set
-`data-brand="cookfrom"` on `<html>` to switch the active accent; the header
+logo). CookFrom is a product (warm orange); Ops Planner is a product (teal,
+from the app's own palette). Product pages set `data-brand="cookfrom"` or
+`data-brand="opsplanner"` on `<html>` to switch the active accent; the header
 wordmark keeps its blue "Core" on every page so the studio stays recognisable.
 
 The supplied HomeLab logo lives at `assets/brand/homelab-logo.png` (original,

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-brand="opsplanner">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ops Planner Support — HomeLabCore</title>
+  <meta name="description" content="Help with Ops Planner: sharing schedules and reports by email, export and import, moving to a new phone, deleting data, and reporting a bug. Contact support@homelabcore.dev.">
+  <link rel="canonical" href="https://homelabcore.dev/support/ops-planner/">
+  <meta name="theme-color" content="#0b0d10">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="HomeLabCore">
+  <meta property="og:title" content="Ops Planner Support">
+  <meta property="og:description" content="Help with Ops Planner: email sharing, reports, export and import, deleting data, and reporting a bug.">
+  <meta property="og:url" content="https://homelabcore.dev/support/ops-planner/">
+  <meta name="twitter:card" content="summary">
+
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="/">
+        <img class="brand__mark" src="/assets/brand/homelab-flask.png" width="256" height="403" alt="" aria-hidden="true">
+        <span class="brand__name">HomeLab<span class="brand__core">Core</span></span>
+      </a>
+
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+        <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6l-12 12"/></svg>
+      </button>
+
+      <ul class="nav__links" id="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/apps/">Apps</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/support/" class="is-section">Support</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="pagebar">
+    <div class="container">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">HomeLabCore</a></li>
+          <li><a href="/apps/">Apps</a></li>
+          <li><a href="/apps/ops-planner/">Ops Planner</a></li>
+          <li aria-current="page">Support</li>
+        </ol>
+      </nav>
+      <nav class="subnav" aria-label="Ops Planner pages">
+        <a href="/apps/ops-planner/">Overview</a>
+        <a href="/privacy/ops-planner/">Privacy Policy</a>
+        <a href="/support/ops-planner/" aria-current="page">Support</a>
+      </nav>
+    </div>
+  </div>
+
+  <main id="main">
+    <section class="section">
+      <div class="container prose">
+        <h1>Ops Planner Support</h1>
+        <p class="lead">Answers to common questions about Ops Planner are below. If they don't solve your problem, email us — we read every message.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="mailto:support@homelabcore.dev?subject=Ops%20Planner%20support">Email Ops Planner support</a>
+          <a class="btn btn--ghost" href="/privacy/ops-planner/">Privacy Policy</a>
+        </div>
+
+        <h2 id="email">Sharing a schedule or report by email</h2>
+        <p>Ops Planner does not send email itself — it prepares the message and hands it to your email app. If nothing happens or you see an error:</p>
+        <ul>
+          <li>Make sure an email app (such as Gmail or Outlook) is installed and signed in on your phone.</li>
+          <li>To share a schedule, the employee needs an email address — add it in the employee's form.</li>
+          <li>To send a workload report, add the manager's email address in <em>Settings</em> first.</li>
+          <li>If Android asks which app to use, pick your email app.</li>
+          <li>Check the message in your email app before sending; it is sent from your own email account.</li>
+        </ul>
+
+        <h2 id="assigning">Assigning work</h2>
+        <ul>
+          <li>Drag a task, duty, or event from the pool onto an employee's card to assign it to the selected day, the whole working week, or the set of days you picked.</li>
+          <li>Work can't be assigned to someone on a day they are on vacation — check their vacation periods in the employee's form.</li>
+          <li>If a workload percentage looks wrong, check the employee's working days, hours, and breaks, and the estimated hours of the assigned items.</li>
+        </ul>
+
+        <h2 id="backup">Export, import, and moving to a new phone</h2>
+        <p>Your data is stored only on your phone, so it is not restored automatically on a new device or after uninstalling.</p>
+        <ul>
+          <li>Before changing phones or reinstalling, open <em>Settings → Export data</em> and save the JSON file somewhere you can reach from the new phone.</li>
+          <li>On the new phone, install Ops Planner, open <em>Settings → Import data</em>, and select that file.</li>
+          <li>Importing <strong>replaces all</strong> data currently in the app with the contents of the file.</li>
+          <li>If an import fails, make sure the file is an unmodified export created by Ops Planner.</li>
+        </ul>
+
+        <h2 id="delete-data">Deleting your data</h2>
+        <p>Ops Planner has no account and HomeLabCore keeps no copy of your data, so deletion happens on your device:</p>
+        <ul>
+          <li>Delete individual employees, departments, vacations, or tasks, duties, and events from their forms in the app.</li>
+          <li>To remove everything, clear the app's storage (<em>Android Settings → Apps → Ops Planner → Storage → Clear storage</em>) or uninstall the app. This cannot be undone — export first if you may need the data later.</li>
+          <li>Export files you saved and emails you sent are separate — delete them in your file manager or email app.</li>
+        </ul>
+        <p>See the <a href="/privacy/ops-planner/#retention">Privacy Policy</a> for details.</p>
+
+        <h2 id="general">If the app misbehaves</h2>
+        <ul>
+          <li>Close and reopen the app, then restart your phone if the problem continues.</li>
+          <li>Make sure you have the latest version of Ops Planner installed.</li>
+          <li>Export your data before trying anything drastic such as clearing storage or reinstalling.</li>
+        </ul>
+
+        <h2 id="bug">Reporting a bug</h2>
+        <p>Email <a href="mailto:support@homelabcore.dev?subject=Ops%20Planner%20bug%20report">support@homelabcore.dev</a> with “Ops Planner” in the subject. These details help us fix it faster:</p>
+        <ul>
+          <li>your phone model and Android version;</li>
+          <li>the Ops Planner version (shown in <em>Android Settings → Apps → Ops Planner</em>);</li>
+          <li>the app language you use;</li>
+          <li>what you did, step by step, what you expected, and what happened instead;</li>
+          <li>a screenshot or screen recording, if you can.</li>
+        </ul>
+        <div class="callout">
+          <p>Please don't attach your export file or include real employee details unless we specifically ask — a description and screenshots are usually enough, and you can blur names.</p>
+        </div>
+
+        <h2 id="contact">Contact</h2>
+        <p>For help with Ops Planner, email <a href="mailto:support@homelabcore.dev">support@homelabcore.dev</a>.</p>
+        <p>For questions about how Ops Planner handles data, see the <a href="/privacy/ops-planner/">Ops Planner Privacy Policy</a> or email <a href="mailto:privacy@homelabcore.dev">privacy@homelabcore.dev</a>.</p>
+        <p><a href="/apps/ops-planner/">← Back to Ops Planner</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <p class="footer-brand">
+            <img class="footer-brand__mark" src="/assets/brand/homelab-flask.png" width="256" height="403" alt="" aria-hidden="true">
+            <span>HomeLab<span class="brand__core">Core</span></span>
+          </p>
+          <p class="footer-tag">we code ideas</p>
+          <p class="footer-desc">A small independent software studio building practical tools for everyday problems.</p>
+        </div>
+        <nav class="footer-grid" aria-label="Footer">
+          <div class="footer-col">
+            <h2>Home</h2>
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/apps/">Apps</a></li>
+              <li><a href="/about">About</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h2 class="footer-col__cf">CookFrom</h2>
+            <ul>
+              <li><a href="/apps/cookfrom">CookFrom</a></li>
+              <li><a href="/privacy/cookfrom">Privacy Policy</a></li>
+              <li><a href="/support/cookfrom">Support</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h2>Contact</h2>
+            <ul class="footer-contact">
+              <li><a href="mailto:privacy@homelabcore.dev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg> privacy@homelabcore.dev</a></li>
+              <li><a href="mailto:support@homelabcore.dev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg> support@homelabcore.dev</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <div class="footer-copy">&copy; <span data-year>2026</span> HomeLabCore</div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

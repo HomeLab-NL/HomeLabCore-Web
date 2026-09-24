@@ -1,9 +1,10 @@
 /* HomeLabCore — public site
    Plain CSS, no framework, no build step.
 
-   Two intentional accent identities:
+   Intentional accent identities:
      HomeLabCore  -> blue / navy (from the logo)   [default]
      CookFrom     -> warm orange                   [data-brand="cookfrom"]
+     Ops Planner  -> teal (from the app's palette) [data-brand="opsplanner"]
 */
 
 :root {
@@ -32,6 +33,11 @@
   --cf-orange-hover: #ff9457;
   --cf-orange-soft: rgba(255, 122, 51, 0.16);
 
+  /* Ops Planner identity */
+  --op-teal: #3fb6a8;
+  --op-teal-hover: #62c9bd;
+  --op-teal-soft: rgba(63, 182, 168, 0.16);
+
   /* active accent (defaults to HomeLabCore) */
   --accent: var(--hlc-blue);
   --accent-hover: var(--hlc-blue-hover);
@@ -58,6 +64,14 @@
   --accent-soft: var(--cf-orange-soft);
   --accent-contrast: #241206;
   --focus-ring: #ffb37f;
+}
+
+[data-brand="opsplanner"] {
+  --accent: var(--op-teal);
+  --accent-hover: var(--op-teal-hover);
+  --accent-soft: var(--op-teal-soft);
+  --accent-contrast: #062521;
+  --focus-ring: #8fdcd2;
 }
 
 /* ---------- base ---------- */
@@ -559,6 +573,21 @@ img {
   border-color: color-mix(in srgb, var(--cf-orange) 40%, transparent);
 }
 
+/* The preview card above is CookFrom-orange by default; Ops Planner pages
+   recolour it (and the showcase badge dot) to the teal accent. */
+[data-brand="opsplanner"] .appcard::before {
+  background: radial-gradient(70% 60% at 50% 40%, var(--op-teal-soft), transparent 70%);
+}
+
+[data-brand="opsplanner"] .appcard__dot,
+[data-brand="opsplanner"] .showcase__badge::before {
+  background: var(--op-teal);
+}
+
+[data-brand="opsplanner"] .appstep--accent {
+  border-color: color-mix(in srgb, var(--op-teal) 40%, transparent);
+}
+
 /* ---------- cards / grid ---------- */
 
 .grid {
@@ -813,6 +842,11 @@ a.app-card:hover {
 .app-card__icon--cookfrom {
   background: var(--cf-orange-soft);
   color: var(--cf-orange);
+}
+
+.app-card__icon--opsplanner {
+  background: var(--op-teal-soft);
+  color: var(--op-teal);
 }
 
 .app-card__icon svg {
