@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "checked_on": "2026-10-03",
+  "manifest_assets": 72,
+  "real_screenshots": 18,
+  "web_visuals": 26,
+  "total_web_bytes": 1054494,
+  "largest_web_bytes": 82430,
+  "projects": {
+    "cookfrom": {
+      "screenshots": 5,
+      "web_visuals": 6
+    },
+    "ops-planner": {
+      "screenshots": 4,
+      "web_visuals": 6
+    },
+    "ai-tutor": {
+      "screenshots": 5,
+      "web_visuals": 6
+    },
+    "keyboard-trainer": {
+      "screenshots": 4,
+      "web_visuals": 6
+    },
+    "agentlab": {
+      "screenshots": 0,
+      "web_visuals": 2
+    }
+  },
+  "checks": [
+    "Required manifest fields and enum values",
+    "All assets exist and paths remain inside handoff",
+    "All assets decode",
+    "Recorded dimensions, sizes and SHA-256 match",
+    "All website assets are WebP below 150 KB",
+    "All internal composition/diagram source paths resolve",
+    "18 original captures visually reviewed",
+    "Cover and hero layouts visually reviewed",
+    "Fresh Android emulator and fresh browser context; no pre-existing user data",
+    "No app source or existing website implementation modified",
+    "All 44 preview images load in Chromium; zero broken images",
+    "All 20 copied Ops Planner lib files and 13 KeyQuest src files match the inspected source byte-for-byte",
+    "Handoff text/SVG scan found no credential patterns, emails, local addresses or owner identifiers"
+  ],
+  "errors": []
+}

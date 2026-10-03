@@ -1,0 +1,1100 @@
+{
+  "schema_version": 1,
+  "created_on": "2026-10-03",
+  "assets": [
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/01-ingredients.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/whats-for-dinner; local recipe_ai; Android beta 0.11.78+137",
+      "recommended_usage": "gallery",
+      "caption": "Choose ingredients from the illustrated catalog.",
+      "alt_text": "Choose ingredients from the illustrated catalog.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 414870,
+      "sha256": "f38884308a433ac19c9c555e99df5a4ad187f5eaacbdeb6a04c7985838ae36ca"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/02-dishes.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/whats-for-dinner; local recipe_ai; Android beta 0.11.78+137",
+      "recommended_usage": "gallery",
+      "caption": "Browse the existing dish catalog.",
+      "alt_text": "Browse the existing dish catalog.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1316717,
+      "sha256": "030feed28ba042c0ff5dde3f08284b01481b9d78ca063debadb224cf8cadc5ea"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/03-recipe.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/whats-for-dinner; local recipe_ai; Android beta 0.11.78+137",
+      "recommended_usage": "gallery",
+      "caption": "A built-in Ukrainian Borscht recipe with servings and ingredients.",
+      "alt_text": "A built-in Ukrainian Borscht recipe with servings and ingredients.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 864913,
+      "sha256": "365c9c21f5ef10b73e1522814bcfcf54e91d4eab3b5a39b1e5dd323834532e64"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/04-cooking.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/whats-for-dinner; local recipe_ai; Android beta 0.11.78+137",
+      "recommended_usage": "gallery",
+      "caption": "Follow the recipe one cooking step at a time.",
+      "alt_text": "Follow the recipe one cooking step at a time.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 71907,
+      "sha256": "e8e275d91e02f7dc7a8d6e47a6520943c35ac404bd9742eb868298562a96cc67"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/05-shopping.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/whats-for-dinner; local recipe_ai; Android beta 0.11.78+137",
+      "recommended_usage": "gallery",
+      "caption": "A shopping list with a sample tomato item.",
+      "alt_text": "A shopping list with a sample tomato item.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 69329,
+      "sha256": "1ff962df2d0f85794f689cec2348eb0de8bae451a8b16630efb528d875095aef"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/cover-composition.png",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/01-ingredients.png",
+        "cookfrom/originals/03-recipe.png"
+      ],
+      "recommended_usage": "card",
+      "caption": "CookFrom: Choose ingredients from the illustrated catalog.",
+      "alt_text": "CookFrom: Choose ingredients from the illustrated catalog.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 412847,
+      "sha256": "766a34c56e18a5a5b037531543ca7550aca3ac3634307dcafa75c4b0cd65c169"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/web/cover.webp",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/cover-composition.png",
+        "cookfrom/originals/01-ingredients.png",
+        "cookfrom/originals/03-recipe.png"
+      ],
+      "recommended_usage": "card",
+      "caption": "CookFrom: Choose ingredients from the illustrated catalog.",
+      "alt_text": "CookFrom: Choose ingredients from the illustrated catalog.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 63098,
+      "sha256": "c875782a3998ac771e7adbb73ecf1cdfc488180722c72fc98a6d69b807d5385d"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/hero-composition.png",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/01-ingredients.png",
+        "cookfrom/originals/03-recipe.png",
+        "cookfrom/originals/04-cooking.png"
+      ],
+      "recommended_usage": "hero",
+      "caption": "CookFrom: current application screens. Real Android beta · 0.11.78.",
+      "alt_text": "CookFrom: current application screens. Real Android beta · 0.11.78.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 547948,
+      "sha256": "a5c09ef8119e1d05fa0d0fb7ba1598af3ec63dbbaca1c46fc6d12c53e67b670f"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/web/hero.webp",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/hero-composition.png",
+        "cookfrom/originals/01-ingredients.png",
+        "cookfrom/originals/03-recipe.png",
+        "cookfrom/originals/04-cooking.png"
+      ],
+      "recommended_usage": "hero",
+      "caption": "CookFrom: current application screens. Real Android beta · 0.11.78.",
+      "alt_text": "CookFrom: current application screens. Real Android beta · 0.11.78.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 82430,
+      "sha256": "8f013d36521cef847fb44ad21a416a6dbef90793ed11ba18ed6537cc35869d60"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/gallery-01-ingredients-composition.png",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/01-ingredients.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Choose ingredients from the illustrated catalog.",
+      "alt_text": "Choose ingredients from the illustrated catalog.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 243696,
+      "sha256": "fc6486c6400f56a0dd23d52339443917f64eaaee9f0519460dc8e8c0a9bf9314"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/web/gallery-01-ingredients.webp",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/gallery-01-ingredients-composition.png",
+        "cookfrom/originals/01-ingredients.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Choose ingredients from the illustrated catalog.",
+      "alt_text": "Choose ingredients from the illustrated catalog.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 45330,
+      "sha256": "099d81960a70c0f3458a5efb6a9a165024bed1c0d794638893001152fdc8853a"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/gallery-02-dishes-composition.png",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/02-dishes.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Browse the existing dish catalog.",
+      "alt_text": "Browse the existing dish catalog.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 588738,
+      "sha256": "a7c904ed3c466d464550b26dede0e6e0a861a02ea6df8f279d824613f63592b6"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/web/gallery-02-dishes.webp",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/gallery-02-dishes-composition.png",
+        "cookfrom/originals/02-dishes.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Browse the existing dish catalog.",
+      "alt_text": "Browse the existing dish catalog.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 65122,
+      "sha256": "331dae0b3d8c0d1c4caf037e149a94ae542c4b3e8d9504a29c69f67f5b775b5e"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/gallery-03-recipe-composition.png",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/03-recipe.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "A built-in Ukrainian Borscht recipe with servings and ingredients.",
+      "alt_text": "A built-in Ukrainian Borscht recipe with servings and ingredients.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 413067,
+      "sha256": "a342a43fa8bda31b4b32b8fa23c052fbd9ce03e03296398104dab461cc682105"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/web/gallery-03-recipe.webp",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/gallery-03-recipe-composition.png",
+        "cookfrom/originals/03-recipe.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "A built-in Ukrainian Borscht recipe with servings and ingredients.",
+      "alt_text": "A built-in Ukrainian Borscht recipe with servings and ingredients.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 49246,
+      "sha256": "938678b81e89c5b97408e24204f5141e8b919fd09472e1e47f163b134dc65d31"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/originals/gallery-04-cooking-composition.png",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/04-cooking.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Follow the recipe one cooking step at a time.",
+      "alt_text": "Follow the recipe one cooking step at a time.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 115414,
+      "sha256": "6d419c4c6663020800fe663ef04a7c2346ac301ffdac10acad416523c9c2fa55"
+    },
+    {
+      "project": "cookfrom",
+      "filename": "cookfrom/web/gallery-04-cooking.webp",
+      "type": "composed",
+      "source": [
+        "cookfrom/originals/gallery-04-cooking-composition.png",
+        "cookfrom/originals/04-cooking.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Follow the recipe one cooking step at a time.",
+      "alt_text": "Follow the recipe one cooking step at a time.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 23722,
+      "sha256": "1264db50d1021eccc7dd62b10f849f151614810df3e4f9d6b5fb5cd7c1042baf"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/originals/01-daily-planner.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/ops-planner; current local working tree at f002466; emulator-compatible debug build",
+      "recommended_usage": "gallery",
+      "caption": "Daily task pool and workload calculated from fictional assignments.",
+      "alt_text": "Daily task pool and workload calculated from fictional assignments.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 186618,
+      "sha256": "bcad6c1b729e6824fff2f08cf64ad1f88a16a1c22decf8544cfa6e4b12e194f2"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/originals/02-weekly-planner.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/ops-planner; current local working tree at f002466; emulator-compatible debug build",
+      "recommended_usage": "gallery",
+      "caption": "Workweek selection and workload for a fictional sample team.",
+      "alt_text": "Workweek selection and workload for a fictional sample team.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 186471,
+      "sha256": "904a9e188da56fff85d185982156804a5caab3fd2374fe931d08e143cf48333b"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/originals/03-employee-week.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/ops-planner; current local working tree at f002466; emulator-compatible debug build",
+      "recommended_usage": "gallery",
+      "caption": "An employee’s weekly assignments in the real schedule view.",
+      "alt_text": "An employee’s weekly assignments in the real schedule view.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 145148,
+      "sha256": "f3873b96cb518ff8d9b4bcee18cb17f5bb43ac37f67a6c42b7b88805f06ff1bb"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/originals/04-schedule-vacation.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/ops-planner; current local working tree at f002466; emulator-compatible debug build",
+      "recommended_usage": "gallery",
+      "caption": "Work hours and a sample vacation period.",
+      "alt_text": "Work hours and a sample vacation period.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 138835,
+      "sha256": "ac4f7d2f02bd597f572bb1d16ca5c77491fa74a700b66125ee4c87cff76cd440"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/originals/cover-composition.png",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/02-weekly-planner.png",
+        "ops-planner/originals/03-employee-week.png"
+      ],
+      "recommended_usage": "card",
+      "caption": "Ops Planner: Workweek selection and workload for a fictional sample team.",
+      "alt_text": "Ops Planner: Workweek selection and workload for a fictional sample team.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 190082,
+      "sha256": "288318d1b71c90ce4da8faa33b7aafd569f57c67cae84e68897ce74c368dccae"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/web/cover.webp",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/cover-composition.png",
+        "ops-planner/originals/02-weekly-planner.png",
+        "ops-planner/originals/03-employee-week.png"
+      ],
+      "recommended_usage": "card",
+      "caption": "Ops Planner: Workweek selection and workload for a fictional sample team.",
+      "alt_text": "Ops Planner: Workweek selection and workload for a fictional sample team.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 40536,
+      "sha256": "56638f624fb8d1a049e95fe24bbb4049494cfb76daac23c9c4b8ddb33e4a3389"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/originals/hero-composition.png",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/02-weekly-planner.png",
+        "ops-planner/originals/03-employee-week.png",
+        "ops-planner/originals/04-schedule-vacation.png"
+      ],
+      "recommended_usage": "hero",
+      "caption": "Ops Planner: current application screens. Real Android UI · fictional sample team.",
+      "alt_text": "Ops Planner: current application screens. Real Android UI · fictional sample team.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 305914,
+      "sha256": "efa4af69d10eb73ad01de538fe1f2541ed6945c3e8437c98616904e5658ce480"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/web/hero.webp",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/hero-composition.png",
+        "ops-planner/originals/02-weekly-planner.png",
+        "ops-planner/originals/03-employee-week.png",
+        "ops-planner/originals/04-schedule-vacation.png"
+      ],
+      "recommended_usage": "hero",
+      "caption": "Ops Planner: current application screens. Real Android UI · fictional sample team.",
+      "alt_text": "Ops Planner: current application screens. Real Android UI · fictional sample team.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 64860,
+      "sha256": "384deb658aca45a9f7f53122a9469d46aa6f91f7c5348cbb3fded36da68cf9c3"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/originals/gallery-01-daily-planner-composition.png",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/01-daily-planner.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Daily task pool and workload calculated from fictional assignments.",
+      "alt_text": "Daily task pool and workload calculated from fictional assignments.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 168735,
+      "sha256": "39e678a4c99f4c603a0a151c9867be561a31193133706242669f5b4f24496d3e"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/web/gallery-01-daily-planner.webp",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/gallery-01-daily-planner-composition.png",
+        "ops-planner/originals/01-daily-planner.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Daily task pool and workload calculated from fictional assignments.",
+      "alt_text": "Daily task pool and workload calculated from fictional assignments.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 36416,
+      "sha256": "88de8d426025258e715815a1e1ab4ca5d1e3c82360ef48f345f7a35b5e220d87"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/originals/gallery-02-weekly-planner-composition.png",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/02-weekly-planner.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Workweek selection and workload for a fictional sample team.",
+      "alt_text": "Workweek selection and workload for a fictional sample team.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 167946,
+      "sha256": "1db1379c96e593e09f096588684632424f2718915f3a7d31a430b5d31364a350"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/web/gallery-02-weekly-planner.webp",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/gallery-02-weekly-planner-composition.png",
+        "ops-planner/originals/02-weekly-planner.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Workweek selection and workload for a fictional sample team.",
+      "alt_text": "Workweek selection and workload for a fictional sample team.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 36506,
+      "sha256": "95ef9178da295e8cbb92ad0ba6973a219dd947b2275ff9209082b97aec9af95c"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/originals/gallery-03-employee-week-composition.png",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/03-employee-week.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "An employee’s weekly assignments in the real schedule view.",
+      "alt_text": "An employee’s weekly assignments in the real schedule view.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 155352,
+      "sha256": "bec2022af9b4dc9829c61d9ea10992624bd224b6d81d1337caab6c2655b15d98"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/web/gallery-03-employee-week.webp",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/gallery-03-employee-week-composition.png",
+        "ops-planner/originals/03-employee-week.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "An employee’s weekly assignments in the real schedule view.",
+      "alt_text": "An employee’s weekly assignments in the real schedule view.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 31554,
+      "sha256": "ebfb18f15ef20592489d05d700da58a6e9cb85c44331372c10f431c0fa8bb1b3"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/originals/gallery-04-schedule-vacation-composition.png",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/04-schedule-vacation.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Work hours and a sample vacation period.",
+      "alt_text": "Work hours and a sample vacation period.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 161863,
+      "sha256": "37ad56836c007ba1e38168fc20f4e6f88fa01c8951488501d93b4b64b3100852"
+    },
+    {
+      "project": "ops-planner",
+      "filename": "ops-planner/web/gallery-04-schedule-vacation.webp",
+      "type": "composed",
+      "source": [
+        "ops-planner/originals/gallery-04-schedule-vacation-composition.png",
+        "ops-planner/originals/04-schedule-vacation.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Work hours and a sample vacation period.",
+      "alt_text": "Work hours and a sample vacation period.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 34084,
+      "sha256": "3121f1ea1aa11602ee928000f968a2302c9649a9e45ebb187ab825db7ae75bcc"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/01-problem.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/homework-tutor; local b39e6b8; existing debug APK; default MockTutorService",
+      "recommended_usage": "gallery",
+      "caption": "Enter a math problem in the real app; built-in sample shown.",
+      "alt_text": "Enter a math problem in the real app; built-in sample shown.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 88487,
+      "sha256": "ea1ee3c4452d3c285e261848f4fcbbee01945b39f38a2818cea75efd316aa4df"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/02-step.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/homework-tutor; local b39e6b8; existing debug APK; default MockTutorService",
+      "recommended_usage": "gallery",
+      "caption": "The first tutoring step for the built-in sample equation.",
+      "alt_text": "The first tutoring step for the built-in sample equation.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 69616,
+      "sha256": "5b926468152226e221b230239235cf8676d6c7ee8fa51271115dd6711274f20b"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/03-hint.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/homework-tutor; local b39e6b8; existing debug APK; default MockTutorService",
+      "recommended_usage": "gallery",
+      "caption": "Level 1 Hint in the built-in sample tutoring flow.",
+      "alt_text": "Level 1 Hint in the built-in sample tutoring flow.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 94297,
+      "sha256": "07e66657de709f9e48f7d3e1f56be06160c6b6802cb838920829b3d1b91a34b8"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/04-explain-differently.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/homework-tutor; local b39e6b8; existing debug APK; default MockTutorService",
+      "recommended_usage": "gallery",
+      "caption": "Explain Differently in the built-in sample mode; no live AI response.",
+      "alt_text": "Explain Differently in the built-in sample mode; no live AI response.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 126999,
+      "sha256": "00456c19da19d6975b3e0be56d2e124474e781df849da09893c5c80eae0c081d"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/05-result.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/homework-tutor; local b39e6b8; existing debug APK; default MockTutorService",
+      "recommended_usage": "gallery",
+      "caption": "The result after completing both steps of the built-in sample.",
+      "alt_text": "The result after completing both steps of the built-in sample.",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 63235,
+      "sha256": "55a158a8f58242d00800afe7cfbe2d804d5de81da2645aa8a9503907440f321a"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/cover-composition.png",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/01-problem.png",
+        "ai-tutor/originals/02-step.png"
+      ],
+      "recommended_usage": "card",
+      "caption": "AI Tutor: Enter a math problem in the real app; built-in sample shown.",
+      "alt_text": "AI Tutor: Enter a math problem in the real app; built-in sample shown.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 125107,
+      "sha256": "83679f5440f7e395c957cc00b39afc346a0ded3f074e89de72a26a6a54da52ea"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/web/cover.webp",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/cover-composition.png",
+        "ai-tutor/originals/01-problem.png",
+        "ai-tutor/originals/02-step.png"
+      ],
+      "recommended_usage": "card",
+      "caption": "AI Tutor: Enter a math problem in the real app; built-in sample shown.",
+      "alt_text": "AI Tutor: Enter a math problem in the real app; built-in sample shown.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 28190,
+      "sha256": "0e9803fdd4177c7bd24bbda20c3eb42a8dca65cbf480567ac0fbaaf5ce3289a3"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/hero-composition.png",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/01-problem.png",
+        "ai-tutor/originals/02-step.png",
+        "ai-tutor/originals/04-explain-differently.png"
+      ],
+      "recommended_usage": "hero",
+      "caption": "AI Tutor: current application screens. Real application UI · built-in sample mode.",
+      "alt_text": "AI Tutor: current application screens. Real application UI · built-in sample mode.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 196138,
+      "sha256": "06b7a19c40017f057e32a2bc6e33123f1c4c58a9ecfce76710ebfb9ff3b67fc6"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/web/hero.webp",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/hero-composition.png",
+        "ai-tutor/originals/01-problem.png",
+        "ai-tutor/originals/02-step.png",
+        "ai-tutor/originals/04-explain-differently.png"
+      ],
+      "recommended_usage": "hero",
+      "caption": "AI Tutor: current application screens. Real application UI · built-in sample mode.",
+      "alt_text": "AI Tutor: current application screens. Real application UI · built-in sample mode.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 48470,
+      "sha256": "1a4e2ecd51d22641037cf1fa3a40e789389f1fce67ee128bb658c25647e81772"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/gallery-02-step-composition.png",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/02-step.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "The first tutoring step for the built-in sample equation.",
+      "alt_text": "The first tutoring step for the built-in sample equation.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 109197,
+      "sha256": "116390389cddd470a18343e02759b0518cde3c68a88699b2fa87b6d0dc6b1d35"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/web/gallery-02-step.webp",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/gallery-02-step-composition.png",
+        "ai-tutor/originals/02-step.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "The first tutoring step for the built-in sample equation.",
+      "alt_text": "The first tutoring step for the built-in sample equation.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 22306,
+      "sha256": "d7556cf366e345fcf606a57ed125d430590fbb74c1911d0ef59f9f078f0b1216"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/gallery-03-hint-composition.png",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/03-hint.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Level 1 Hint in the built-in sample tutoring flow.",
+      "alt_text": "Level 1 Hint in the built-in sample tutoring flow.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 124023,
+      "sha256": "ddf9ac289d0bea6059ed3e924ad298a7df10967aed047a66604e8a6f63060917"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/web/gallery-03-hint.webp",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/gallery-03-hint-composition.png",
+        "ai-tutor/originals/03-hint.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Level 1 Hint in the built-in sample tutoring flow.",
+      "alt_text": "Level 1 Hint in the built-in sample tutoring flow.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 25024,
+      "sha256": "52aadbfb8958cbafd26931f2c37081b1c8f4634723c02e7e0c8ca58983c878d5"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/gallery-04-explain-differently-composition.png",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/04-explain-differently.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Explain Differently in the built-in sample mode; no live AI response.",
+      "alt_text": "Explain Differently in the built-in sample mode; no live AI response.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 147987,
+      "sha256": "4a3c7c23d44cd891f0b1cafe6a38c289be3032d4e84a118df72d19c34c3d1245"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/web/gallery-04-explain-differently.webp",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/gallery-04-explain-differently-composition.png",
+        "ai-tutor/originals/04-explain-differently.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "Explain Differently in the built-in sample mode; no live AI response.",
+      "alt_text": "Explain Differently in the built-in sample mode; no live AI response.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 31428,
+      "sha256": "878475d92520eb6e9e2fdfa3b6fe2be002ff5a020b1e4aba9343399b0d51e42f"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/originals/gallery-05-result-composition.png",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/05-result.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "The result after completing both steps of the built-in sample.",
+      "alt_text": "The result after completing both steps of the built-in sample.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 107042,
+      "sha256": "51b4ca4fd285410d2fd53e106aa223d99f99c380a6d2792e95fb2505bccc5979"
+    },
+    {
+      "project": "ai-tutor",
+      "filename": "ai-tutor/web/gallery-05-result.webp",
+      "type": "composed",
+      "source": [
+        "ai-tutor/originals/gallery-05-result-composition.png",
+        "ai-tutor/originals/05-result.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "The result after completing both steps of the built-in sample.",
+      "alt_text": "The result after completing both steps of the built-in sample.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 21806,
+      "sha256": "a45c5f3a2df4110e6508f65b3ecfe440ed644a3748b49ae8b0b1390e32f1c319"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/originals/01-home.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/keyboard-trainer; repositories/Keyboard-Trainer current uncommitted src; copied unchanged to disposable Vite project",
+      "recommended_usage": "gallery",
+      "caption": "The current KeyQuest home screen.",
+      "alt_text": "The current KeyQuest home screen.",
+      "width": 1440,
+      "height": 900,
+      "bytes": 492750,
+      "sha256": "955343b6613c3ad42028a1cb140684b79f713ebcd8dcfc8b6f5265208e5c9f69"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/originals/02-quest-map.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/keyboard-trainer; repositories/Keyboard-Trainer current uncommitted src; copied unchanged to disposable Vite project",
+      "recommended_usage": "gallery",
+      "caption": "The real ten-level quest map with its initial unlock state.",
+      "alt_text": "The real ten-level quest map with its initial unlock state.",
+      "width": 1440,
+      "height": 900,
+      "bytes": 601483,
+      "sha256": "5c8481f1d70e8e853fdeea94bc1d7db27eefde2d7940721205f6590c9a677a24"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/originals/03-typing.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/keyboard-trainer; repositories/Keyboard-Trainer current uncommitted src; copied unchanged to disposable Vite project",
+      "recommended_usage": "gallery",
+      "caption": "The first typing challenge with its highlighted target key.",
+      "alt_text": "The first typing challenge with its highlighted target key.",
+      "width": 1440,
+      "height": 900,
+      "bytes": 301347,
+      "sha256": "b6d1d469696fc6f77c95ea10f7e70c7ef31e824fb5a8f14386ee831ed14b632a"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/originals/04-completed.png",
+      "type": "screenshot",
+      "source": "HomeLab-NL/keyboard-trainer; repositories/Keyboard-Trainer current uncommitted src; copied unchanged to disposable Vite project",
+      "recommended_usage": "gallery",
+      "caption": "A result earned by typing the actual first challenge; sample session only.",
+      "alt_text": "A result earned by typing the actual first challenge; sample session only.",
+      "width": 1440,
+      "height": 900,
+      "bytes": 369567,
+      "sha256": "5e135dd1050beffd9e13a362f110ee8d8dd7585deccc6d5c17459c9ced1c0506"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/originals/cover-composition.png",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/03-typing.png"
+      ],
+      "recommended_usage": "card",
+      "caption": "KeyQuest: The first typing challenge with its highlighted target key.",
+      "alt_text": "KeyQuest: The first typing challenge with its highlighted target key.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 319302,
+      "sha256": "f16c5a6f56e182bcafa67c639cb5659be90ff507572c831fc3ddf50a3d363354"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/web/cover.webp",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/cover-composition.png",
+        "keyboard-trainer/originals/03-typing.png"
+      ],
+      "recommended_usage": "card",
+      "caption": "KeyQuest: The first typing challenge with its highlighted target key.",
+      "alt_text": "KeyQuest: The first typing challenge with its highlighted target key.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 28898,
+      "sha256": "1bcc0534b2f7fd6f54474c52a0bac8cd4e90e62fcf54c809920664196b8e01e5"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/originals/hero-composition.png",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/03-typing.png"
+      ],
+      "recommended_usage": "hero",
+      "caption": "KeyQuest: current application screens. Real browser application · development build.",
+      "alt_text": "KeyQuest: current application screens. Real browser application · development build.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 415672,
+      "sha256": "5eca5c1d3af3dbef25996d900a0f4246756f531e14e753ef2bb51d540915945a"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/web/hero.webp",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/hero-composition.png",
+        "keyboard-trainer/originals/03-typing.png"
+      ],
+      "recommended_usage": "hero",
+      "caption": "KeyQuest: current application screens. Real browser application · development build.",
+      "alt_text": "KeyQuest: current application screens. Real browser application · development build.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 36406,
+      "sha256": "3c51732ff2d2bf2a5ec5a44fa8625b68e4e9e812e1d7e3d5660289dcf25076b8"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/originals/gallery-01-home-composition.png",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/01-home.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "The current KeyQuest home screen.",
+      "alt_text": "The current KeyQuest home screen.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 516062,
+      "sha256": "88f1aa5a866058ea0fec40629583928aa42db1cbb2b210a3421bce5aca96492e"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/web/gallery-01-home.webp",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/gallery-01-home-composition.png",
+        "keyboard-trainer/originals/01-home.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "The current KeyQuest home screen.",
+      "alt_text": "The current KeyQuest home screen.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 41992,
+      "sha256": "817fbd3bdc11e2746f90ba85a31874b77377db607e4468c4305a19bf36a0dacf"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/originals/gallery-02-quest-map-composition.png",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/02-quest-map.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "The real ten-level quest map with its initial unlock state.",
+      "alt_text": "The real ten-level quest map with its initial unlock state.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 562807,
+      "sha256": "0d9fd641f4f57f276c13045ba67d7e330057a87cfa2f6776c09b1fa920ad355f"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/web/gallery-02-quest-map.webp",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/gallery-02-quest-map-composition.png",
+        "keyboard-trainer/originals/02-quest-map.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "The real ten-level quest map with its initial unlock state.",
+      "alt_text": "The real ten-level quest map with its initial unlock state.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 32504,
+      "sha256": "80d6d9a1076f9ab04a4824a8b804d3ddfb56b0b886c837781e7c5f8aebc55b08"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/originals/gallery-03-typing-composition.png",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/03-typing.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "The first typing challenge with its highlighted target key.",
+      "alt_text": "The first typing challenge with its highlighted target key.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 338574,
+      "sha256": "655032cf1719f5cc441649555f947ddbe7e8eb5c6bf6058868433149c1a946ab"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/web/gallery-03-typing.webp",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/gallery-03-typing-composition.png",
+        "keyboard-trainer/originals/03-typing.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "The first typing challenge with its highlighted target key.",
+      "alt_text": "The first typing challenge with its highlighted target key.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 30894,
+      "sha256": "75952ed0b75144f6e77108bb7f0e58a92986d5cb6c758f5357a8b047b7e290b0"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/originals/gallery-04-completed-composition.png",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/04-completed.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "A result earned by typing the actual first challenge; sample session only.",
+      "alt_text": "A result earned by typing the actual first challenge; sample session only.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 455577,
+      "sha256": "550c2265cea69e5c51fb8c869beef40dcd22da44965a8de9726e3e8fd76340a4"
+    },
+    {
+      "project": "keyboard-trainer",
+      "filename": "keyboard-trainer/web/gallery-04-completed.webp",
+      "type": "composed",
+      "source": [
+        "keyboard-trainer/originals/gallery-04-completed-composition.png",
+        "keyboard-trainer/originals/04-completed.png"
+      ],
+      "recommended_usage": "gallery",
+      "caption": "A result earned by typing the actual first challenge; sample session only.",
+      "alt_text": "A result earned by typing the actual first challenge; sample session only.",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 34532,
+      "sha256": "2e39b5e24f71eb66043bbfaae26c87987f1903d77f13b91cb59b384610152712"
+    },
+    {
+      "project": "agentlab",
+      "filename": "agentlab/originals/cover.svg",
+      "type": "diagram",
+      "source": [
+        "SOURCE_AUDIT.md#agentlab",
+        ".keyboard-trainer-staging workflow configuration (sanitized evidence in SOURCE_AUDIT.md)",
+        "homelab-infrastructure-audit.md (local evidence; not distributed)"
+      ],
+      "recommended_usage": "card",
+      "caption": "AgentLab workflow roles: Claude planner, Qwen/OpenCode builder, and QA/safety reviewer. Runtime status is based on the 03 October 2026 audit, not a new live check.",
+      "alt_text": "AgentLab workflow roles: Claude planner, Qwen/OpenCode builder, and QA/safety reviewer. Runtime status is based on the 03 October 2026 audit, not a new live check.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 2908,
+      "sha256": "8ffbae7deac3890b69d8e77737e70153799d7fd86f38de419d4eabfc49b478d1"
+    },
+    {
+      "project": "agentlab",
+      "filename": "agentlab/originals/cover.png",
+      "type": "diagram",
+      "source": [
+        "agentlab/originals/cover.svg"
+      ],
+      "recommended_usage": "card",
+      "caption": "AgentLab workflow roles: Claude planner, Qwen/OpenCode builder, and QA/safety reviewer. Runtime status is based on the 03 October 2026 audit, not a new live check.",
+      "alt_text": "AgentLab workflow roles: Claude planner, Qwen/OpenCode builder, and QA/safety reviewer. Runtime status is based on the 03 October 2026 audit, not a new live check.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 100330,
+      "sha256": "c94fa0df34a065553f87e26d393da9330f0eab2f3dc26b2289439bd0aeb6917b"
+    },
+    {
+      "project": "agentlab",
+      "filename": "agentlab/web/cover.webp",
+      "type": "diagram",
+      "source": [
+        "agentlab/originals/cover.svg",
+        "agentlab/originals/cover.png"
+      ],
+      "recommended_usage": "card",
+      "caption": "AgentLab workflow roles: Claude planner, Qwen/OpenCode builder, and QA/safety reviewer. Runtime status is based on the 03 October 2026 audit, not a new live check.",
+      "alt_text": "AgentLab workflow roles: Claude planner, Qwen/OpenCode builder, and QA/safety reviewer. Runtime status is based on the 03 October 2026 audit, not a new live check.",
+      "width": 1600,
+      "height": 900,
+      "bytes": 37912,
+      "sha256": "ecfb4018209d68014246e6bbf9ab39b79bb6fed4b5df024240d558de633ef6cf"
+    },
+    {
+      "project": "agentlab",
+      "filename": "agentlab/originals/hero.svg",
+      "type": "diagram",
+      "source": [
+        "SOURCE_AUDIT.md#agentlab",
+        "agentlab-local-ai-gateway/README.md",
+        "agentlab-local-ai-gateway/gateway.py",
+        "agentlab-local-ai-gateway/router.py",
+        "agentlab-local-ai-gateway/telemetry.py"
+      ],
+      "recommended_usage": "hero",
+      "caption": "Current AgentLab gateway architecture: deterministic L0 tasks, L1/L2 local inference through Ollama, schema validation, bounded repair, and metadata-only telemetry. Guard rejection requests escalation without making a cloud call.",
+      "alt_text": "Current AgentLab gateway architecture: deterministic L0 tasks, L1/L2 local inference through Ollama, schema validation, bounded repair, and metadata-only telemetry. Guard rejection requests escalation without making a cloud call.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 4655,
+      "sha256": "5a664167fe6c9a588ceb6032537ec50eb07828c1b9bdf35a89e628e071dddb3e"
+    },
+    {
+      "project": "agentlab",
+      "filename": "agentlab/originals/hero.png",
+      "type": "diagram",
+      "source": [
+        "agentlab/originals/hero.svg"
+      ],
+      "recommended_usage": "hero",
+      "caption": "Current AgentLab gateway architecture: deterministic L0 tasks, L1/L2 local inference through Ollama, schema validation, bounded repair, and metadata-only telemetry. Guard rejection requests escalation without making a cloud call.",
+      "alt_text": "Current AgentLab gateway architecture: deterministic L0 tasks, L1/L2 local inference through Ollama, schema validation, bounded repair, and metadata-only telemetry. Guard rejection requests escalation without making a cloud call.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 159196,
+      "sha256": "67941775a534b8507dd3ca7a4cc5918f1c7409cbefafc9ea25aad6fbfbe899da"
+    },
+    {
+      "project": "agentlab",
+      "filename": "agentlab/web/hero.webp",
+      "type": "diagram",
+      "source": [
+        "agentlab/originals/hero.svg",
+        "agentlab/originals/hero.png"
+      ],
+      "recommended_usage": "hero",
+      "caption": "Current AgentLab gateway architecture: deterministic L0 tasks, L1/L2 local inference through Ollama, schema validation, bounded repair, and metadata-only telemetry. Guard rejection requests escalation without making a cloud call.",
+      "alt_text": "Current AgentLab gateway architecture: deterministic L0 tasks, L1/L2 local inference through Ollama, schema validation, bounded repair, and metadata-only telemetry. Guard rejection requests escalation without making a cloud call.",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 61228,
+      "sha256": "323a149e8bb88c5eaa2b9177f3b6069027927ae961a34af9d972fce95a061dfd"
+    }
+  ]
+}
