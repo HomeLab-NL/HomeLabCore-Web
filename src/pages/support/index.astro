@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import AppCard from "../../components/AppCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const apps = (await getCollection("apps")).sort((a, b) => a.data.order - b.data.order);
+---
+<BaseLayout
+  route="support"
+  title="Support — HomeLabCore"
+  description="Support for apps published by HomeLabCore. Choose the app you need help with."
+  ogDescription="Support for apps published by HomeLabCore."
+  navCurrent="support"
+>
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Support</p>
+        <h1>Support</h1>
+        <p class="lead">Help for apps published by HomeLabCore. Choose the app you need help with.</p>
+      </div>
+
+      <div class="app-grid">
+        {apps.map((app) => (
+          <AppCard app={app} href={app.data.urls.support} description={app.data.cards.support} showPlatform={false} />
+        ))}
+      </div>
+
+      <p class="muted" style="margin-top: 1.25rem; font-size: 0.92rem;">General questions: <a href="mailto:support@homelabcore.dev">support@homelabcore.dev</a>. Privacy questions: <a href="mailto:privacy@homelabcore.dev">privacy@homelabcore.dev</a>.</p>
+    </div>
+  </section>
+</BaseLayout>

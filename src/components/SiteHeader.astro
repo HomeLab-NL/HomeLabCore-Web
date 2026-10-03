@@ -1,0 +1,38 @@
+---
+import Icon from "./Icon.astro";
+import { NAV, type NavKey } from "../data/site";
+
+interface Props {
+  /** The nav item for this exact page (aria-current="page"). */
+  current?: NavKey;
+  /** The nav item for the section a deeper page belongs to. */
+  section?: NavKey;
+}
+
+const { current, section } = Astro.props;
+---
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="/">
+      <img class="brand__mark" src="/assets/brand/homelab-flask.png" width="256" height="403" alt="" aria-hidden="true">
+      <span class="brand__name">HomeLab<span class="brand__core">Core</span></span>
+    </a>
+
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+      <Icon name="menu" />
+      <Icon name="close" />
+    </button>
+
+    <ul class="nav__links" id="nav-links">
+      {NAV.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            aria-current={item.key === current ? "page" : undefined}
+            class={item.key === section ? "is-section" : undefined}
+          >{item.label}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</header>

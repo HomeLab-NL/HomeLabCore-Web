@@ -1,0 +1,73 @@
+---
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import { ROUTES, type RouteKey } from "../data/routes";
+import { SITE_URL, type NavKey } from "../data/site";
+
+interface Props {
+  route: RouteKey;
+  title: string;
+  description: string;
+  /** Open Graph overrides; default to title/description. */
+  ogTitle?: string;
+  ogDescription?: string;
+  ogType?: "website" | "article";
+  /** Product accent, set as <html data-brand>. */
+  brand?: "cookfrom" | "opsplanner";
+  navCurrent?: NavKey;
+  navSection?: NavKey;
+}
+
+const {
+  route,
+  title,
+  description,
+  ogTitle = title,
+  ogDescription = description,
+  ogType = "website",
+  brand,
+  navCurrent,
+  navSection,
+} = Astro.props;
+
+const { path, indexed } = ROUTES[route];
+const url = SITE_URL + path;
+---
+<!DOCTYPE html>
+<html lang="en" data-brand={brand}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  {indexed ? <link rel="canonical" href={url}> : <meta name="robots" content="noindex">}
+  <meta name="theme-color" content="#0b0d10">
+  {indexed && (
+    <>
+      <meta property="og:type" content={ogType}>
+      <meta property="og:site_name" content="HomeLabCore">
+      <meta property="og:title" content={ogTitle}>
+      <meta property="og:description" content={ogDescription}>
+      <meta property="og:url" content={url}>
+      <meta name="twitter:card" content="summary">
+    </>
+  )}
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <SiteHeader current={navCurrent} section={navSection} />
+
+  <slot name="pagebar" />
+
+  <main id="main">
+    <slot />
+  </main>
+
+  <SiteFooter />
+
+  <script is:inline src="/assets/js/main.js" defer></script>
+</body>
+</html>

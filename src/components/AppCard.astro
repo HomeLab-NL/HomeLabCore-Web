@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Icon from "./Icon.astro";
+
+interface Props {
+  app: CollectionEntry<"apps">;
+  href: string;
+  description: string;
+  /** Show the "Built for …" platform line (listings, not support). */
+  showPlatform?: boolean;
+}
+
+const { app, href, description, showPlatform = true } = Astro.props;
+const { name, icon, platform } = app.data;
+---
+<a class="app-card" href={href}>
+  <span class={`app-card__icon app-card__icon--${icon}`} aria-hidden="true">
+    <Icon name={icon} />
+  </span>
+  <span class="app-card__body">
+    <span class="app-card__name">{name}</span>
+    <span class="app-card__desc">{description}</span>
+    {showPlatform && (
+      <span class="app-card__platform">
+        <Icon name="android" />
+        {platform}
+      </span>
+    )}
+  </span>
+  <span class="app-card__chevron" aria-hidden="true">
+    <Icon name="chevron" />
+  </span>
+</a>

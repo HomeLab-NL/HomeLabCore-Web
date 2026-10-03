@@ -1,0 +1,31 @@
+# Every URL the hand-written site served before the Astro migration.
+# These must keep resolving: app store listings link to the privacy and
+# support pages, and search engines index the rest. Removing a line here
+# needs a redirect in its place.
+/
+/404.html
+/about
+/about/
+/apps/
+/apps/cookfrom
+/apps/cookfrom/
+/apps/ops-planner
+/apps/ops-planner/
+/support/
+/support/cookfrom
+/support/cookfrom/
+/support/ops-planner
+/support/ops-planner/
+/privacy/cookfrom
+/privacy/cookfrom/
+/privacy/ops-planner
+/privacy/ops-planner/
+/robots.txt
+/sitemap.xml
+/assets/css/styles.css
+/assets/js/main.js
+/assets/favicon.svg
+/assets/brand/homelab-flask.png
+/assets/brand/homelab-logo.png
+/assets/brand/homelab-logo-web.png
+/assets/brand/homelab-logo-web.webp

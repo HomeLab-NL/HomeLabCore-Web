@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import ProductPageBar, { type ProductTab } from "../components/ProductPageBar.astro";
+import type { RouteKey } from "../data/routes";
+
+// Pages that belong to one app: product overview, privacy policy, support.
+// Adds the app accent, the breadcrumb + product sub-nav, and highlights the
+// app's parent section in the global nav.
+interface Props {
+  app: CollectionEntry<"apps">;
+  tab: ProductTab;
+  route: RouteKey;
+  title: string;
+  description: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogType?: "website" | "article";
+}
+
+const { app, tab, ...meta } = Astro.props;
+---
+<BaseLayout {...meta} brand={app.data.brand} navSection={tab === "support" ? "support" : "apps"}>
+  <ProductPageBar slot="pagebar" app={app} tab={tab} />
+  <slot />
+</BaseLayout>
