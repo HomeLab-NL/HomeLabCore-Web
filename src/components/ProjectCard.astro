@@ -1,0 +1,37 @@
+---
+import { Picture } from "astro:assets";
+import type { Project } from "../lib/projects";
+import { platformLabel } from "../lib/projects";
+import Status from "./Status.astro";
+
+// Screenshot-led project card. The title link covers the whole card.
+interface Props {
+  project: Project;
+  headingLevel?: "h2" | "h3";
+  sizes?: string;
+}
+
+const { project, headingLevel = "h3", sizes = "(min-width: 1040px) 33vw, (min-width: 720px) 50vw, 100vw" } = Astro.props;
+const { name, kind, status, summary, cover, urls } = project.data;
+const Heading = headingLevel;
+---
+<article class="pcard" data-project={project.id}>
+  <div class:list={["pcard__visual", { "pcard__visual--illustration": cover?.kind === "illustration" }]}>
+    {cover ? (
+      <Picture src={cover.src} alt={cover.alt} widths={[400, 640, 960].filter((w) => w <= cover.src.width)} sizes={sizes} formats={["avif"]} fallbackFormat="webp" loading="lazy" decoding="async" />
+    ) : (
+      <div class="placeholder">
+        <span class="placeholder__label">Placeholder</span>
+        <span class="placeholder__text">No {name} visuals published yet.</span>
+      </div>
+    )}
+  </div>
+  <div>
+    <div class="meta-row">
+      <Status status={status} />
+      <span class="meta">{kind} · {platformLabel(project)}</span>
+    </div>
+    <Heading class="pcard__title"><a href={urls.overview}>{name}</a></Heading>
+    <p class="pcard__summary">{summary}</p>
+  </div>
+</article>

@@ -1,0 +1,9 @@
+---
+import Icon from "./Icon.astro";
+// One button. Its name ("Dark theme") stays fixed; aria-pressed says whether
+// the dark theme is on. Hidden until main.js wires it up (it needs JS).
+---
+<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Dark theme" title="Toggle dark theme" data-theme-toggle hidden>
+  <Icon name="moon" />
+  <span class="theme-toggle__label" aria-hidden="true">Dark</span>
+</button>

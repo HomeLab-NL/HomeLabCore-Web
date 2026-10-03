@@ -1,0 +1,21 @@
+{
+  "name": "Ops Planner",
+  "section": "apps",
+  "kind": "Android app",
+  "platforms": ["Android"],
+  "status": "closed-testing",
+  "summary": "A weekly planner for sharing out a department's tasks, duties, and events among employees — with workload tracking, vacations, and schedules you can email. All data stays on your device.",
+  "order": 2,
+  "featured": true,
+  "accent": {
+    "light": { "fill": "#3fb6a8", "text": "#15705f" },
+    "dark": { "fill": "#3fb6a8", "text": "#3fb6a8" }
+  },
+  "urls": {
+    "overview": "/apps/ops-planner/",
+    "privacy": "/privacy/ops-planner/",
+    "support": "/support/ops-planner/"
+  },
+  "supportSummary": "Help with sharing schedules and reports by email, export and import, moving to a new phone, deleting data, and reporting a bug.",
+  "missing": ["App screenshots", "Google Play store URL (listing not public yet)"]
+}

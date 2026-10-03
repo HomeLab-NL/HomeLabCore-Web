@@ -1,0 +1,14 @@
+{
+  "name": "At the Mountains of Madness",
+  "section": "lab",
+  "kind": "Game",
+  "platforms": [],
+  "status": "active-development",
+  "summary": "A game in active development.",
+  "order": 2,
+  "featured": true,
+  "urls": {
+    "overview": "/lab/at-the-mountains-of-madness/"
+  },
+  "missing": ["Game description", "Visuals (screenshots or concept art)", "Platform"]
+}

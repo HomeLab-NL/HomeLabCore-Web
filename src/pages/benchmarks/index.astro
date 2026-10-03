@@ -1,0 +1,58 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionHead from "../../components/SectionHead.astro";
+import { formatDate, isoDate } from "../../lib/projects";
+
+const runs = (await getCollection("benchmarks")).sort((a, b) => b.data.published.getTime() - a.data.published.getTime());
+---
+<BaseLayout
+  route="benchmarks"
+  title="Benchmarks — HomeLabCore"
+  description="Public workflow benchmarks comparing Claude, Codex and Qwen. No results have been published yet."
+  navCurrent="benchmarks"
+>
+  <section class="section">
+    <div class="container">
+      <SectionHead label="Benchmarks" title="AI workflow benchmarks" level="h1">
+        Public comparisons of Claude, Codex and Qwen on development workflows.
+      </SectionHead>
+
+      {runs.length === 0 ? (
+        <div class="split">
+          <div class="panel">
+            <p class="meta">Status · no results published yet</p>
+            <h2>The first benchmark is in preparation</h2>
+            <p class="muted">Nothing is published here until a run is complete. When it is, this page will list it with a link to the full write-up.</p>
+          </div>
+          <div>
+            <h2>What every published run will include</h2>
+            <dl class="meta-list">
+              <dt>Systems</dt>
+              <dd>Each tool and model compared, with the exact version used.</dd>
+              <dt>Date</dt>
+              <dd>When the run was carried out.</dd>
+              <dt>Tasks</dt>
+              <dd>The workflows each system was asked to complete, and how many.</dd>
+              <dt>Scoring</dt>
+              <dd>How results were judged — the methodology, written out.</dd>
+              <dt>Results</dt>
+              <dd>Charts with the underlying numbers in an accessible table.</dd>
+              <dt>Raw data</dt>
+              <dd>A downloadable file with the raw results.</dd>
+            </dl>
+          </div>
+        </div>
+      ) : (
+        <ul class="updates">
+          {runs.map((r) => (
+            <li>
+              <time datetime={isoDate(r.data.published)}>{formatDate(r.data.published)}</time>
+              <p><a href={`/benchmarks/${r.id}/`}>{r.data.title}</a> — {r.data.summary}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+</BaseLayout>

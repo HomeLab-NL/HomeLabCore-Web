@@ -2,7 +2,8 @@
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import { ROUTES, type RouteKey } from "../data/routes";
-import { SITE_URL, type NavKey } from "../data/site";
+import { SITE_URL, THEME_STORAGE_KEY, type NavKey } from "../data/site";
+import { accentCss, allProjects } from "../lib/projects";
 
 interface Props {
   route: RouteKey;
@@ -12,8 +13,8 @@ interface Props {
   ogTitle?: string;
   ogDescription?: string;
   ogType?: "website" | "article";
-  /** Product accent, set as <html data-brand>. */
-  brand?: "cookfrom" | "opsplanner";
+  /** Project id: applies that project's accent to the whole page. */
+  project?: string;
   navCurrent?: NavKey;
   navSection?: NavKey;
 }
@@ -25,23 +26,31 @@ const {
   ogTitle = title,
   ogDescription = description,
   ogType = "website",
-  brand,
+  project,
   navCurrent,
   navSection,
 } = Astro.props;
 
 const { path, indexed } = ROUTES[route];
 const url = SITE_URL + path;
+const accents = accentCss(await allProjects());
+
+// Runs before the stylesheet and before <body> exists: applies a saved manual
+// theme choice so the first paint is already in that theme. No saved choice
+// (or no storage) -> the light default in the markup stays. The OS
+// prefers-color-scheme setting is deliberately not consulted.
+const themeInit = `(function(){var d=document.documentElement;d.classList.add("js");var t;try{t=localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)})}catch(e){}if(t==="dark"||t==="light"){d.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#0b0d10":"#fafaf7")}})();`;
 ---
 <!DOCTYPE html>
-<html lang="en" data-brand={brand}>
+<html lang="en" data-theme="light" data-project={project}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafaf7">
+  <script is:inline set:html={themeInit}></script>
   <title>{title}</title>
   <meta name="description" content={description}>
   {indexed ? <link rel="canonical" href={url}> : <meta name="robots" content="noindex">}
-  <meta name="theme-color" content="#0b0d10">
   {indexed && (
     <>
       <meta property="og:type" content={ogType}>
@@ -54,6 +63,7 @@ const url = SITE_URL + path;
   )}
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <style is:inline set:html={accents}></style>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>

@@ -1,0 +1,24 @@
+---
+import type { Project } from "../lib/projects";
+import { platformLabel } from "../lib/projects";
+import Status from "./Status.astro";
+
+// Compact, text-only project row for lists.
+interface Props {
+  project: Project;
+  href?: string;
+  summary?: string;
+  headingLevel?: "h2" | "h3";
+}
+
+const { project, href = project.data.urls.overview, summary = project.data.summary, headingLevel = "h3" } = Astro.props;
+const Heading = headingLevel;
+---
+<article class="prow" data-project={project.id}>
+  <Heading class="prow__title"><a href={href}>{project.data.name}</a></Heading>
+  <p class="prow__summary">{summary}</p>
+  <div class="meta-row">
+    <Status status={project.data.status} />
+    <span class="meta">{project.data.kind} · {platformLabel(project)}</span>
+  </div>
+</article>

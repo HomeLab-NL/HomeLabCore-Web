@@ -1,0 +1,47 @@
+{
+  "name": "CookFrom",
+  "section": "apps",
+  "kind": "Android app",
+  "platforms": ["Android"],
+  "status": "closed-testing",
+  "summary": "Cook with what you already have. Choose or photograph your ingredients and get an AI-assisted recipe you can adjust, save, and cook from step by step.",
+  "order": 1,
+  "featured": true,
+  "accent": {
+    "light": { "fill": "#ff7a33", "text": "#a8490c" },
+    "dark": { "fill": "#ff7a33", "text": "#ff7a33" }
+  },
+  "urls": {
+    "overview": "/apps/cookfrom",
+    "privacy": "/privacy/cookfrom",
+    "support": "/support/cookfrom"
+  },
+  "supportSummary": "Troubleshooting for AI recipe generation, ingredient photo recognition, Pro entitlement and purchase restoration, and application data.",
+  "cover": {
+    "src": "../../assets/projects/cookfrom/borscht.webp",
+    "alt": "A bowl of borscht, rendered in CookFrom's near-realistic 3D illustration style.",
+    "caption": "Borscht — one of CookFrom's in-app dish illustrations",
+    "kind": "illustration"
+  },
+  "figures": [
+    {
+      "src": "../../assets/projects/cookfrom/varenyky.webp",
+      "alt": "A plate of varenyky (dumplings) in CookFrom's 3D illustration style.",
+      "caption": "Varenyky",
+      "kind": "illustration"
+    },
+    {
+      "src": "../../assets/projects/cookfrom/deruny.webp",
+      "alt": "A stack of deruny (potato pancakes) in CookFrom's 3D illustration style.",
+      "caption": "Deruny",
+      "kind": "illustration"
+    },
+    {
+      "src": "../../assets/projects/cookfrom/holubtsi.webp",
+      "alt": "Holubtsi (cabbage rolls) in CookFrom's 3D illustration style.",
+      "caption": "Holubtsi",
+      "kind": "illustration"
+    }
+  ],
+  "missing": ["App screenshots (Google Play store screenshots or device captures)", "Google Play store URL (listing not public yet)"]
+}

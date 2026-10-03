@@ -1,9 +1,11 @@
 ---
-import { getCollection } from "astro:content";
-import AppCard from "../../components/AppCard.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectRow from "../../components/ProjectRow.astro";
+import SectionHead from "../../components/SectionHead.astro";
+import { CONTACT } from "../../data/site";
+import { projectsIn } from "../../lib/projects";
 
-const apps = (await getCollection("apps")).sort((a, b) => a.data.order - b.data.order);
+const apps = (await projectsIn("apps")).filter((p) => p.data.urls.support);
 ---
 <BaseLayout
   route="support"
@@ -14,19 +16,13 @@ const apps = (await getCollection("apps")).sort((a, b) => a.data.order - b.data.
 >
   <section class="section">
     <div class="container">
-      <div class="section-head">
-        <p class="eyebrow">Support</p>
-        <h1>Support</h1>
-        <p class="lead">Help for apps published by HomeLabCore. Choose the app you need help with.</p>
+      <SectionHead label="Support" title="Support" level="h1">
+        Help for apps published by HomeLabCore. Choose the app you need help with.
+      </SectionHead>
+      <div>
+        {apps.map((p) => <ProjectRow project={p} href={p.data.urls.support} summary={p.data.supportSummary} headingLevel="h2" />)}
       </div>
-
-      <div class="app-grid">
-        {apps.map((app) => (
-          <AppCard app={app} href={app.data.urls.support} description={app.data.cards.support} showPlatform={false} />
-        ))}
-      </div>
-
-      <p class="muted" style="margin-top: 1.25rem; font-size: 0.92rem;">General questions: <a href="mailto:support@homelabcore.dev">support@homelabcore.dev</a>. Privacy questions: <a href="mailto:privacy@homelabcore.dev">privacy@homelabcore.dev</a>.</p>
+      <p class="muted small support-note">General questions: <a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a>. Privacy questions: <a href={`mailto:${CONTACT.privacy}`}>{CONTACT.privacy}</a>.</p>
     </div>
   </section>
 </BaseLayout>

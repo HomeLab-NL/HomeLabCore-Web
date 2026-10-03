@@ -2,10 +2,10 @@
 import { getEntry } from "astro:content";
 import ProductLayout from "../../../layouts/ProductLayout.astro";
 
-const app = (await getEntry("apps", "ops-planner"))!;
+const project = (await getEntry("projects", "ops-planner"))!;
 ---
 <ProductLayout
-  app={app}
+  project={project}
   tab="privacy"
   route="privacyOpsPlanner"
   title="Ops Planner Privacy Policy — HomeLabCore"

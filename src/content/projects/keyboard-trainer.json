@@ -1,0 +1,33 @@
+{
+  "name": "Keyboard Trainer",
+  "section": "apps",
+  "kind": "Web app",
+  "platforms": ["Web"],
+  "status": "active-development",
+  "summary": "A desktop-first typing game for children aged 6–12: ten keyboard challenges of increasing difficulty, with stars, XP and coins to earn on the way. Progress is stored only in the browser.",
+  "workingTitle": "KeyQuest",
+  "order": 4,
+  "featured": true,
+  "accent": {
+    "light": { "fill": "#7c5cff", "text": "#5a3fd0" },
+    "dark": { "fill": "#8b6cff", "text": "#a891ff" }
+  },
+  "urls": {
+    "overview": "/apps/keyboard-trainer/"
+  },
+  "cover": {
+    "src": "../../assets/projects/keyboard-trainer/start-screen.png",
+    "alt": "Keyboard Trainer start screen: the KeyQuest title, the line “Turn every key into an adventure.”, a Play now button and a block-built character on a floating island.",
+    "caption": "Start screen",
+    "kind": "screenshot"
+  },
+  "figures": [
+    {
+      "src": "../../assets/projects/keyboard-trainer/level-1.png",
+      "alt": "Level 1, “Home Row Hello”: the letter A glows above an on-screen keyboard, with combo, accuracy and mistake counters.",
+      "caption": "Level 1 — Home Row Hello",
+      "kind": "screenshot"
+    }
+  ],
+  "missing": ["Public web URL (not deployed yet)", "Confirmed product name (the app currently shows the working title KeyQuest)"]
+}

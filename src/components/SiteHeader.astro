@@ -1,6 +1,7 @@
 ---
 import Icon from "./Icon.astro";
-import { NAV, type NavKey } from "../data/site";
+import ThemeToggle from "./ThemeToggle.astro";
+import { PRIMARY_NAV, SECONDARY_NAV, type NavKey } from "../data/site";
 
 interface Props {
   /** The nav item for this exact page (aria-current="page"). */
@@ -10,29 +11,40 @@ interface Props {
 }
 
 const { current, section } = Astro.props;
+const attrs = (key: NavKey) => ({
+  "aria-current": key === current ? ("page" as const) : undefined,
+  class: key === section ? "is-section" : undefined,
+});
 ---
 <header class="site-header">
   <div class="container nav">
     <a class="brand" href="/">
-      <img class="brand__mark" src="/assets/brand/homelab-flask.png" width="256" height="403" alt="" aria-hidden="true">
+      <img class="brand__mark" src="/assets/brand/homelab-flask.png" width="256" height="403" alt="">
       <span class="brand__name">HomeLab<span class="brand__core">Core</span></span>
     </a>
 
-    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Menu" hidden>
       <Icon name="menu" />
       <Icon name="close" />
     </button>
 
-    <ul class="nav__links" id="nav-links">
-      {NAV.map((item) => (
-        <li>
-          <a
-            href={item.href}
-            aria-current={item.key === current ? "page" : undefined}
-            class={item.key === section ? "is-section" : undefined}
-          >{item.label}</a>
-        </li>
-      ))}
-    </ul>
+    <div class="nav__menu" id="nav-menu">
+      <nav aria-label="Primary">
+        <ul class="nav__links">
+          {PRIMARY_NAV.map((item) => (
+            <li><a href={item.href} {...attrs(item.key)}>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+      <span class="nav__divider" aria-hidden="true"></span>
+      <nav aria-label="Secondary">
+        <ul class="nav__secondary">
+          {SECONDARY_NAV.map((item) => (
+            <li><a href={item.href} {...attrs(item.key)}>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+      <ThemeToggle />
+    </div>
   </div>
 </header>

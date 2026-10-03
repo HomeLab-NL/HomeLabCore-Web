@@ -1,0 +1,14 @@
+{
+  "name": "AI Tutor",
+  "section": "apps",
+  "kind": "Android app",
+  "platforms": ["Android"],
+  "status": "active-development",
+  "summary": "An Android app in early development. The goal: help students work through maths homework one step at a time, instead of revealing the final answer straight away.",
+  "order": 3,
+  "featured": true,
+  "urls": {
+    "overview": "/apps/ai-tutor/"
+  },
+  "missing": ["Screenshots or visuals", "Accent colour", "Feature description beyond the project goal"]
+}

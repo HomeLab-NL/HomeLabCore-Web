@@ -1,108 +1,52 @@
 // Runs axe-core (WCAG 2.0/2.1/2.2 A + AA rules) against every built page in
-// dist/, at a phone and a desktop width. Fails on any violation that is not
-// listed in KNOWN_ISSUES.
+// dist/, in BOTH themes, at a phone and a desktop width. Any violation fails.
 
-import fs from "node:fs";
-import http from "node:http";
-import path from "node:path";
 import { chromium } from "playwright";
 import { AxeBuilder } from "@axe-core/playwright";
+import { contextWithTheme, pagePaths, serve, THEMES } from "./lib/serve.mjs";
 
-const DIST = path.resolve("dist");
 const VIEWPORTS = [
-  { width: 360, height: 800 },
+  { width: 390, height: 844 },
   { width: 1280, height: 800 },
 ];
 
-// Violations that exist in the current design and are scheduled to be fixed
-// by a later phase. Each entry is a rule id; remove it once fixed so the
-// check guards against regressions.
-const KNOWN_ISSUES = {
-  // The dark theme's studio blue (#3f74d8) is ~4.2–4.5:1 on its backgrounds,
-  // just under AA. Fixed by the Phase 2 light theme (blue text #2b5cc4).
-  "color-contrast": "Phase 2: light theme tokens",
-  // Links inside paragraphs differ from body text by colour only. Fixed by
-  // underlining in-text links in the Phase 2 design.
-  "link-in-text-block": "Phase 2: underline links in running text",
-};
-
-const TYPES = {
-  ".html": "text/html; charset=utf-8",
-  ".css": "text/css",
-  ".js": "text/javascript",
-  ".svg": "image/svg+xml",
-  ".png": "image/png",
-  ".webp": "image/webp",
-  ".xml": "application/xml",
-  ".txt": "text/plain",
-};
-
-function serve() {
-  const server = http.createServer((req, res) => {
-    const urlPath = decodeURIComponent(new URL(req.url, "http://x").pathname);
-    const rel = urlPath.replace(/^\/+/, "");
-    const file = [rel, `${rel}.html`, path.join(rel, "index.html")]
-      .map((c) => path.join(DIST, c))
-      .find((f) => f.startsWith(DIST) && fs.existsSync(f) && fs.statSync(f).isFile());
-    if (!file) {
-      res.writeHead(404).end();
-      return;
-    }
-    res.writeHead(200, { "Content-Type": TYPES[path.extname(file)] ?? "application/octet-stream" });
-    fs.createReadStream(file).pipe(res);
-  });
-  return new Promise((resolve) => server.listen(0, "127.0.0.1", () => resolve(server)));
-}
-
-function pagePaths(dir) {
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
-    const p = path.join(dir, e.name);
-    if (e.isDirectory()) return pagePaths(p);
-    if (!e.name.endsWith(".html")) return [];
-    const rel = "/" + path.relative(DIST, p).split(path.sep).join("/");
-    return [rel.replace(/index\.html$/, "")];
-  });
-}
-
-const server = await serve();
-const base = `http://127.0.0.1:${server.address().port}`;
+const { server, base } = await serve();
 const browser = await chromium.launch();
+const pages = pagePaths();
 const failures = [];
-const known = new Map();
+let runs = 0;
 
 try {
-  for (const viewport of VIEWPORTS) {
-    const context = await browser.newContext({ viewport });
-    for (const p of pagePaths(DIST).sort()) {
-      const page = await context.newPage();
-      await page.goto(base + p);
-      const { violations } = await new AxeBuilder({ page })
-        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
-        .analyze();
-      for (const v of violations) {
-        if (v.id in KNOWN_ISSUES) {
-          known.set(v.id, (known.get(v.id) ?? 0) + v.nodes.length);
-          continue;
+  for (const theme of THEMES) {
+    for (const viewport of VIEWPORTS) {
+      const context = await contextWithTheme(browser, theme, { viewport });
+      for (const p of pages) {
+        const page = await context.newPage();
+        await page.goto(base + p, { waitUntil: "load" });
+        const applied = await page.evaluate(() => document.documentElement.getAttribute("data-theme"));
+        if (applied !== theme) failures.push(`${p} [${theme}]: page rendered with data-theme="${applied}"`);
+        const { violations } = await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+          .analyze();
+        runs++;
+        for (const v of violations) {
+          failures.push(
+            `${p} [${theme} @${viewport.width}px] — ${v.id} (${v.impact}): ${v.help}\n` +
+              v.nodes.map((n) => `    ${n.target.join(" ")}  ${n.failureSummary?.split("\n")[1]?.trim() ?? ""}`).join("\n"),
+          );
         }
-        failures.push(
-          `${p} @${viewport.width}px — ${v.id} (${v.impact}): ${v.help}\n` +
-            v.nodes.map((n) => `    ${n.target.join(" ")}`).join("\n"),
-        );
+        await page.close();
       }
-      await page.close();
+      await context.close();
     }
-    await context.close();
   }
 } finally {
   await browser.close();
   server.close();
 }
 
-for (const [id, count] of known) {
-  console.warn(`! known issue, not failing: ${id} (${count} nodes) — ${KNOWN_ISSUES[id]}`);
-}
 if (failures.length) {
   console.error(failures.map((f) => `✗ ${f}`).join("\n"));
   process.exit(1);
 }
-console.log(`✓ axe: no new WCAG A/AA violations on ${pagePaths(DIST).length} pages × ${VIEWPORTS.length} viewports.`);
+console.log(`✓ axe: no WCAG A/AA violations — ${pages.length} pages × ${THEMES.length} themes × ${VIEWPORTS.length} viewports (${runs} runs).`);

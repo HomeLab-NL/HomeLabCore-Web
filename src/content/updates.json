@@ -1,0 +1,22 @@
+[
+  {
+    "id": "2026-10-03-new-projects",
+    "date": "2026-10-03",
+    "title": "AI Tutor, Keyboard Trainer, AgentLab and At the Mountains of Madness are now listed on HomeLabCore.",
+    "projects": ["ai-tutor", "keyboard-trainer", "agentlab", "at-the-mountains-of-madness"]
+  },
+  {
+    "id": "2026-09-24-ops-planner",
+    "date": "2026-09-24",
+    "title": "Ops Planner product page, privacy policy and support page published.",
+    "projects": ["ops-planner"],
+    "href": "/apps/ops-planner/"
+  },
+  {
+    "id": "2026-09-01-cookfrom",
+    "date": "2026-09-01",
+    "title": "CookFrom product page, privacy policy and support page published.",
+    "projects": ["cookfrom"],
+    "href": "/apps/cookfrom"
+  }
+]

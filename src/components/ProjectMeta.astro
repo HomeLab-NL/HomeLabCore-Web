@@ -1,0 +1,25 @@
+---
+import type { Project } from "../lib/projects";
+import { platformLabel } from "../lib/projects";
+import Status from "./Status.astro";
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const { kind, status, workingTitle } = project.data;
+---
+<dl class="meta-list">
+  <dt>Status</dt>
+  <dd><Status status={status} /></dd>
+  <dt>Type</dt>
+  <dd>{kind}</dd>
+  <dt>Platform</dt>
+  <dd>{platformLabel(project)}</dd>
+  {workingTitle && (
+    <>
+      <dt>Working title</dt>
+      <dd>{workingTitle}</dd>
+    </>
+  )}
+</dl>

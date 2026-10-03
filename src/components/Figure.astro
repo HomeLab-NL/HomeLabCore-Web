@@ -1,0 +1,66 @@
+---
+import { Picture } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+// A captioned figure: "Fig. 01 — Caption · screenshot".
+// Pass `image` for a real asset, or omit it and pass `missing` to render a
+// clearly marked placeholder. Anything else can be passed in the slot (for
+// example an HTML illustration).
+interface Props {
+  number?: number;
+  caption: string;
+  kind?: "screenshot" | "illustration";
+  image?: ImageMetadata;
+  alt?: string;
+  /** What visual is missing, for the placeholder text. */
+  missing?: string;
+  widths?: number[];
+  sizes?: string;
+  loading?: "eager" | "lazy";
+  class?: string;
+}
+
+const {
+  number,
+  caption,
+  kind,
+  image,
+  alt = "",
+  missing,
+  widths = [480, 800, 1200],
+  sizes = "(min-width: 960px) 50vw, 100vw",
+  loading = "lazy",
+  class: className,
+} = Astro.props;
+
+const label = number !== undefined ? `Fig. ${String(number).padStart(2, "0")}` : undefined;
+const hasSlot = Astro.slots.has("default");
+---
+<figure class:list={["fig", { "fig--illustration": kind === "illustration" && image }, className]}>
+  <div class="fig__frame">
+    {image ? (
+      <Picture
+        src={image}
+        alt={alt}
+        widths={widths.filter((w) => w <= image.width)}
+        sizes={sizes}
+        formats={["avif"]} fallbackFormat="webp"
+        loading={loading}
+        decoding="async"
+      />
+    ) : hasSlot ? (
+      <slot />
+    ) : (
+      <div class="placeholder">
+        <span class="placeholder__label">Placeholder</span>
+        <span class="placeholder__text">{missing ?? "Visual not available yet."}</span>
+      </div>
+    )}
+  </div>
+  <figcaption class="fig__caption">
+    {label && <span class="meta">{label} —</span>}
+    <span>{caption}</span>
+    {kind && <span class="meta">· {kind}</span>}
+    {!image && !hasSlot && <span class="meta">· placeholder</span>}
+  </figcaption>
+</figure>

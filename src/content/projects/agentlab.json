@@ -1,0 +1,14 @@
+{
+  "name": "AgentLab",
+  "section": "lab",
+  "kind": "Infrastructure experiment",
+  "platforms": [],
+  "status": "experiment",
+  "summary": "An experiment in AI development infrastructure.",
+  "order": 1,
+  "featured": true,
+  "urls": {
+    "overview": "/lab/agentlab/"
+  },
+  "missing": ["Description of what AgentLab does", "Visuals", "Platform / stack"]
+}

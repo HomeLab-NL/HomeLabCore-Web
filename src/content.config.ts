@@ -1,34 +1,117 @@
-import { defineCollection } from "astro:content";
-import { glob } from "astro/loaders";
+import { defineCollection, reference } from "astro:content";
+import { file, glob } from "astro/loaders";
 import { z } from "astro/zod";
+import { AA_TEXT, contrast } from "./lib/contrast";
+import { textBackgrounds, type ThemeName } from "./lib/theme-tokens";
 
-// One entry per published app. Listings (home, /apps/, /support/), the
-// product page bar and the per-app pages read from here.
-const apps = defineCollection({
-  loader: glob({ pattern: "*.json", base: "./src/content/apps" }),
+const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "must be a #rrggbb colour");
+const sitePath = z.string().startsWith("/");
+
+// A project accent has a fill (dots, rules, figure tints — decoration only)
+// and a text colour, for each theme. The text colour must reach WCAG AA on
+// every background text can sit on in that theme, or the build fails.
+const accentTheme = z.object({ fill: hex, text: hex });
+const accent = z
+  .object({ light: accentTheme, dark: accentTheme })
+  .superRefine((value, ctx) => {
+    for (const theme of ["light", "dark"] as ThemeName[]) {
+      for (const [token, bg] of Object.entries(textBackgrounds(theme))) {
+        const ratio = contrast(value[theme].text, bg);
+        if (ratio < AA_TEXT) {
+          ctx.addIssue({
+            code: "custom",
+            path: [theme, "text"],
+            message: `${value[theme].text} on ${theme} ${token} (${bg}) is ${ratio.toFixed(2)}:1; WCAG AA needs ${AA_TEXT}:1`,
+          });
+        }
+      }
+    }
+  });
+
+export const STATUSES = {
+  "closed-testing": "Closed testing",
+  "active-development": "In development",
+  experiment: "Experiment",
+  live: "Live",
+  archived: "Archived",
+} as const;
+
+const projects = defineCollection({
+  loader: glob({ pattern: "*.json", base: "./src/content/projects" }),
+  schema: ({ image }) => {
+    const figure = z.object({
+      src: image(),
+      alt: z.string().min(1),
+      caption: z.string().min(1),
+      /** "screenshot" or "illustration" — shown in the caption so a reader knows what they are looking at. */
+      kind: z.enum(["screenshot", "illustration"]),
+    });
+    return z.object({
+      name: z.string(),
+      /** Where the project lives: /apps/ or /lab/. */
+      section: z.enum(["apps", "lab"]),
+      /** Short category, e.g. "Android app", "Game". */
+      kind: z.string(),
+      /** Empty when the platform has not been announced. */
+      platforms: z.array(z.string()),
+      status: z.enum(Object.keys(STATUSES) as [keyof typeof STATUSES, ...(keyof typeof STATUSES)[]]),
+      /** One or two sentences, used on cards. Facts only. */
+      summary: z.string(),
+      /** Name used inside the product while it is in development, if different. */
+      workingTitle: z.string().optional(),
+      order: z.number().int(),
+      featured: z.boolean().default(false),
+      accent: accent.optional(),
+      urls: z.object({
+        overview: sitePath,
+        privacy: sitePath.optional(),
+        support: sitePath.optional(),
+      }),
+      /** Card copy on /support/. */
+      supportSummary: z.string().optional(),
+      cover: figure.optional(),
+      figures: z.array(figure).default([]),
+      /** Information or assets still missing; shown as marked placeholders and listed in reports. */
+      missing: z.array(z.string()).default([]),
+    });
+  },
+});
+
+// Dated site updates (pages published, projects listed). Shown in "Recent
+// updates" on the homepage. Only facts that happened on this site.
+const updates = defineCollection({
+  loader: file("src/content/updates.json"),
   schema: z.object({
-    name: z.string(),
-    /** Value of <html data-brand> on the app's pages; selects the accent. */
-    brand: z.enum(["cookfrom", "opsplanner"]),
-    /** Key of the icon in src/components/Icon.astro. */
-    icon: z.enum(["cookfrom", "opsplanner"]),
-    platform: z.string(),
-    /** Listing order. */
-    order: z.number().int(),
-    /** Shown in the homepage app list. */
-    onHome: z.boolean(),
-    urls: z.object({
-      overview: z.string().startsWith("/"),
-      privacy: z.string().startsWith("/"),
-      support: z.string().startsWith("/"),
-    }),
-    /** Card copy per listing; the wording differs between pages. */
-    cards: z.object({
-      home: z.string().optional(),
-      apps: z.string(),
-      support: z.string(),
-    }),
+    date: z.coerce.date(),
+    title: z.string(),
+    projects: z.array(reference("projects")).default([]),
+    href: sitePath.optional(),
   }),
 });
 
-export const collections = { apps };
+// Public workflow benchmarks (Claude / Codex / Qwen). No runs are published
+// yet; this schema is what the first one must provide.
+const benchmarks = defineCollection({
+  loader: glob({ pattern: "*.{md,mdx}", base: "./src/content/benchmarks" }),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    published: z.coerce.date(),
+    /** Every tool/model compared, with the exact version used. */
+    systems: z
+      .array(
+        z.object({
+          name: z.string(),
+          vendor: z.string(),
+          version: z.string(),
+        }),
+      )
+      .min(2),
+    tasks: z.number().int().positive(),
+    /** Path to the raw results file shipped with the run. */
+    rawData: sitePath,
+    methodology: z.string(),
+  }),
+});
+
+export const collections = { projects, updates, benchmarks };

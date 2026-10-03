@@ -2,10 +2,10 @@
 import { getEntry } from "astro:content";
 import ProductLayout from "../../../layouts/ProductLayout.astro";
 
-const app = (await getEntry("apps", "ops-planner"))!;
+const project = (await getEntry("projects", "ops-planner"))!;
 ---
 <ProductLayout
-  app={app}
+  project={project}
   tab="support"
   route="supportOpsPlanner"
   title="Ops Planner Support — HomeLabCore"

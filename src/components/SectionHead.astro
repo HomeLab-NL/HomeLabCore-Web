@@ -1,0 +1,24 @@
+---
+// Section heading with a notebook index ("01 / Apps") and an optional link.
+interface Props {
+  index?: number;
+  label?: string;
+  title: string;
+  level?: "h1" | "h2";
+  link?: { href: string; text: string };
+  id?: string;
+}
+
+const { index, label, title, level = "h2", link, id } = Astro.props;
+const Heading = level;
+---
+<div class="section-head">
+  <div>
+    {(index !== undefined || label) && (
+      <span class="eyebrow">{index !== undefined && `${String(index).padStart(2, "0")} / `}{label}</span>
+    )}
+    <Heading id={id}>{title}</Heading>
+    {Astro.slots.has("default") && <p><slot /></p>}
+  </div>
+  {link && <a class="section-head__link" href={link.href}>{link.text} <span aria-hidden="true">→</span></a>}
+</div>

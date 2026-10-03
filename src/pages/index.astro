@@ -1,56 +1,143 @@
 ---
-import { getCollection } from "astro:content";
-import AppCard from "../components/AppCard.astro";
-import ComingSoonCard from "../components/ComingSoonCard.astro";
+import { getCollection, getEntry } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Figure from "../components/Figure.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import ProjectRow from "../components/ProjectRow.astro";
+import SectionHead from "../components/SectionHead.astro";
+import { CONTACT } from "../data/site";
+import { formatDate, isoDate, projectsIn } from "../lib/projects";
 
-const apps = (await getCollection("apps", (a) => a.data.onHome)).sort((a, b) => a.data.order - b.data.order);
+const apps = (await projectsIn("apps")).filter((p) => p.data.featured);
+const lab = (await projectsIn("lab")).filter((p) => p.data.featured);
+const benchmarks = await getCollection("benchmarks");
+const updates = (await getCollection("updates")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 5);
+
+const keyboard = (await getEntry("projects", "keyboard-trainer"))!;
+const cookfrom = (await getEntry("projects", "cookfrom"))!;
 ---
 <BaseLayout
   route="home"
-  title="HomeLabCore — Small tools. Thoughtfully built."
-  description="HomeLabCore is a small independent software studio. It builds and maintains a short list of focused apps, starting with CookFrom."
-  ogDescription="A small independent software studio building and maintaining a short list of focused apps, starting with CookFrom."
+  title="HomeLabCore — Apps, experiments and AI benchmarks"
+  description="HomeLabCore is an independent software lab. It builds apps, runs experiments, makes games and publishes AI workflow benchmarks."
   navCurrent="home"
 >
   <section class="hero">
     <div class="container hero__grid">
       <div>
-        <p class="eyebrow">HomeLabCore</p>
-        <h1 class="hero__title">Small tools.<br>Thoughtfully built.</h1>
-        <p class="lead">HomeLabCore is a small independent software studio. It designs, builds, and maintains a short list of focused apps — practical software for everyday problems.</p>
-        <div class="btn-row">
-          <a class="btn btn--primary" href="/apps/">View apps</a>
-          <a class="btn btn--ghost" href="/about">About HomeLabCore</a>
-        </div>
+        <span class="eyebrow">HomeLabCore · independent software lab</span>
+        <h1 class="hero__title">Apps, experiments and AI benchmarks.</h1>
+        <p class="lead">HomeLabCore is an independent software lab. It makes small, focused Android and web apps, runs experiments and games in the lab, and is preparing public benchmarks of AI-assisted development workflows.</p>
+        <ul class="link-list" aria-label="Explore">
+          <li><span class="meta">01</span><a href="/apps/">Apps</a></li>
+          <li><span class="meta">02</span><a href="/lab/">Lab</a></li>
+          <li><span class="meta">03</span><a href="/benchmarks/">Benchmarks</a></li>
+        </ul>
       </div>
-
-      <div class="hero__brand" aria-hidden="true">
-        <img class="hero__brand-mark" src="/assets/brand/homelab-flask.png" width="256" height="403" alt="">
-        <div>
-          <p class="hero__brand-name">HomeLab<span class="brand__core">Core</span></p>
-          <p class="hero__brand-tag">we code ideas</p>
-        </div>
+      <div class="collage">
+        <Figure
+          number={1}
+          image={keyboard.data.cover!.src}
+          alt={keyboard.data.cover!.alt}
+          caption={`${keyboard.data.name} — ${keyboard.data.cover!.caption.toLowerCase()}`}
+          kind={keyboard.data.cover!.kind}
+          sizes="(min-width: 960px) 55vw, 100vw"
+          loading="eager"
+        />
+        <Figure
+          number={2}
+          image={cookfrom.data.cover!.src}
+          alt={cookfrom.data.cover!.alt}
+          caption="CookFrom — in-app dish illustration"
+          kind="illustration"
+          sizes="(min-width: 960px) 27vw, 50vw"
+          loading="eager"
+        />
+        <Figure
+          number={3}
+          image={keyboard.data.figures[0].src}
+          alt={keyboard.data.figures[0].alt}
+          caption={`${keyboard.data.name} — level 1`}
+          kind="screenshot"
+          sizes="(min-width: 960px) 27vw, 50vw"
+          loading="eager"
+        />
       </div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" aria-labelledby="apps-title">
     <div class="container">
-      <div class="section-head">
-        <p class="eyebrow">Apps</p>
-        <h2>Software published by HomeLabCore</h2>
-        <p class="lead">One app today, with room for more. Each is built and maintained as its own focused product.</p>
+      <SectionHead index={1} label="Apps" title="Featured apps" id="apps-title" link={{ href: "/apps/", text: "All apps" }}>
+        Android and web apps, each with its own product page — and, once released, its own privacy policy and support page.
+      </SectionHead>
+      <div class="card-grid card-grid--2">
+        {apps.map((p) => <ProjectCard project={p} sizes="(min-width: 720px) 50vw, 100vw" />)}
       </div>
+    </div>
+  </section>
 
-      <div class="app-grid">
-        {apps.map((app) => (
-          <AppCard app={app} href={app.data.urls.overview} description={app.data.cards.home ?? app.data.cards.apps} />
+  <section class="section" aria-labelledby="lab-title">
+    <div class="container">
+      <SectionHead index={2} label="Lab" title="From the Lab" id="lab-title" link={{ href: "/lab/", text: "All lab projects" }}>
+        Experiments, infrastructure and games that are not products (yet).
+      </SectionHead>
+      <div>
+        {lab.map((p) => <ProjectRow project={p} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="bench-title">
+    <div class="container">
+      <SectionHead index={3} label="Benchmarks" title="AI workflow benchmarks" id="bench-title" link={{ href: "/benchmarks/", text: "About the benchmarks" }}>
+        Public comparisons of Claude, Codex and Qwen on development workflows.
+      </SectionHead>
+      {benchmarks.length === 0 ? (
+        <div class="panel">
+          <p class="meta">No results published yet</p>
+          <p>The first benchmark is being prepared. Each published run will state its full setup — the exact model versions, the date, the tasks and how they were scored — next to the results and the raw data.</p>
+        </div>
+      ) : (
+        <ul class="updates">
+          {benchmarks.map((b) => (
+            <li><time datetime={isoDate(b.data.published)}>{formatDate(b.data.published)}</time><p><a href={`/benchmarks/${b.id}/`}>{b.data.title}</a> — {b.data.summary}</p></li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="updates-title">
+    <div class="container">
+      <SectionHead index={4} label="Log" title="Recent updates" id="updates-title" />
+      <ul class="updates">
+        {updates.map((u) => (
+          <li>
+            <time datetime={isoDate(u.data.date)}>{formatDate(u.data.date)}</time>
+            <p>{u.data.href ? <a href={u.data.href}>{u.data.title}</a> : u.data.title}</p>
+          </li>
         ))}
-        <ComingSoonCard />
-      </div>
+      </ul>
+    </div>
+  </section>
 
-      <p class="muted" style="margin-top: 1.25rem; font-size: 0.92rem;">Every app gets its own product page, privacy policy, and support page. The full directory lives on the <a href="/apps/">Apps</a> page.</p>
+  <section class="section" aria-labelledby="about-title">
+    <div class="container split">
+      <div>
+        <span class="eyebrow">05 / About</span>
+        <h2 id="about-title">About HomeLabCore</h2>
+        <p class="muted measure">HomeLabCore is a small, independent software studio. It builds a short list of focused apps and experiments, keeps them maintained, and is clear about how each one handles your data.</p>
+        <p><a href="/about">More about HomeLabCore <span aria-hidden="true">→</span></a></p>
+      </div>
+      <dl class="meta-list">
+        <dt>Support</dt>
+        <dd><a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a></dd>
+        <dt>Privacy</dt>
+        <dd><a href={`mailto:${CONTACT.privacy}`}>{CONTACT.privacy}</a></dd>
+        <dt>Help</dt>
+        <dd><a href="/support/">Support pages for each app</a></dd>
+      </dl>
     </div>
   </section>
 </BaseLayout>

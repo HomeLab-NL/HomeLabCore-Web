@@ -7,13 +7,21 @@ export const CONTACT = {
   support: "support@homelabcore.dev",
 };
 
+/** localStorage key for the manual theme choice ("light" | "dark"). */
+export const THEME_STORAGE_KEY = "hlc-theme";
+
 // Global navigation. `current` on a page highlights its item with
 // aria-current="page"; `section` marks the parent section of a deeper page.
-export type NavKey = "home" | "apps" | "about" | "support";
+export type NavKey = "home" | "apps" | "lab" | "benchmarks" | "about" | "support";
 
-export const NAV: { key: NavKey; label: string; href: string }[] = [
+export const PRIMARY_NAV: { key: NavKey; label: string; href: string }[] = [
   { key: "home", label: "Home", href: "/" },
   { key: "apps", label: "Apps", href: "/apps/" },
+  { key: "lab", label: "Lab", href: "/lab/" },
+  { key: "benchmarks", label: "Benchmarks", href: "/benchmarks/" },
   { key: "about", label: "About", href: "/about" },
+];
+
+export const SECONDARY_NAV: { key: NavKey; label: string; href: string }[] = [
   { key: "support", label: "Support", href: "/support/" },
 ];
