@@ -1,0 +1,44 @@
+---
+import Icon from "./Icon.astro";
+import { CONTACT } from "../data/site";
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <p class="footer-brand">
+          <img class="footer-brand__mark" src="/assets/brand/homelab-flask.png" width="256" height="403" alt="" aria-hidden="true">
+          <span>HomeLab<span class="brand__core">Core</span></span>
+        </p>
+        <p class="footer-tag">we code ideas</p>
+        <p class="footer-desc">A small independent software studio building practical tools for everyday problems.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <div class="footer-col">
+          <h2>Home</h2>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/apps/">Apps</a></li>
+            <li><a href="/about">About</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-col__cf">CookFrom</h2>
+          <ul>
+            <li><a href="/apps/cookfrom">CookFrom</a></li>
+            <li><a href="/privacy/cookfrom">Privacy Policy</a></li>
+            <li><a href="/support/cookfrom">Support</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Contact</h2>
+          <ul class="footer-contact">
+            <li><a href={`mailto:${CONTACT.privacy}`}><Icon name="mail" /> {CONTACT.privacy}</a></li>
+            <li><a href={`mailto:${CONTACT.support}`}><Icon name="mail" /> {CONTACT.support}</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-copy">&copy; <span data-year>2026</span> HomeLabCore</div>
+  </div>
+</footer>

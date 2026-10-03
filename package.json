@@ -1,0 +1,26 @@
+{
+  "name": "homelabcore-web",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test:urls": "node scripts/check-urls.mjs",
+    "test:html": "html-validate \"dist/**/*.html\"",
+    "test:a11y": "node scripts/check-a11y.mjs",
+    "test": "npm run test:urls && npm run test:html && npm run test:a11y"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
+    "astro": "^7.3.5",
+    "html-validate": "^11.16.1",
+    "playwright": "1.56.1",
+    "typescript": "^6.0.3"
+  }
+}

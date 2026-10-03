@@ -1,75 +1,100 @@
 # HomeLabCore-Web
 
-Public umbrella website for **HomeLabCore** and its first product, **CookFrom**.
+Public website for **HomeLabCore** and its apps (CookFrom, Ops Planner),
+served at <https://homelabcore.dev/>.
 
-## What this is
+## Stack
 
-A plain static site — hand-written HTML, one CSS file, and a small vanilla
-JavaScript file. There is **no framework and no build step**. Cloudflare Pages
-serves the repository root directly.
+A static [Astro](https://astro.build/) site. Astro renders every page to plain
+HTML at build time; the browser gets HTML, one CSS file and one small vanilla
+JavaScript file — no framework runtime.
+
+- Node.js 22.12 or later (see `.nvmrc`)
+- `npm ci` installs everything
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Local dev server with live reload |
+| `npm run build` | Build the site into `dist/` |
+| `npm run preview` | Serve the built `dist/` |
+| `npm run check` | Type-check `.astro` and `.ts` files |
+| `npm run test:urls` | Every legacy URL, internal link and sitemap URL resolves |
+| `npm run test:html` | Validate built HTML (`html-validate`) |
+| `npm run test:a11y` | axe accessibility check (WCAG A/AA) on every page |
+| `npm test` | All three checks (after `npm run build`) |
+
+CI (`.github/workflows/ci.yml`) runs the type check, build and all checks on
+every pull request and on pushes to `main`.
 
 ## Structure
 
 ```
-/                       index.html            HomeLabCore homepage (studio)
-/apps/                   index.html            Apps directory
-/apps/cookfrom/          index.html            CookFrom product page
-/about/                  index.html            About HomeLabCore
-/support/                index.html            Support directory
-/support/cookfrom/       index.html            CookFrom Support
-/privacy/cookfrom/       index.html            CookFrom Privacy Policy
-/apps/ops-planner/       index.html            Ops Planner product page
-/support/ops-planner/    index.html            Ops Planner Support
-/privacy/ops-planner/    index.html            Ops Planner Privacy Policy
-/assets/css/styles.css                         Site styles (dual accent system)
-/assets/js/main.js                             Nav toggle + footer year
-/assets/favicon.svg                            Favicon
-/assets/brand/homelab-logo.png                 Supplied HomeLab logo — original, untouched
-/assets/brand/homelab-flask.png                 Cropped transparent flask mark (header, hero, footer)
-/assets/brand/homelab-logo-web.webp|.png       Full logo, web copies — used on /about only
-/404.html                                      Not-found page
-/robots.txt  /sitemap.xml                      SEO
+astro.config.mjs                Static output, <route>/index.html file layout
+src/
+  content.config.ts             Schema for the apps collection
+  content/apps/*.json           One entry per app: name, brand, URLs, card copy
+  data/site.ts                  Site URL, contact emails, global navigation
+  data/routes.ts                Every page's path + lastmod (canonical URLs, sitemap)
+  layouts/BaseLayout.astro      <head>, header, footer, script
+  layouts/ProductLayout.astro   App pages: accent, breadcrumb, product sub-nav
+  components/                   SiteHeader, SiteFooter, ProductPageBar,
+                                AppCard, ComingSoonCard, Icon
+  pages/                        One .astro file per page (URL = file path)
+  pages/sitemap.xml.ts          sitemap.xml, generated from data/routes.ts
+public/                         Copied to dist/ unchanged
+  assets/css/styles.css         Site styles (colour tokens, see below)
+  assets/js/main.js             Nav toggle + footer year
+  assets/brand/                 Logo files
+  robots.txt
+scripts/
+  legacy-urls.txt               URLs that must keep working
+  check-urls.mjs                URL / link / sitemap check
+  check-a11y.mjs                axe check, with documented known issues
 ```
 
-## Information architecture
+## URLs
 
-HomeLabCore is the parent brand. Global navigation is **Home / Apps / About /
-Support**. Individual apps live under `/apps/` — CookFrom is one product, not a
-top-level peer of navigation or legal pages.
+Each page is emitted as `<route>/index.html` (plus `404.html`), the same file
+layout as the earlier hand-written site, so every existing URL keeps working.
+`scripts/legacy-urls.txt` lists them; removing one needs a redirect. App store
+listings link to the privacy and support pages, so those URLs must never
+break.
 
-Each app has a product page (`/apps/<app>`), a privacy policy
-(`/privacy/<app>`), and a support page (`/support/<app>`). Those pages carry a
-breadcrumb (HomeLabCore → Apps → <App> → …) and a small product sub-nav
-(Overview / Privacy Policy / Support); the global navigation stays unchanged.
+Links currently keep their historical spelling (`/apps/cookfrom` without a
+trailing slash, `/apps/ops-planner/` with one). Normalising this is a separate
+change.
 
-Adding another app = add one card to `/apps/` and `/support/`, then create the
-three product pages. No navigation or layout changes are required.
+## Colour tokens
 
-## Brand
+`styles.css` has two token layers. **Palette** tokens hold raw brand colours
+(`--hlc-*` HomeLabCore blue, `--cf-*` CookFrom orange, `--op-*` Ops Planner
+teal) and are only referenced inside the token blocks. **Semantic** tokens say
+what a colour is for (`--bg`, `--surface`, `--text`, `--accent`,
+`--studio-accent`, `--preview-accent`, `--header-bg`, …); component rules use
+only these. App pages set `data-brand` on `<html>`, which switches `--accent`
+and `--preview-accent`. A new theme is a new set of semantic token values.
 
-HomeLabCore is the umbrella / studio brand (blue / navy, derived from the
-logo). CookFrom is a product (warm orange); Ops Planner is a product (teal,
-from the app's own palette). Product pages set `data-brand="cookfrom"` or
-`data-brand="opsplanner"` on `<html>` to switch the active accent; the header
-wordmark keeps its blue "Core" on every page so the studio stays recognisable.
+## Adding an app
 
-The supplied HomeLab logo lives at `assets/brand/homelab-logo.png` (original,
-untouched). Site chrome uses a compact lockup — a small flask mark
-(`homelab-flask.png`, the flask element cropped from the source and keyed to
-transparent) beside the textual `HomeLabCore` wordmark. This appears in the
-header, the homepage hero (as a small secondary mark, not the full vertical
-logo), and the footer. The full vertical logo still appears once, on `/about`,
-inside its light panel.
-
-## Local preview
-
-Open `index.html` in a browser, or serve the folder with any static server,
-e.g. `python -m http.server`.
+1. Add `src/content/apps/<slug>.json` (the schema in `src/content.config.ts`
+   says which fields are required; the build fails on a missing or invalid
+   field). It then appears on `/apps/` and `/support/`, and on the homepage if
+   `onHome` is true.
+2. Add its accent to the palette and a `[data-brand="<brand>"]` block in
+   `styles.css`, the brand to the `brand` enum and an icon to `Icon.astro`.
+3. Create `src/pages/apps/<slug>/`, `privacy/<slug>/` and `support/<slug>/`
+   pages using `ProductLayout`, add their routes to `src/data/routes.ts` and
+   to `scripts/legacy-urls.txt` once published.
 
 ## Deployment
 
-Production branch is `main`. Pushing to `main` triggers the Cloudflare Pages
-production deploy. No environment variables or secrets are required.
+Cloudflare Pages deploys `main` to production. Build settings:
+
+- Build command: `npm run build`
+- Build output directory: `dist`
+- Environment variable: `NODE_VERSION` = `22`
+
+No secrets are required.
 
 ## Contacts
 

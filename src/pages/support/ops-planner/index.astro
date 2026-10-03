@@ -1,0 +1,86 @@
+---
+import { getEntry } from "astro:content";
+import ProductLayout from "../../../layouts/ProductLayout.astro";
+
+const app = (await getEntry("apps", "ops-planner"))!;
+---
+<ProductLayout
+  app={app}
+  tab="support"
+  route="supportOpsPlanner"
+  title="Ops Planner Support — HomeLabCore"
+  description="Help with Ops Planner: sharing schedules and reports by email, export and import, moving to a new phone, deleting data, and reporting a bug. Contact support@homelabcore.dev."
+  ogTitle="Ops Planner Support"
+  ogDescription="Help with Ops Planner: email sharing, reports, export and import, deleting data, and reporting a bug."
+>
+  <section class="section">
+    <div class="container prose">
+      <h1>Ops Planner Support</h1>
+      <p class="lead">Answers to common questions about Ops Planner are below. If they don't solve your problem, email us — we read every message.</p>
+      <div class="btn-row">
+        <a class="btn btn--primary" href="mailto:support@homelabcore.dev?subject=Ops%20Planner%20support">Email Ops Planner support</a>
+        <a class="btn btn--ghost" href="/privacy/ops-planner/">Privacy Policy</a>
+      </div>
+
+      <h2 id="email">Sharing a schedule or report by email</h2>
+      <p>Ops Planner does not send email itself — it prepares the message and hands it to your email app. If nothing happens or you see an error:</p>
+      <ul>
+        <li>Make sure an email app (such as Gmail or Outlook) is installed and signed in on your phone.</li>
+        <li>To share a schedule, the employee needs an email address — add it in the employee's form.</li>
+        <li>To send a workload report, add the manager's email address in <em>Settings</em> first.</li>
+        <li>If Android asks which app to use, pick your email app.</li>
+        <li>Check the message in your email app before sending; it is sent from your own email account.</li>
+      </ul>
+
+      <h2 id="assigning">Assigning work</h2>
+      <ul>
+        <li>Drag a task, duty, or event from the pool onto an employee's card to assign it to the selected day, the whole working week, or the set of days you picked.</li>
+        <li>Work can't be assigned to someone on a day they are on vacation — check their vacation periods in the employee's form.</li>
+        <li>If a workload percentage looks wrong, check the employee's working days, hours, and breaks, and the estimated hours of the assigned items.</li>
+      </ul>
+
+      <h2 id="backup">Export, import, and moving to a new phone</h2>
+      <p>Your data is stored only on your phone, so it is not restored automatically on a new device or after uninstalling.</p>
+      <ul>
+        <li>Before changing phones or reinstalling, open <em>Settings → Export data</em> and save the JSON file somewhere you can reach from the new phone.</li>
+        <li>On the new phone, install Ops Planner, open <em>Settings → Import data</em>, and select that file.</li>
+        <li>Importing <strong>replaces all</strong> data currently in the app with the contents of the file.</li>
+        <li>If an import fails, make sure the file is an unmodified export created by Ops Planner.</li>
+      </ul>
+
+      <h2 id="delete-data">Deleting your data</h2>
+      <p>Ops Planner has no account and HomeLabCore keeps no copy of your data, so deletion happens on your device:</p>
+      <ul>
+        <li>Delete individual employees, departments, vacations, or tasks, duties, and events from their forms in the app.</li>
+        <li>To remove everything, clear the app's storage (<em>Android Settings → Apps → Ops Planner → Storage → Clear storage</em>) or uninstall the app. This cannot be undone — export first if you may need the data later.</li>
+        <li>Export files you saved and emails you sent are separate — delete them in your file manager or email app.</li>
+      </ul>
+      <p>See the <a href="/privacy/ops-planner/#retention">Privacy Policy</a> for details.</p>
+
+      <h2 id="general">If the app misbehaves</h2>
+      <ul>
+        <li>Close and reopen the app, then restart your phone if the problem continues.</li>
+        <li>Make sure you have the latest version of Ops Planner installed.</li>
+        <li>Export your data before trying anything drastic such as clearing storage or reinstalling.</li>
+      </ul>
+
+      <h2 id="bug">Reporting a bug</h2>
+      <p>Email <a href="mailto:support@homelabcore.dev?subject=Ops%20Planner%20bug%20report">support@homelabcore.dev</a> with “Ops Planner” in the subject. These details help us fix it faster:</p>
+      <ul>
+        <li>your phone model and Android version;</li>
+        <li>the Ops Planner version (shown in <em>Android Settings → Apps → Ops Planner</em>);</li>
+        <li>the app language you use;</li>
+        <li>what you did, step by step, what you expected, and what happened instead;</li>
+        <li>a screenshot or screen recording, if you can.</li>
+      </ul>
+      <div class="callout">
+        <p>Please don't attach your export file or include real employee details unless we specifically ask — a description and screenshots are usually enough, and you can blur names.</p>
+      </div>
+
+      <h2 id="contact">Contact</h2>
+      <p>For help with Ops Planner, email <a href="mailto:support@homelabcore.dev">support@homelabcore.dev</a>.</p>
+      <p>For questions about how Ops Planner handles data, see the <a href="/privacy/ops-planner/">Ops Planner Privacy Policy</a> or email <a href="mailto:privacy@homelabcore.dev">privacy@homelabcore.dev</a>.</p>
+      <p><a href="/apps/ops-planner/">← Back to Ops Planner</a></p>
+    </div>
+  </section>
+</ProductLayout>

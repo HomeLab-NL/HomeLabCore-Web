@@ -1,0 +1,56 @@
+---
+import { getCollection } from "astro:content";
+import AppCard from "../components/AppCard.astro";
+import ComingSoonCard from "../components/ComingSoonCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const apps = (await getCollection("apps", (a) => a.data.onHome)).sort((a, b) => a.data.order - b.data.order);
+---
+<BaseLayout
+  route="home"
+  title="HomeLabCore — Small tools. Thoughtfully built."
+  description="HomeLabCore is a small independent software studio. It builds and maintains a short list of focused apps, starting with CookFrom."
+  ogDescription="A small independent software studio building and maintaining a short list of focused apps, starting with CookFrom."
+  navCurrent="home"
+>
+  <section class="hero">
+    <div class="container hero__grid">
+      <div>
+        <p class="eyebrow">HomeLabCore</p>
+        <h1 class="hero__title">Small tools.<br>Thoughtfully built.</h1>
+        <p class="lead">HomeLabCore is a small independent software studio. It designs, builds, and maintains a short list of focused apps — practical software for everyday problems.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="/apps/">View apps</a>
+          <a class="btn btn--ghost" href="/about">About HomeLabCore</a>
+        </div>
+      </div>
+
+      <div class="hero__brand" aria-hidden="true">
+        <img class="hero__brand-mark" src="/assets/brand/homelab-flask.png" width="256" height="403" alt="">
+        <div>
+          <p class="hero__brand-name">HomeLab<span class="brand__core">Core</span></p>
+          <p class="hero__brand-tag">we code ideas</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Apps</p>
+        <h2>Software published by HomeLabCore</h2>
+        <p class="lead">One app today, with room for more. Each is built and maintained as its own focused product.</p>
+      </div>
+
+      <div class="app-grid">
+        {apps.map((app) => (
+          <AppCard app={app} href={app.data.urls.overview} description={app.data.cards.home ?? app.data.cards.apps} />
+        ))}
+        <ComingSoonCard />
+      </div>
+
+      <p class="muted" style="margin-top: 1.25rem; font-size: 0.92rem;">Every app gets its own product page, privacy policy, and support page. The full directory lives on the <a href="/apps/">Apps</a> page.</p>
+    </div>
+  </section>
+</BaseLayout>
