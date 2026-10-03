@@ -1,8 +1,8 @@
 ---
 import { getEntry } from "astro:content";
 import ProductLayout from "../../../layouts/ProductLayout.astro";
-import Figure from "../../../components/Figure.astro";
-import ProjectMeta from "../../../components/ProjectMeta.astro";
+import ProjectGallery from "../../../components/ProjectGallery.astro";
+import ProjectHero from "../../../components/ProjectHero.astro";
 import SectionHead from "../../../components/SectionHead.astro";
 
 const project = (await getEntry("projects", "ops-planner"))!;
@@ -15,45 +15,17 @@ const project = (await getEntry("projects", "ops-planner"))!;
   description="Ops Planner is an Android app for distributing a department's tasks, duties, and events among employees across the week. All data stays on your device — no account, no server."
   ogDescription="Distribute a department's tasks, duties, and events among employees across the week. Local-only: no account, no server."
 >
-  <section class="project-hero">
-    <div class="container project-hero__grid">
-      <div>
-        <span class="eyebrow">Ops Planner</span>
-        <h1>Plan your team's week.</h1>
-        <p class="lead">Ops Planner helps you share out a department's tasks, duties, and events among employees, day by day. Drag a task onto a person, see everyone's workload at a glance, and send each person their schedule.</p>
-        <ProjectMeta project={project} />
-        <div class="btn-row">
-          <a class="btn btn--primary" href="/support/ops-planner/">Get support</a>
-          <a class="btn btn--ghost" href="/privacy/ops-planner/">Privacy Policy</a>
-        </div>
-      </div>
-      <Figure number={1} caption="Assigning a task from the pool to an employee" kind="illustration">
-        <div class="mock" role="img" aria-label="Ops Planner preview: a task from the pool is dragged onto an employee for Monday, and their workload updates.">
-          <div class="mock__head" aria-hidden="true">Ops Planner</div>
-          <div aria-hidden="true">
-            <p class="mock__label">Pool</p>
-            <div class="chips">
-              <span class="chip">📋 Weekly stock check</span>
-              <span class="chip">🛎 Front-desk duty</span>
-              <span class="chip">📅 Team meeting</span>
-            </div>
-            <div class="mock__flow">
-              <span class="mock__arrow">↓</span>
-              <div class="mock__step">
-                <p class="mock__label">Employee · Monday</p>
-                Anna — Weekly stock check
-              </div>
-              <span class="mock__arrow">↓</span>
-              <div class="mock__step mock__step--accent">
-                <p class="mock__label">Workload</p>
-                Anna · 75% of working hours
-              </div>
-            </div>
-          </div>
-        </div>
-      </Figure>
+  <ProjectHero
+    project={project}
+    eyebrow="Ops Planner"
+    title="Plan your team's week."
+    lead="Ops Planner helps you share out a department's tasks, duties, and events among employees, day by day. Drag a task onto a person, see everyone's workload at a glance, and send each person their schedule."
+  >
+    <div class="btn-row">
+      <a class="btn btn--primary" href="/support/ops-planner/">Get support</a>
+      <a class="btn btn--ghost" href="/privacy/ops-planner/">Privacy Policy</a>
     </div>
-  </section>
+  </ProjectHero>
 
   <section class="section" aria-labelledby="how-title">
     <div class="container">
@@ -116,12 +88,7 @@ const project = (await getEntry("projects", "ops-planner"))!;
     </div>
   </section>
 
-  <section class="section" aria-labelledby="shots-title">
-    <div class="container">
-      <SectionHead index={4} label="Screenshots" title="Screenshots" id="shots-title" />
-      <Figure number={2} caption="Ops Planner" missing="Ops Planner screenshots have not been published yet. They will appear here with the public store listing." />
-    </div>
-  </section>
+  <ProjectGallery project={project} index={4} />
 
   <section class="section section--tight" aria-labelledby="availability-title">
     <div class="container">

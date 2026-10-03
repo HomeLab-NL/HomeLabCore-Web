@@ -2,32 +2,69 @@
   "name": "Keyboard Trainer",
   "section": "apps",
   "kind": "Web app",
-  "platforms": ["Web"],
+  "platforms": [
+    "Web"
+  ],
   "status": "active-development",
   "summary": "A desktop-first typing game for children aged 6–12: ten keyboard challenges of increasing difficulty, with stars, XP and coins to earn on the way. Progress is stored only in the browser.",
   "workingTitle": "KeyQuest",
   "order": 4,
   "featured": true,
   "accent": {
-    "light": { "fill": "#7c5cff", "text": "#5a3fd0" },
-    "dark": { "fill": "#8b6cff", "text": "#a891ff" }
+    "light": {
+      "fill": "#7c5cff",
+      "text": "#5a3fd0"
+    },
+    "dark": {
+      "fill": "#8b6cff",
+      "text": "#a891ff"
+    }
   },
   "urls": {
     "overview": "/apps/keyboard-trainer/"
   },
+  "visualTag": "Development build",
+  "visualNote": "Screens captured from the current development build, which runs under the working title KeyQuest. The result screen comes from a single automated sample session, not from player data.",
   "cover": {
-    "src": "../../assets/projects/keyboard-trainer/start-screen.png",
-    "alt": "Keyboard Trainer start screen: the KeyQuest title, the line “Turn every key into an adventure.”, a Play now button and a block-built character on a floating island.",
-    "caption": "Start screen",
-    "kind": "screenshot"
+    "src": "../../assets/projects/keyboard-trainer/cover.webp",
+    "alt": "KeyQuest: The first typing challenge with its highlighted target key.",
+    "caption": "KeyQuest: The first typing challenge with its highlighted target key.",
+    "kind": "composition"
+  },
+  "hero": {
+    "src": "../../assets/projects/keyboard-trainer/hero.webp",
+    "alt": "KeyQuest: current application screens. Real browser application · development build.",
+    "caption": "KeyQuest: current application screens. Real browser application · development build.",
+    "kind": "composition"
   },
   "figures": [
     {
-      "src": "../../assets/projects/keyboard-trainer/level-1.png",
-      "alt": "Level 1, “Home Row Hello”: the letter A glows above an on-screen keyboard, with combo, accuracy and mistake counters.",
-      "caption": "Level 1 — Home Row Hello",
-      "kind": "screenshot"
+      "src": "../../assets/projects/keyboard-trainer/gallery-01-home.webp",
+      "alt": "The current KeyQuest home screen.",
+      "caption": "The current KeyQuest home screen.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/keyboard-trainer/gallery-02-quest-map.webp",
+      "alt": "The real ten-level quest map with its initial unlock state.",
+      "caption": "The real ten-level quest map with its initial unlock state.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/keyboard-trainer/gallery-03-typing.webp",
+      "alt": "The first typing challenge with its highlighted target key.",
+      "caption": "The first typing challenge with its highlighted target key.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/keyboard-trainer/gallery-04-completed.webp",
+      "alt": "A result earned by typing the actual first challenge; sample session only.",
+      "caption": "A result earned by typing the actual first challenge; sample session only.",
+      "kind": "composition"
     }
   ],
-  "missing": ["Public web URL (not deployed yet)", "Confirmed product name (the app currently shows the working title KeyQuest)"]
+  "missing": [
+    "Public web URL (not deployed yet)",
+    "Confirmed product name (the app currently shows the working title KeyQuest)"
+  ]
 }

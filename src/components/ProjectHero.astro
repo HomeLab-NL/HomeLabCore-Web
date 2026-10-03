@@ -1,0 +1,47 @@
+---
+import Figure from "./Figure.astro";
+import ProjectMeta from "./ProjectMeta.astro";
+import type { Project } from "../lib/projects";
+
+// Project page header: title, lead and metadata, then the project's lead
+// image full width (or a marked placeholder), with its provenance note.
+interface Props {
+  project: Project;
+  eyebrow: string;
+  title: string;
+  lead: string;
+}
+
+const { project, eyebrow, title, lead } = Astro.props;
+const { name, hero, visualNote } = project.data;
+---
+<section class="project-hero">
+  <div class="container">
+    <div class="project-hero__grid">
+      <div>
+        <span class="eyebrow">{eyebrow}</span>
+        <h1>{title}</h1>
+        <p class="lead">{lead}</p>
+        <slot />
+      </div>
+      <ProjectMeta project={project} />
+    </div>
+    <div class="project-hero__figure">
+      {hero ? (
+        <Figure
+          number={1}
+          image={hero.src}
+          alt={hero.alt}
+          caption={hero.caption}
+          kind={hero.kind}
+          sizes="(min-width: 1160px) 1100px, 100vw"
+          loading="eager"
+          zoom
+        />
+      ) : (
+        <Figure number={1} caption={name} missing={`No ${name} screenshots or visuals have been published yet.`} />
+      )}
+      {visualNote && hero && <p class="visual-note">{visualNote}</p>}
+    </div>
+  </div>
+</section>

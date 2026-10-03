@@ -1,7 +1,7 @@
 ---
 import ProductLayout from "../layouts/ProductLayout.astro";
-import Figure from "./Figure.astro";
-import ProjectMeta from "./ProjectMeta.astro";
+import ProjectGallery from "./ProjectGallery.astro";
+import ProjectHero from "./ProjectHero.astro";
 import { routeForPath } from "../data/routes";
 import type { Project } from "../lib/projects";
 
@@ -12,8 +12,7 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { name, summary, kind, cover, figures, missing, urls } = project.data;
-const shots = [cover, ...figures].filter((f) => f !== undefined);
+const { name, summary, kind, missing, urls } = project.data;
 ---
 <ProductLayout
   project={project}
@@ -22,42 +21,22 @@ const shots = [cover, ...figures].filter((f) => f !== undefined);
   title={`${name} — HomeLabCore`}
   description={summary}
 >
-  <section class="project-hero">
-    <div class="container project-hero__grid">
-      <div>
-        <span class="eyebrow">{kind}</span>
-        <h1>{name}</h1>
-        <p class="lead">{summary}</p>
-        <ProjectMeta project={project} />
-      </div>
-      {shots.length > 0 ? (
-        <Figure number={1} image={shots[0].src} alt={shots[0].alt} caption={shots[0].caption} kind={shots[0].kind} loading="eager" />
-      ) : (
-        <Figure number={1} caption={`${name}`} missing={`No ${name} screenshots or visuals have been published yet.`} />
-      )}
-    </div>
-  </section>
+  <ProjectHero project={project} eyebrow={kind} title={name} lead={summary} />
 
-  {shots.length > 1 && (
+  <ProjectGallery project={project} index={1} />
+
+  {missing.length > 0 && (
     <section class="section section--tight">
-      <div class="container gallery">
-        {shots.slice(1).map((f, i) => (
-          <Figure number={i + 2} image={f.src} alt={f.alt} caption={f.caption} kind={f.kind} sizes={shots.length === 2 ? "(min-width: 1160px) 1100px, 100vw" : "(min-width: 960px) 50vw, 100vw"} />
-        ))}
+      <div class="container">
+        <div class="panel panel--note measure">
+          <h2>More information coming</h2>
+          <p class="muted">{name} is a work in progress, and this page only states what has been confirmed so far. Still to come:</p>
+          <ul class="muted">
+            {missing.map((m) => <li>{m}</li>)}
+          </ul>
+          <p class="small">Questions in the meantime: <a href="mailto:support@homelabcore.dev">support@homelabcore.dev</a>.</p>
+        </div>
       </div>
     </section>
   )}
-
-  <section class="section section--tight">
-    <div class="container">
-      <div class="panel panel--note measure">
-        <h2>More information coming</h2>
-        <p class="muted">{name} is a work in progress, and this page only states what has been confirmed so far. Details will be added as they are ready:</p>
-        <ul class="muted">
-          {missing.map((m) => <li>{m}</li>)}
-        </ul>
-        <p class="small">Questions in the meantime: <a href="mailto:support@homelabcore.dev">support@homelabcore.dev</a>.</p>
-      </div>
-    </div>
-  </section>
 </ProductLayout>

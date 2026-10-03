@@ -2,14 +2,22 @@
   "name": "Ops Planner",
   "section": "apps",
   "kind": "Android app",
-  "platforms": ["Android"],
+  "platforms": [
+    "Android"
+  ],
   "status": "closed-testing",
   "summary": "A weekly planner for sharing out a department's tasks, duties, and events among employees — with workload tracking, vacations, and schedules you can email. All data stays on your device.",
   "order": 2,
   "featured": true,
   "accent": {
-    "light": { "fill": "#3fb6a8", "text": "#15705f" },
-    "dark": { "fill": "#3fb6a8", "text": "#3fb6a8" }
+    "light": {
+      "fill": "#3fb6a8",
+      "text": "#15705f"
+    },
+    "dark": {
+      "fill": "#3fb6a8",
+      "text": "#3fb6a8"
+    }
   },
   "urls": {
     "overview": "/apps/ops-planner/",
@@ -17,5 +25,47 @@
     "support": "/support/ops-planner/"
   },
   "supportSummary": "Help with sharing schedules and reports by email, export and import, moving to a new phone, deleting data, and reporting a bug.",
-  "missing": ["App screenshots", "Google Play store URL (listing not public yet)"]
+  "visualTag": "Debug build · fictional sample team",
+  "visualNote": "Screens captured from a local debug build of the current Ops Planner source. The team, assignments and vacation are fictional sample data; workload figures are calculated by the app from those assignments.",
+  "cover": {
+    "src": "../../assets/projects/ops-planner/cover.webp",
+    "alt": "Ops Planner: Workweek selection and workload for a fictional sample team.",
+    "caption": "Ops Planner: Workweek selection and workload for a fictional sample team.",
+    "kind": "composition"
+  },
+  "hero": {
+    "src": "../../assets/projects/ops-planner/hero.webp",
+    "alt": "Ops Planner: current application screens. Real Android UI · fictional sample team.",
+    "caption": "Ops Planner: current application screens. Real Android UI · fictional sample team.",
+    "kind": "composition"
+  },
+  "figures": [
+    {
+      "src": "../../assets/projects/ops-planner/gallery-01-daily-planner.webp",
+      "alt": "Daily task pool and workload calculated from fictional assignments.",
+      "caption": "Daily task pool and workload calculated from fictional assignments.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/ops-planner/gallery-02-weekly-planner.webp",
+      "alt": "Workweek selection and workload for a fictional sample team.",
+      "caption": "Workweek selection and workload for a fictional sample team.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/ops-planner/gallery-03-employee-week.webp",
+      "alt": "An employee’s weekly assignments in the real schedule view.",
+      "caption": "An employee’s weekly assignments in the real schedule view.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/ops-planner/gallery-04-schedule-vacation.webp",
+      "alt": "Work hours and a sample vacation period.",
+      "caption": "Work hours and a sample vacation period.",
+      "kind": "composition"
+    }
+  ],
+  "missing": [
+    "Google Play store URL (listing not public yet)"
+  ]
 }

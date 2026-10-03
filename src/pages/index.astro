@@ -13,8 +13,12 @@ const lab = (await projectsIn("lab")).filter((p) => p.data.featured);
 const benchmarks = await getCollection("benchmarks");
 const updates = (await getCollection("updates")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 5);
 
-const keyboard = (await getEntry("projects", "keyboard-trainer"))!;
-const cookfrom = (await getEntry("projects", "cookfrom"))!;
+// Hero collage: real app screens from three projects (handoff compositions).
+const heroFigures = [
+  (await getEntry("projects", "cookfrom"))!.data.hero!,
+  (await getEntry("projects", "ops-planner"))!.data.cover!,
+  (await getEntry("projects", "keyboard-trainer"))!.data.cover!,
+];
 ---
 <BaseLayout
   route="home"
@@ -35,33 +39,17 @@ const cookfrom = (await getEntry("projects", "cookfrom"))!;
         </ul>
       </div>
       <div class="collage">
-        <Figure
-          number={1}
-          image={keyboard.data.cover!.src}
-          alt={keyboard.data.cover!.alt}
-          caption={`${keyboard.data.name} — ${keyboard.data.cover!.caption.toLowerCase()}`}
-          kind={keyboard.data.cover!.kind}
-          sizes="(min-width: 960px) 55vw, 100vw"
-          loading="eager"
-        />
-        <Figure
-          number={2}
-          image={cookfrom.data.cover!.src}
-          alt={cookfrom.data.cover!.alt}
-          caption="CookFrom — in-app dish illustration"
-          kind="illustration"
-          sizes="(min-width: 960px) 27vw, 50vw"
-          loading="eager"
-        />
-        <Figure
-          number={3}
-          image={keyboard.data.figures[0].src}
-          alt={keyboard.data.figures[0].alt}
-          caption={`${keyboard.data.name} — level 1`}
-          kind="screenshot"
-          sizes="(min-width: 960px) 27vw, 50vw"
-          loading="eager"
-        />
+        {heroFigures.map((f, i) => (
+          <Figure
+            number={i + 1}
+            image={f.src}
+            alt={f.alt}
+            caption={f.caption}
+            kind={f.kind}
+            sizes={i === 0 ? "(min-width: 960px) 55vw, 100vw" : "(min-width: 960px) 27vw, 50vw"}
+            loading="eager"
+          />
+        ))}
       </div>
     </div>
   </section>

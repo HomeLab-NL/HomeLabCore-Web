@@ -2,14 +2,22 @@
   "name": "CookFrom",
   "section": "apps",
   "kind": "Android app",
-  "platforms": ["Android"],
+  "platforms": [
+    "Android"
+  ],
   "status": "closed-testing",
   "summary": "Cook with what you already have. Choose or photograph your ingredients and get an AI-assisted recipe you can adjust, save, and cook from step by step.",
   "order": 1,
   "featured": true,
   "accent": {
-    "light": { "fill": "#ff7a33", "text": "#a8490c" },
-    "dark": { "fill": "#ff7a33", "text": "#ff7a33" }
+    "light": {
+      "fill": "#ff7a33",
+      "text": "#a8490c"
+    },
+    "dark": {
+      "fill": "#ff7a33",
+      "text": "#ff7a33"
+    }
   },
   "urls": {
     "overview": "/apps/cookfrom",
@@ -17,31 +25,47 @@
     "support": "/support/cookfrom"
   },
   "supportSummary": "Troubleshooting for AI recipe generation, ingredient photo recognition, Pro entitlement and purchase restoration, and application data.",
+  "visualTag": "Android beta screens",
+  "visualNote": "Screens captured from the CookFrom closed-testing Android beta (0.11.78) on a fresh emulator with no user data. The recipe shown is a built-in catalogue recipe, not a freshly generated AI response.",
   "cover": {
-    "src": "../../assets/projects/cookfrom/borscht.webp",
-    "alt": "A bowl of borscht, rendered in CookFrom's near-realistic 3D illustration style.",
-    "caption": "Borscht — one of CookFrom's in-app dish illustrations",
-    "kind": "illustration"
+    "src": "../../assets/projects/cookfrom/cover.webp",
+    "alt": "CookFrom: Choose ingredients from the illustrated catalog.",
+    "caption": "CookFrom: Choose ingredients from the illustrated catalog.",
+    "kind": "composition"
+  },
+  "hero": {
+    "src": "../../assets/projects/cookfrom/hero.webp",
+    "alt": "CookFrom: current application screens. Real Android beta · 0.11.78.",
+    "caption": "CookFrom: current application screens. Real Android beta · 0.11.78.",
+    "kind": "composition"
   },
   "figures": [
     {
-      "src": "../../assets/projects/cookfrom/varenyky.webp",
-      "alt": "A plate of varenyky (dumplings) in CookFrom's 3D illustration style.",
-      "caption": "Varenyky",
-      "kind": "illustration"
+      "src": "../../assets/projects/cookfrom/gallery-01-ingredients.webp",
+      "alt": "Choose ingredients from the illustrated catalog.",
+      "caption": "Choose ingredients from the illustrated catalog.",
+      "kind": "composition"
     },
     {
-      "src": "../../assets/projects/cookfrom/deruny.webp",
-      "alt": "A stack of deruny (potato pancakes) in CookFrom's 3D illustration style.",
-      "caption": "Deruny",
-      "kind": "illustration"
+      "src": "../../assets/projects/cookfrom/gallery-02-dishes.webp",
+      "alt": "Browse the existing dish catalog.",
+      "caption": "Browse the existing dish catalog.",
+      "kind": "composition"
     },
     {
-      "src": "../../assets/projects/cookfrom/holubtsi.webp",
-      "alt": "Holubtsi (cabbage rolls) in CookFrom's 3D illustration style.",
-      "caption": "Holubtsi",
-      "kind": "illustration"
+      "src": "../../assets/projects/cookfrom/gallery-03-recipe.webp",
+      "alt": "A built-in Ukrainian Borscht recipe with servings and ingredients.",
+      "caption": "A built-in Ukrainian Borscht recipe with servings and ingredients.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/cookfrom/gallery-04-cooking.webp",
+      "alt": "Follow the recipe one cooking step at a time.",
+      "caption": "Follow the recipe one cooking step at a time.",
+      "kind": "composition"
     }
   ],
-  "missing": ["App screenshots (Google Play store screenshots or device captures)", "Google Play store URL (listing not public yet)"]
+  "missing": [
+    "Google Play store URL (listing not public yet)"
+  ]
 }

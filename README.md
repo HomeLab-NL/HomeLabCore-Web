@@ -52,10 +52,20 @@ scripts/                        CI checks (URLs, a11y, theme, budget)
 
 ## Content rules
 
+Project images come from a verified visual handoff (branch
+`assets/phase2-visuals-20261003`, `handoff/phase2-visuals/`): only the
+optimised `web/*.webp` files are copied into `src/assets/projects/`, and
+their captions and alt text are taken verbatim from its `manifest.json`.
+Each entry's `visualNote` keeps the provenance and limits documented there
+(beta build, built-in sample mode, fictional sample data, diagram rather
+than screenshot) visible on the page. The handoff folder itself is not part
+of the site.
+
 Project entries state facts only. Anything not yet available — screenshots,
 store links, descriptions — goes in the entry's `missing` list; pages show a
 clearly marked placeholder and list what is missing. Each figure says
-whether it is a `screenshot` or an `illustration`.
+what it is: `screenshot`, `composition` (whole real screenshots placed in a
+neutral frame), `illustration`, or `diagram`.
 
 ## Adding a project
 

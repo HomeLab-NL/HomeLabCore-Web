@@ -2,13 +2,39 @@
   "name": "AgentLab",
   "section": "lab",
   "kind": "Infrastructure experiment",
-  "platforms": [],
+  "platforms": [
+    "Self-hosted"
+  ],
   "status": "experiment",
-  "summary": "An experiment in AI development infrastructure.",
+  "summary": "An experiment in AI development infrastructure: planning, building and review roles, with local inference behind a gateway that makes routing and validation explicit.",
   "order": 1,
   "featured": true,
   "urls": {
     "overview": "/lab/agentlab/"
   },
-  "missing": ["Description of what AgentLab does", "Visuals", "Platform / stack"]
+  "visualTag": "Architecture diagram",
+  "visualNote": "These are architecture and workflow diagrams, not screenshots. The workflow roles are based on an infrastructure audit dated 3 October 2026, not a new live check; the reviewer's model is not identified. Exact runtime model tags and benchmark numbers are deliberately omitted.",
+  "cover": {
+    "src": "../../assets/projects/agentlab/cover.webp",
+    "alt": "AgentLab workflow roles: Claude planner, Qwen/OpenCode builder, and QA/safety reviewer. Runtime status is based on the 03 October 2026 audit, not a new live check.",
+    "caption": "AgentLab workflow roles: Claude planner, Qwen/OpenCode builder, and QA/safety reviewer. Runtime status is based on the 03 October 2026 audit, not a new live check.",
+    "kind": "diagram"
+  },
+  "hero": {
+    "src": "../../assets/projects/agentlab/hero.webp",
+    "alt": "Current AgentLab gateway architecture: deterministic L0 tasks, L1/L2 local inference through Ollama, schema validation, bounded repair, and metadata-only telemetry. Guard rejection requests escalation without making a cloud call.",
+    "caption": "Current AgentLab gateway architecture: deterministic L0 tasks, L1/L2 local inference through Ollama, schema validation, bounded repair, and metadata-only telemetry. Guard rejection requests escalation without making a cloud call.",
+    "kind": "diagram"
+  },
+  "figures": [
+    {
+      "src": "../../assets/projects/agentlab/cover.webp",
+      "alt": "AgentLab workflow roles: Claude planner, Qwen/OpenCode builder, and QA/safety reviewer. Runtime status is based on the 03 October 2026 audit, not a new live check.",
+      "caption": "AgentLab workflow roles: Claude planner, Qwen/OpenCode builder, and QA/safety reviewer. Runtime status is based on the 03 October 2026 audit, not a new live check.",
+      "kind": "diagram"
+    }
+  ],
+  "missing": [
+    "Screenshots of a running interface (none captured yet)"
+  ]
 }

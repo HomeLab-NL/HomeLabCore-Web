@@ -12,13 +12,13 @@ interface Props {
 }
 
 const { project, headingLevel = "h3", sizes = "(min-width: 1040px) 33vw, (min-width: 720px) 50vw, 100vw" } = Astro.props;
-const { name, kind, status, summary, cover, urls } = project.data;
+const { name, kind, status, summary, cover, urls, visualTag } = project.data;
 const Heading = headingLevel;
 ---
 <article class="pcard" data-project={project.id}>
   <div class:list={["pcard__visual", { "pcard__visual--illustration": cover?.kind === "illustration" }]}>
     {cover ? (
-      <Picture src={cover.src} alt={cover.alt} widths={[400, 640, 960].filter((w) => w <= cover.src.width)} sizes={sizes} formats={["avif"]} fallbackFormat="webp" loading="lazy" decoding="async" />
+      <Picture src={cover.src} alt={cover.alt} widths={[400, 640, 960, 1280].filter((w) => w <= cover.src.width)} sizes={sizes} formats={["avif"]} fallbackFormat="webp" loading="lazy" decoding="async" />
     ) : (
       <div class="placeholder">
         <span class="placeholder__label">Placeholder</span>
@@ -33,5 +33,6 @@ const Heading = headingLevel;
     </div>
     <Heading class="pcard__title"><a href={urls.overview}>{name}</a></Heading>
     <p class="pcard__summary">{summary}</p>
+    {visualTag && cover && <p class="pcard__visual-tag meta">Image: {visualTag}</p>}
   </div>
 </article>

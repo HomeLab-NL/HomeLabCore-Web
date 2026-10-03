@@ -39,12 +39,20 @@ export const STATUSES = {
 const projects = defineCollection({
   loader: glob({ pattern: "*.json", base: "./src/content/projects" }),
   schema: ({ image }) => {
+    // Captions and alt text for handoff assets are copied verbatim from
+    // the visual handoff manifest (handoff/phase2-visuals/manifest.json).
     const figure = z.object({
       src: image(),
       alt: z.string().min(1),
       caption: z.string().min(1),
-      /** "screenshot" or "illustration" — shown in the caption so a reader knows what they are looking at. */
-      kind: z.enum(["screenshot", "illustration"]),
+      /**
+       * What the image is, shown next to the caption:
+       * screenshot   — an unedited application capture
+       * composition  — whole real application screenshots placed in a neutral frame
+       * illustration — artwork from the product itself
+       * diagram      — a source-backed architecture/workflow diagram, not a screenshot
+       */
+      kind: z.enum(["screenshot", "composition", "illustration", "diagram"]),
     });
     return z.object({
       name: z.string(),
@@ -69,8 +77,16 @@ const projects = defineCollection({
       }),
       /** Card copy on /support/. */
       supportSummary: z.string().optional(),
+      /** Card image (16:9). */
       cover: figure.optional(),
+      /** Project page lead image (16:9). */
+      hero: figure.optional(),
+      /** Project page gallery. */
       figures: z.array(figure).default([]),
+      /** Short label on cards saying what the visuals show, e.g. "Built-in sample mode". */
+      visualTag: z.string().optional(),
+      /** Visible note on the project page with the visuals' provenance and limits. */
+      visualNote: z.string().optional(),
       /** Information or assets still missing; shown as marked placeholders and listed in reports. */
       missing: z.array(z.string()).default([]),
     });
