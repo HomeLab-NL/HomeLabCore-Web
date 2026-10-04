@@ -1,7 +1,6 @@
 ---
 import { Picture } from "astro:assets";
 import type { Project } from "../lib/projects";
-import { platformLabel } from "../lib/projects";
 import Status from "./Status.astro";
 
 // Screenshot-led project card. The title link covers the whole card.
@@ -9,10 +8,17 @@ interface Props {
   project: Project;
   headingLevel?: "h2" | "h3";
   sizes?: string;
+  /** Show the short image-provenance label (listing pages; not the homepage). */
+  showVisualTag?: boolean;
 }
 
-const { project, headingLevel = "h3", sizes = "(min-width: 1040px) 33vw, (min-width: 720px) 50vw, 100vw" } = Astro.props;
-const { name, kind, status, summary, cover, urls, visualTag } = project.data;
+const {
+  project,
+  headingLevel = "h3",
+  sizes = "(min-width: 1040px) 33vw, (min-width: 720px) 50vw, 100vw",
+  showVisualTag = false,
+} = Astro.props;
+const { name, status, platforms, summary, cover, urls, visualTag } = project.data;
 const Heading = headingLevel;
 ---
 <article class="pcard" data-project={project.id}>
@@ -27,12 +33,9 @@ const Heading = headingLevel;
     )}
   </div>
   <div>
-    <div class="meta-row">
-      <Status status={status} />
-      <span class="meta">{kind} · {platformLabel(project)}</span>
-    </div>
+    <Status status={status} platforms={platforms} />
     <Heading class="pcard__title"><a href={urls.overview}>{name}</a></Heading>
     <p class="pcard__summary">{summary}</p>
-    {visualTag && cover && <p class="pcard__visual-tag meta">Image: {visualTag}</p>}
+    {showVisualTag && visualTag && cover && <p class="pcard__visual-tag meta">Image: {visualTag}</p>}
   </div>
 </article>

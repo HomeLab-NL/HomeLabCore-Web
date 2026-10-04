@@ -1,66 +1,48 @@
 ---
-import { getCollection, getEntry } from "astro:content";
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Figure from "../components/Figure.astro";
+import LabOverview from "../components/LabOverview.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import ProjectRow from "../components/ProjectRow.astro";
 import SectionHead from "../components/SectionHead.astro";
 import { CONTACT } from "../data/site";
 import { formatDate, isoDate, projectsIn } from "../lib/projects";
 
+// Each project is presented once: apps in 01, lab projects in 02. The hero's
+// lab overview uses different images from the cards.
 const apps = (await projectsIn("apps")).filter((p) => p.data.featured);
 const lab = (await projectsIn("lab")).filter((p) => p.data.featured);
-const benchmarks = await getCollection("benchmarks");
-const updates = (await getCollection("updates")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 5);
-
-// Hero collage: real app screens from three projects (handoff compositions).
-const heroFigures = [
-  (await getEntry("projects", "cookfrom"))!.data.hero!,
-  (await getEntry("projects", "ops-planner"))!.data.cover!,
-  (await getEntry("projects", "keyboard-trainer"))!.data.cover!,
-];
+const benchmarks = (await getCollection("benchmarks")).sort((a, b) => b.data.published.getTime() - a.data.published.getTime());
+const updates = (await getCollection("updates")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 4);
 ---
 <BaseLayout
   route="home"
-  title="HomeLabCore — Apps, experiments and AI benchmarks"
-  description="HomeLabCore is an independent software lab. It builds apps, runs experiments, makes games and publishes AI workflow benchmarks."
+  title="HomeLabCore — We build things. Then measure how we built them."
+  description="HomeLabCore is an independent software lab: Android and web apps, experiments and games, and public benchmarks of AI-assisted development workflows."
   navCurrent="home"
 >
   <section class="hero">
     <div class="container hero__grid">
       <div>
         <span class="eyebrow">HomeLabCore · independent software lab</span>
-        <h1 class="hero__title">Apps, experiments and AI benchmarks.</h1>
-        <p class="lead">HomeLabCore is an independent software lab. It makes small, focused Android and web apps, runs experiments and games in the lab, and is preparing public benchmarks of AI-assisted development workflows.</p>
+        <h1 class="hero__title">We build things.<br>Then measure how we built them.</h1>
+        <p class="lead">HomeLabCore is an independent software lab. It makes small Android and web apps, runs experiments and games in the lab, and is preparing public benchmarks of the AI-assisted workflows behind them.</p>
         <ul class="link-list" aria-label="Explore">
           <li><span class="meta">01</span><a href="/apps/">Apps</a></li>
           <li><span class="meta">02</span><a href="/lab/">Lab</a></li>
           <li><span class="meta">03</span><a href="/benchmarks/">Benchmarks</a></li>
         </ul>
       </div>
-      <div class="collage">
-        {heroFigures.map((f, i) => (
-          <Figure
-            number={i + 1}
-            image={f.src}
-            alt={f.alt}
-            caption={f.caption}
-            kind={f.kind}
-            sizes={i === 0 ? "(min-width: 960px) 55vw, 100vw" : "(min-width: 960px) 27vw, 50vw"}
-            loading="eager"
-          />
-        ))}
-      </div>
+      <LabOverview />
     </div>
   </section>
 
   <section class="section" aria-labelledby="apps-title">
     <div class="container">
-      <SectionHead index={1} label="Apps" title="Featured apps" id="apps-title" link={{ href: "/apps/", text: "All apps" }}>
-        Android and web apps, each with its own product page — and, once released, its own privacy policy and support page.
+      <SectionHead index={1} label="Apps" title="Apps" id="apps-title" link={{ href: "/apps/", text: "All apps" }}>
+        Android and web apps, from closed testing to early development.
       </SectionHead>
       <div class="card-grid card-grid--2">
-        {apps.map((p) => <ProjectCard project={p} sizes="(min-width: 720px) 50vw, 100vw" />)}
+        {apps.map((p) => <ProjectCard project={p} sizes="(min-width: 1160px) 545px, (min-width: 720px) 50vw, 100vw" />)}
       </div>
     </div>
   </section>
@@ -68,64 +50,59 @@ const heroFigures = [
   <section class="section" aria-labelledby="lab-title">
     <div class="container">
       <SectionHead index={2} label="Lab" title="From the Lab" id="lab-title" link={{ href: "/lab/", text: "All lab projects" }}>
-        Experiments, infrastructure and games that are not products (yet).
+        Infrastructure, experiments and games that are not products.
       </SectionHead>
-      <div>
-        {lab.map((p) => <ProjectRow project={p} />)}
+      <div class="card-grid card-grid--2">
+        {lab.map((p) => <ProjectCard project={p} sizes="(min-width: 1160px) 545px, (min-width: 720px) 50vw, 100vw" />)}
       </div>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="bench-title">
+  <section class="section section--tight" aria-labelledby="bench-title">
     <div class="container">
-      <SectionHead index={3} label="Benchmarks" title="AI workflow benchmarks" id="bench-title" link={{ href: "/benchmarks/", text: "About the benchmarks" }}>
-        Public comparisons of Claude, Codex and Qwen on development workflows.
-      </SectionHead>
-      {benchmarks.length === 0 ? (
-        <div class="panel">
-          <p class="meta">No results published yet</p>
-          <p>The first benchmark is being prepared. Each published run will state its full setup — the exact model versions, the date, the tasks and how they were scored — next to the results and the raw data.</p>
+      <div class="bench-strip">
+        <div>
+          <span class="eyebrow">03 / Benchmarks</span>
+          <h2 id="bench-title">AI workflow benchmarks</h2>
+          <p class="muted">Public comparisons of Claude, Codex and Qwen on development workflows. Each run will publish its setup, method and raw data alongside the results.</p>
         </div>
-      ) : (
-        <ul class="updates">
-          {benchmarks.map((b) => (
-            <li><time datetime={isoDate(b.data.published)}>{formatDate(b.data.published)}</time><p><a href={`/benchmarks/${b.id}/`}>{b.data.title}</a> — {b.data.summary}</p></li>
-          ))}
-        </ul>
-      )}
+        {benchmarks.length === 0 ? (
+          <p class="bench-strip__status"><span class="meta">Status</span> No results published yet · <a href="/benchmarks/">How runs will be reported</a></p>
+        ) : (
+          <p class="bench-strip__status"><span class="meta">{formatDate(benchmarks[0].data.published)}</span> <a href={`/benchmarks/${benchmarks[0].id}/`}>{benchmarks[0].data.title}</a></p>
+        )}
+      </div>
     </div>
   </section>
 
   <section class="section" aria-labelledby="updates-title">
-    <div class="container">
-      <SectionHead index={4} label="Log" title="Recent updates" id="updates-title" />
-      <ul class="updates">
-        {updates.map((u) => (
-          <li>
-            <time datetime={isoDate(u.data.date)}>{formatDate(u.data.date)}</time>
-            <p>{u.data.href ? <a href={u.data.href}>{u.data.title}</a> : u.data.title}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="about-title">
     <div class="container split">
       <div>
-        <span class="eyebrow">05 / About</span>
-        <h2 id="about-title">About HomeLabCore</h2>
-        <p class="muted measure">HomeLabCore is a small, independent software studio. It builds a short list of focused apps and experiments, keeps them maintained, and is clear about how each one handles your data.</p>
-        <p><a href="/about">More about HomeLabCore <span aria-hidden="true">→</span></a></p>
+        <span class="eyebrow">04 / Log</span>
+        <h2 id="updates-title">Recent updates</h2>
+        <ul class="updates">
+          {updates.map((u) => (
+            <li>
+              <time datetime={isoDate(u.data.date)}>{formatDate(u.data.date)}</time>
+              <p>{u.data.href ? <a href={u.data.href}>{u.data.title}</a> : u.data.title}</p>
+            </li>
+          ))}
+        </ul>
       </div>
-      <dl class="meta-list">
-        <dt>Support</dt>
-        <dd><a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a></dd>
-        <dt>Privacy</dt>
-        <dd><a href={`mailto:${CONTACT.privacy}`}>{CONTACT.privacy}</a></dd>
-        <dt>Help</dt>
-        <dd><a href="/support/">Support pages for each app</a></dd>
-      </dl>
+      <div>
+        <span class="eyebrow">About</span>
+        <h2 id="about-title">About HomeLabCore</h2>
+        <p class="muted">HomeLabCore is a small, independent software studio. It builds a short list of focused apps and experiments, keeps them maintained, and is clear about how each one handles your data.</p>
+        <p><a href="/about">More about HomeLabCore <span aria-hidden="true">→</span></a></p>
+        <dl class="meta-list">
+          <dt>Support</dt>
+          <dd><a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a></dd>
+          <dt>Privacy</dt>
+          <dd><a href={`mailto:${CONTACT.privacy}`}>{CONTACT.privacy}</a></dd>
+          <dt>Help</dt>
+          <dd><a href="/support/">Support pages for each app</a></dd>
+        </dl>
+      </div>
     </div>
   </section>
 </BaseLayout>

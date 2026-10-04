@@ -2,9 +2,13 @@
 import type { Project } from "../lib/projects";
 import { statusLabel } from "../lib/projects";
 
+// One metadata line: "CLOSED TESTING · ANDROID". Platform is left out when
+// it has not been announced.
 interface Props {
   status: Project["data"]["status"];
+  platforms?: string[];
 }
-const { status } = Astro.props;
+const { status, platforms = [] } = Astro.props;
+const text = [statusLabel(status), platforms.join(", ")].filter(Boolean).join(" · ");
 ---
-<span class="status" data-status={status}>{statusLabel(status)}</span>
+<span class="status" data-status={status}>{text}</span>

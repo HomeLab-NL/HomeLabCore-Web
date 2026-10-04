@@ -677,7 +677,7 @@ img {
 /* ---------- home hero ---------- */
 
 .hero {
-  padding-block: clamp(3rem, 8vw, 6rem) clamp(2.5rem, 6vw, 4.5rem);
+  padding-block: clamp(2.25rem, 6vw, 4.5rem) clamp(2rem, 4.5vw, 3.5rem);
   border-bottom: 1px solid var(--border);
 }
 
@@ -689,12 +689,12 @@ img {
 
 @media (min-width: 960px) {
   .hero__grid {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 }
 
 .hero__title {
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-size: clamp(2.1rem, 4.2vw, 3rem);
   margin-bottom: 1rem;
 }
 
@@ -702,24 +702,91 @@ img {
   margin-bottom: 0;
 }
 
-/* Collage of real project figures. */
-.collage {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  align-items: start;
+/* Homepage lab overview: one framed figure combining visuals from different
+   areas (infrastructure, Android, web) on a notebook dot grid. */
+.lab-overview__frame {
+  padding: clamp(0.75rem, 2vw, 1.1rem);
+  background-color: var(--surface);
+  background-image: radial-gradient(var(--dot-grid) 1px, transparent 1px);
+  background-size: 14px 14px;
 }
 
-.collage > :nth-child(1) {
+.lab-overview__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.6rem, 1.6vw, 0.9rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lab-overview__tile {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.lab-overview__tile--main {
   grid-column: 1 / -1;
 }
 
-.collage > :nth-child(2) {
-  grid-column: 1 / 4;
+/* Wide screens: main tile on the left, two tiles stacked beside it, so the
+   figure is about as tall as the hero text. */
+@media (min-width: 640px) {
+  .lab-overview__grid {
+    grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+  }
+
+  .lab-overview__tile--main {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
 }
 
-.collage > :nth-child(3) {
-  grid-column: 4 / -1;
+.lab-overview__tile img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.lab-overview__tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Compact benchmarks strip until real results exist. */
+.bench-strip {
+  display: grid;
+  gap: 1rem 3rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem) 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 900px) {
+  .bench-strip {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: center;
+  }
+}
+
+.bench-strip h2 {
+  margin-bottom: 0.4rem;
+}
+
+.bench-strip p {
+  margin: 0;
+}
+
+.bench-strip__status .meta {
+  margin-right: 0.6rem;
 }
 
 /* ---------- figures ---------- */

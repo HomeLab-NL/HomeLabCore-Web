@@ -1,0 +1,52 @@
+---
+import { Picture } from "astro:assets";
+import { getEntry } from "astro:content";
+
+// Homepage hero figure: one framed "lab overview" combining verified visuals
+// from different areas of HomeLabCore — infrastructure, an Android app and a
+// web app. It deliberately uses images that are NOT the cards' covers, so the
+// hero shows the breadth of the lab instead of repeating the Apps section.
+// Alt text comes from the visual handoff manifest via the project entries.
+
+const agentlab = (await getEntry("projects", "agentlab"))!.data;
+const cookfrom = (await getEntry("projects", "cookfrom"))!.data;
+const keyboard = (await getEntry("projects", "keyboard-trainer"))!.data;
+
+const pick = (figures: typeof cookfrom.figures, file: string) => {
+  const hit = figures.find((f) => f.src.src.includes(file));
+  if (!hit) throw new Error(`Lab overview: no figure matching ${file}`);
+  return hit;
+};
+
+const tiles = [
+  { area: "Infrastructure", project: "AgentLab", fig: agentlab.hero!, main: true },
+  { area: "Android app", project: "CookFrom", fig: pick(cookfrom.figures, "gallery-04-cooking"), main: false },
+  { area: "Web app", project: "Keyboard Trainer", fig: pick(keyboard.figures, "gallery-02-quest-map"), main: false },
+];
+---
+<figure class="fig lab-overview">
+  <div class="fig__frame lab-overview__frame">
+    <ul class="lab-overview__grid" aria-label="Lab overview">
+      {tiles.map((t) => (
+        <li class:list={["lab-overview__tile", { "lab-overview__tile--main": t.main }]}>
+          <span class="lab-overview__tag">{t.area} · {t.project}</span>
+          <Picture
+            src={t.fig.src}
+            alt={t.fig.alt}
+            widths={t.main ? [480, 800, 1200] : [320, 480, 720]}
+            sizes={t.main ? "(min-width: 960px) 400px, (min-width: 640px) 60vw, 100vw" : "(min-width: 960px) 230px, (min-width: 640px) 35vw, 50vw"}
+            formats={["avif"]}
+            fallbackFormat="webp"
+            loading="eager"
+            decoding="async"
+          />
+        </li>
+      ))}
+    </ul>
+  </div>
+  <figcaption class="fig__caption">
+    <span class="meta">Fig. 01 —</span>
+    <span>Lab overview: the AgentLab gateway, CookFrom's cooking mode and Keyboard Trainer's quest map.</span>
+    <span class="meta">· a source-backed diagram and real app screens</span>
+  </figcaption>
+</figure>

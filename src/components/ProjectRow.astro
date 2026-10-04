@@ -1,6 +1,5 @@
 ---
 import type { Project } from "../lib/projects";
-import { platformLabel } from "../lib/projects";
 import Status from "./Status.astro";
 
 // Compact, text-only project row for lists.
@@ -17,8 +16,5 @@ const Heading = headingLevel;
 <article class="prow" data-project={project.id}>
   <Heading class="prow__title"><a href={href}>{project.data.name}</a></Heading>
   <p class="prow__summary">{summary}</p>
-  <div class="meta-row">
-    <Status status={project.data.status} />
-    <span class="meta">{project.data.kind} · {platformLabel(project)}</span>
-  </div>
+  <Status status={project.data.status} platforms={project.data.platforms} />
 </article>
