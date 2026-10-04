@@ -12,8 +12,7 @@
   "urls": {
     "overview": "/apps/ai-tutor/"
   },
-  "visualTag": "Built-in sample mode",
-  "visualNote": "These screens show the real app UI running in its built-in sample mode, using the shipped example problem 3x + 7 = 22. They are not live AI responses, and do not show image recognition or a production deployment. The app's header currently shows its development name, Homework Tutor.",
+  "visualNote": "Shown in the app's built-in sample mode with the example problem 3x + 7 = 22 — these are not live AI responses. The app currently shows its development name, Homework Tutor.",
   "cover": {
     "src": "../../assets/projects/ai-tutor/cover.webp",
     "alt": "AI Tutor: Enter a math problem in the real app; built-in sample shown.",
@@ -23,7 +22,7 @@
   "hero": {
     "src": "../../assets/projects/ai-tutor/hero.webp",
     "alt": "AI Tutor: current application screens. Real application UI · built-in sample mode.",
-    "caption": "AI Tutor: current application screens. Real application UI · built-in sample mode.",
+    "caption": "AI Tutor — built-in sample mode",
     "kind": "composition"
   },
   "figures": [

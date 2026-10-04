@@ -13,9 +13,11 @@
     "test:urls": "node scripts/check-urls.mjs",
     "test:html": "html-validate \"dist/**/*.html\"",
     "test:a11y": "node scripts/check-a11y.mjs",
-    "test": "npm run test:urls && npm run test:html && npm run test:a11y && npm run test:theme && npm run test:budget",
+    "test": "npm run test:urls && npm run test:html && npm run test:meta && npm run test:a11y && npm run test:theme && npm run test:budget",
     "test:theme": "node scripts/check-theme.mjs",
-    "test:budget": "node scripts/check-budget.mjs"
+    "test:budget": "node scripts/check-budget.mjs",
+    "test:meta": "node scripts/check-meta.mjs",
+    "og": "node scripts/og/render-og.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

@@ -25,8 +25,7 @@
     "support": "/support/ops-planner/"
   },
   "supportSummary": "Help with sharing schedules and reports by email, export and import, moving to a new phone, deleting data, and reporting a bug.",
-  "visualTag": "Debug build · fictional sample team",
-  "visualNote": "Screens captured from a local debug build of the current Ops Planner source. The team, assignments and vacation are fictional sample data; workload figures are calculated by the app from those assignments.",
+  "visualNote": "Screens from a development build. The team, assignments and vacation shown are fictional sample data.",
   "cover": {
     "src": "../../assets/projects/ops-planner/cover.webp",
     "alt": "Ops Planner: Workweek selection and workload for a fictional sample team.",
@@ -36,7 +35,7 @@
   "hero": {
     "src": "../../assets/projects/ops-planner/hero.webp",
     "alt": "Ops Planner: current application screens. Real Android UI · fictional sample team.",
-    "caption": "Ops Planner: current application screens. Real Android UI · fictional sample team.",
+    "caption": "Ops Planner — development build with a fictional sample team",
     "kind": "composition"
   },
   "figures": [

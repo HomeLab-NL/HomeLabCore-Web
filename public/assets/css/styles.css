@@ -387,6 +387,19 @@ img {
   flex: none;
 }
 
+/* Flask mark: original colours in light; outline lightened for dark. */
+.brand__mark--dark {
+  display: none;
+}
+
+[data-theme="dark"] .brand__mark--light {
+  display: none;
+}
+
+[data-theme="dark"] .brand__mark--dark {
+  display: block;
+}
+
 .nav__menu {
   display: flex;
   align-items: center;
@@ -1330,9 +1343,7 @@ img {
   cursor: zoom-in;
 }
 
-.pcard__visual-tag {
-  margin: 0.5rem 0 0;
-}
+
 
 .project-hero h1 {
   margin-bottom: 0.75rem;
@@ -1535,6 +1546,8 @@ img {
 .about-logo img {
   width: 100%;
   height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 /* ---------- footer ---------- */
@@ -1654,4 +1667,32 @@ img {
 .steps--plain h3 {
   margin: 0;
   font-size: 1rem;
+}
+
+/* Small label in a caption, e.g. "Concept art · Not gameplay". */
+.badge {
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  vertical-align: 0.1em;
+}
+
+/* Same label laid over a card image (concept art). */
+.pcard__visual {
+  position: relative;
+}
+
+.pcard__badge {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  margin: 0;
 }

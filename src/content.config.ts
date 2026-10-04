@@ -85,8 +85,6 @@ const projects = defineCollection({
       hero: figure.optional(),
       /** Project page gallery. */
       figures: z.array(figure).default([]),
-      /** Short label on cards saying what the visuals show, e.g. "Built-in sample mode". */
-      visualTag: z.string().optional(),
       /** Visible note on the project page with the visuals' provenance and limits. */
       visualNote: z.string().optional(),
       /** Information or assets still missing; shown as marked placeholders and listed in reports. */

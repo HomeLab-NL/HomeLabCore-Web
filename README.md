@@ -23,6 +23,8 @@ JavaScript file and optimised images (AVIF with WebP fallback).
 | `npm run test:a11y` | axe (WCAG A/AA) on every page, light and dark, phone and desktop |
 | `npm run test:theme` | Theme default, persistence, no flash, keyboard toggle, no-JS |
 | `npm run test:budget` | Per-page download budget (total, CSS, JS) |
+| `npm run test:meta` | Titles, descriptions, canonical, Open Graph/Twitter tags, social images, sitemap/robots |
+| `npm run og` | Re-render the social preview images in `public/og/` |
 | `npm test` | All of the above (after `npm run build`) |
 
 CI (`.github/workflows/ci.yml`) runs the type check, the build and every
@@ -95,6 +97,24 @@ tokens (`--bg`, `--surface`, `--text`, `--studio-text`, ...) twice — under
 `:root, [data-theme="light"]` and `[data-theme="dark"]`. Project accents have
 a `fill` (decoration) and a `text` value per theme; the build checks every
 accent text colour against each theme's backgrounds and fails below 4.5:1.
+
+## Social previews
+
+Every indexable page has complete Open Graph and Twitter
+(`summary_large_image`) metadata with absolute `https://homelabcore.dev`
+URLs. Images are 1200×630 and live in `public/og/`:
+
+- `homelabcore.png` — global HomeLabCore image (fallback for every page)
+- `<project>.jpg` — per project, made from its verified cover; concept art is
+  labelled "Concept art · Not gameplay"
+
+They are rendered by `scripts/og/render-og.mjs` (`npm run og`); re-run it after
+changing a project cover. `public/_headers` sends `X-Robots-Tag: noindex` on
+`*.pages.dev` preview hosts.
+
+The header/footer flask marks (`public/assets/brand/homelab-flask-mark*.png`)
+are built from the supplied logo by `scripts/brand/make-flask-marks.mjs`; the
+dark-theme mark lightens only the outline.
 
 ## URLs
 

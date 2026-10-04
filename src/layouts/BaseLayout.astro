@@ -4,6 +4,7 @@ import SiteFooter from "../components/SiteFooter.astro";
 import { ROUTES, type RouteKey } from "../data/routes";
 import { SITE_URL, THEME_STORAGE_KEY, type NavKey } from "../data/site";
 import { accentCss, allProjects } from "../lib/projects";
+import { socialImage } from "../lib/social";
 
 interface Props {
   route: RouteKey;
@@ -34,6 +35,9 @@ const {
 const { path, indexed } = ROUTES[route];
 const url = SITE_URL + path;
 const accents = accentCss(await allProjects());
+// Social preview image: the project's own image if it has one, otherwise the
+// global HomeLabCore image. Absolute URLs; independent of the site theme.
+const og = await socialImage(project);
 
 // Runs before the stylesheet and before <body> exists: applies a saved manual
 // theme choice so the first paint is already in that theme. No saved choice
@@ -58,7 +62,16 @@ const themeInit = `(function(){var d=document.documentElement;d.classList.add("j
       <meta property="og:title" content={ogTitle}>
       <meta property="og:description" content={ogDescription}>
       <meta property="og:url" content={url}>
-      <meta name="twitter:card" content="summary">
+      <meta property="og:image" content={og.url}>
+      <meta property="og:image:type" content={og.type}>
+      <meta property="og:image:width" content={String(og.width)}>
+      <meta property="og:image:height" content={String(og.height)}>
+      <meta property="og:image:alt" content={og.alt}>
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content={ogTitle}>
+      <meta name="twitter:description" content={ogDescription}>
+      <meta name="twitter:image" content={og.url}>
+      <meta name="twitter:image:alt" content={og.alt}>
     </>
   )}
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">

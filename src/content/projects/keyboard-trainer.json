@@ -23,8 +23,7 @@
   "urls": {
     "overview": "/apps/keyboard-trainer/"
   },
-  "visualTag": "Development build",
-  "visualNote": "Screens captured from the current development build, which runs under the working title KeyQuest. The result screen comes from a single automated sample session, not from player data.",
+  "visualNote": "Screens from the current development build, which runs under the working title KeyQuest.",
   "cover": {
     "src": "../../assets/projects/keyboard-trainer/cover.webp",
     "alt": "KeyQuest: The first typing challenge with its highlighted target key.",
@@ -34,7 +33,7 @@
   "hero": {
     "src": "../../assets/projects/keyboard-trainer/hero.webp",
     "alt": "KeyQuest: current application screens. Real browser application · development build.",
-    "caption": "KeyQuest: current application screens. Real browser application · development build.",
+    "caption": "Keyboard Trainer — development build (working title KeyQuest)",
     "kind": "composition"
   },
   "figures": [

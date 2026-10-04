@@ -6,11 +6,9 @@ import type { Project } from "../lib/projects";
 interface Props {
   project: Project;
   index?: number;
-  /** First figure number (the hero is Fig. 01). */
-  start?: number;
 }
 
-const { project, index, start = 2 } = Astro.props;
+const { project, index } = Astro.props;
 const { name, figures } = project.data;
 const allScreens = figures.every((f) => f.kind === "composition" || f.kind === "screenshot");
 ---
@@ -18,12 +16,11 @@ const allScreens = figures.every((f) => f.kind === "composition" || f.kind === "
   <section class="section" aria-labelledby="gallery-title">
     <div class="container">
       <SectionHead index={index} label="Gallery" title={allScreens ? `${name} screens` : `${name} visuals`} id="gallery-title">
-        Select an image to open it at full size.
+        Select an image to see it at full size.
       </SectionHead>
       <div class="gallery">
-        {figures.map((f, i) => (
+        {figures.map((f) => (
           <Figure
-            number={start + i}
             image={f.src}
             alt={f.alt}
             caption={f.caption}

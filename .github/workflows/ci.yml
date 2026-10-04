@@ -39,6 +39,9 @@ jobs:
       - name: HTML validation
         run: npm run test:html
 
+      - name: Metadata, social previews and SEO
+        run: npm run test:meta
+
       - name: Install Chromium for accessibility checks
         run: npx playwright install --with-deps chromium
 

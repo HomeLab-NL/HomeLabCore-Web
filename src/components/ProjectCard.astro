@@ -8,23 +8,23 @@ interface Props {
   project: Project;
   headingLevel?: "h2" | "h3";
   sizes?: string;
-  /** Show the short image-provenance label (listing pages; not the homepage). */
-  showVisualTag?: boolean;
 }
 
 const {
   project,
   headingLevel = "h3",
   sizes = "(min-width: 1040px) 33vw, (min-width: 720px) 50vw, 100vw",
-  showVisualTag = false,
 } = Astro.props;
-const { name, status, platforms, summary, cover, urls, visualTag } = project.data;
+const { name, status, platforms, summary, cover, urls } = project.data;
 const Heading = headingLevel;
 ---
 <article class="pcard" data-project={project.id}>
   <div class:list={["pcard__visual", { "pcard__visual--illustration": cover?.kind === "illustration" }]}>
     {cover ? (
-      <Picture src={cover.src} alt={cover.alt} widths={[400, 640, 960, 1280].filter((w) => w <= cover.src.width)} sizes={sizes} formats={["avif"]} fallbackFormat="webp" loading="lazy" decoding="async" />
+      <>
+        <Picture src={cover.src} alt={cover.alt} widths={[400, 640, 960, 1280].filter((w) => w <= cover.src.width)} sizes={sizes} formats={["avif"]} fallbackFormat="webp" loading="lazy" decoding="async" />
+        {cover.kind === "concept" && <span class="badge pcard__badge">Concept art · Not gameplay</span>}
+      </>
     ) : (
       <div class="placeholder">
         <span class="placeholder__label">Placeholder</span>
@@ -36,6 +36,5 @@ const Heading = headingLevel;
     <Status status={status} platforms={platforms} />
     <Heading class="pcard__title"><a href={urls.overview}>{name}</a></Heading>
     <p class="pcard__summary">{summary}</p>
-    {showVisualTag && visualTag && cover && <p class="pcard__visual-tag meta">Image: {visualTag}</p>}
   </div>
 </article>

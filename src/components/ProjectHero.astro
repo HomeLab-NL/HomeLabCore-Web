@@ -29,7 +29,6 @@ const { name, hero, visualNote } = project.data;
     <div class="project-hero__figure">
       {hero ? (
         <Figure
-          number={1}
           image={hero.src}
           alt={hero.alt}
           caption={hero.caption}
@@ -39,7 +38,7 @@ const { name, hero, visualNote } = project.data;
           zoom
         />
       ) : (
-        <Figure number={1} caption={name} missing={`No ${name} screenshots or visuals have been published yet.`} />
+        <Figure caption={name} missing={`No ${name} screenshots or visuals have been published yet.`} />
       )}
       {visualNote && hero && <p class="visual-note">{visualNote}</p>}
     </div>

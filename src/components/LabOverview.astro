@@ -29,7 +29,7 @@ const tiles = [
     <ul class="lab-overview__grid" aria-label="Lab overview">
       {tiles.map((t) => (
         <li class:list={["lab-overview__tile", { "lab-overview__tile--main": t.main }]}>
-          <span class="lab-overview__tag">{t.area} · {t.project}</span>
+          <span class="lab-overview__tag">{t.project}</span>
           <Picture
             src={t.fig.src}
             alt={t.fig.alt}
@@ -46,7 +46,6 @@ const tiles = [
   </div>
   <figcaption class="fig__caption">
     <span class="meta">Fig. 01 —</span>
-    <span>Lab overview: the AgentLab gateway, CookFrom's cooking mode and Keyboard Trainer's quest map.</span>
-    <span class="meta">· a source-backed diagram and real app screens</span>
+    <span>Lab overview: infrastructure, an Android app and a web app.</span>
   </figcaption>
 </figure>

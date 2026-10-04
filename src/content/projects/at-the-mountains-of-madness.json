@@ -10,8 +10,7 @@
   "urls": {
     "overview": "/lab/at-the-mountains-of-madness/"
   },
-  "visualTag": "Concept art",
-  "visualNote": "Concept art created for the project to set its intended visual direction and atmosphere. It is not a gameplay screenshot or in-engine render, and does not show content already implemented in the game.",
+  "visualNote": "Concept art for the game's intended look and atmosphere. It is not gameplay and does not show content already in the game.",
   "cover": {
     "src": "../../assets/projects/at-the-mountains-of-madness/concept-expedition.webp",
     "alt": "Watercolor concept art of an Antarctic expedition crossing a frozen landscape toward monumental ancient ruins in the mountains.",
@@ -21,7 +20,7 @@
   "hero": {
     "src": "../../assets/projects/at-the-mountains-of-madness/concept-expedition.webp",
     "alt": "Watercolor concept art of an Antarctic expedition crossing a frozen landscape toward monumental ancient ruins in the mountains.",
-    "caption": "Concept art — Antarctic expedition approaching the ancient ruins. Watercolor visual direction for At the Mountains of Madness.",
+    "caption": "Antarctic expedition approaching the ancient ruins — watercolor visual direction",
     "kind": "concept"
   },
   "figures": [],
