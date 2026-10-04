@@ -51,8 +51,10 @@ const projects = defineCollection({
        * composition  — whole real application screenshots placed in a neutral frame
        * illustration — artwork from the product itself
        * diagram      — a source-backed architecture/workflow diagram, not a screenshot
+       * concept      — concept / development art: intended visual direction,
+       *                not a screenshot, render or implemented content
        */
-      kind: z.enum(["screenshot", "composition", "illustration", "diagram"]),
+      kind: z.enum(["screenshot", "composition", "illustration", "diagram", "concept"]),
     });
     return z.object({
       name: z.string(),

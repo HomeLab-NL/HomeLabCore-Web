@@ -6,13 +6,14 @@ import type { ImageMetadata } from "astro";
 // Pass `image` for a real asset, or omit it and pass `missing` to render a
 // clearly marked placeholder. Anything else can be passed in the slot (for
 // example an HTML illustration).
-export type FigureKind = "screenshot" | "composition" | "illustration" | "diagram";
+export type FigureKind = "screenshot" | "composition" | "illustration" | "diagram" | "concept";
 
 const KIND_LABEL: Record<FigureKind, string> = {
   screenshot: "screenshot",
   composition: "real app screens, composed",
   illustration: "illustration",
   diagram: "diagram, not a screenshot",
+  concept: "concept art, not gameplay",
 };
 
 interface Props {
