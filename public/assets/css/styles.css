@@ -735,7 +735,7 @@ img {
    figure is about as tall as the hero text. */
 @media (min-width: 640px) {
   .lab-overview__grid {
-    grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 2.3fr) minmax(0, 1fr);
     grid-template-rows: auto auto;
     align-items: start;
   }
@@ -743,6 +743,7 @@ img {
   .lab-overview__tile--main {
     grid-column: 1;
     grid-row: 1 / span 2;
+    align-self: center;
   }
 }
 
@@ -755,8 +756,8 @@ img {
 
 .lab-overview__tag {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
