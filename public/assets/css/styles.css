@@ -715,64 +715,190 @@ img {
   margin-bottom: 0;
 }
 
-/* Homepage lab overview: one framed figure combining visuals from different
-   areas (infrastructure, Android, web) on a notebook dot grid. */
-.lab-overview__frame {
-  padding: clamp(0.75rem, 2vw, 1.1rem);
+/* Homepage hero schematic (LabLoop): build -> lab -> measure. Lines draw in
+   once, then short pulses travel from each project to the lab and on to the
+   benchmarks. CSS-only; static with reduced motion. */
+.lab-loop__frame {
+  padding: clamp(0.5rem, 1.6vw, 1rem);
   background-color: var(--surface);
   background-image: radial-gradient(var(--dot-grid) 1px, transparent 1px);
   background-size: 14px 14px;
 }
 
-.lab-overview__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(0.6rem, 1.6vw, 0.9rem);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.lab-overview__tile {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.lab-overview__tile--main {
-  grid-column: 1 / -1;
-}
-
-/* Wide screens: main tile on the left, two tiles stacked beside it, so the
-   figure is about as tall as the hero text. */
-@media (min-width: 640px) {
-  .lab-overview__grid {
-    grid-template-columns: minmax(0, 2.3fr) minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    align-items: start;
-  }
-
-  .lab-overview__tile--main {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    align-self: center;
-  }
-}
-
-.lab-overview__tile img {
+.lab-loop__svg {
+  display: block;
   width: 100%;
   height: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  font-family: var(--font);
 }
 
-.lab-overview__tag {
+.ll-head {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.02em;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  fill: var(--text-faint);
+}
+
+.ll-node {
+  fill: var(--surface);
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.ll-name {
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--text);
+}
+
+.ll-status {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  fill: var(--text-muted);
+}
+
+.ll-dot {
+  fill: var(--p-fill);
+}
+
+.ll-link,
+.ll-pulse,
+.ll-axis,
+.ll-sweep,
+.ll-flask {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.ll-link {
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: ll-draw 0.9s ease-out forwards;
+  animation-delay: calc(var(--i, 0) * 0.12s);
+}
+
+.ll-pulse {
+  stroke: var(--p-fill);
+  stroke-width: 3.5;
+  stroke-dasharray: 14 86;
+  stroke-dashoffset: 14;
+  opacity: 0;
+  animation: ll-pulse 4.2s linear infinite;
+  animation-delay: calc(1.2s + var(--i, 0) * 0.7s);
+}
+
+.ll-pulse--out {
+  stroke: var(--studio-fill);
+  stroke-dasharray: 30 70;
+  stroke-dashoffset: 30;
+  animation-duration: 1.4s;
+  animation-delay: 1.6s;
+}
+
+.ll-hub__core {
+  fill: var(--surface);
+  stroke: var(--studio-fill);
+  stroke-width: 2;
+}
+
+.ll-hub__ring {
+  fill: none;
+  stroke: var(--studio-fill);
+  stroke-width: 1;
+  opacity: 0.35;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ll-ring 2.8s ease-out infinite;
+  animation-delay: 1.2s;
+}
+
+.ll-flask {
+  stroke: var(--text);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.ll-liquid {
+  fill: var(--studio-fill);
+}
+
+.ll-axis {
+  stroke: var(--border-strong);
+  stroke-width: 1.2;
+}
+
+.ll-sweep {
+  stroke: var(--studio-fill);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 4;
+  opacity: 0.7;
+  animation: ll-sweep 5s ease-in-out infinite alternate;
+  animation-delay: 1.2s;
+}
+
+@keyframes ll-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes ll-pulse {
+  0% {
+    stroke-dashoffset: 14;
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  30% {
+    stroke-dashoffset: -86;
+    opacity: 1;
+  }
+  31%,
+  100% {
+    stroke-dashoffset: -86;
+    opacity: 0;
+  }
+}
+
+@keyframes ll-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+@keyframes ll-sweep {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(92px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ll-link {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .ll-pulse,
+  .ll-hub__ring {
+    animation: none;
+    display: none;
+  }
+  .ll-sweep {
+    animation: none;
+  }
 }
 
 /* Compact benchmarks strip until real results exist. */
