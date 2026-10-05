@@ -25,7 +25,7 @@
     "support": "/support/cookfrom"
   },
   "supportSummary": "Troubleshooting for AI recipe generation, ingredient photo recognition, Pro entitlement and purchase restoration, and application data.",
-  "visualNote": "Promotional artwork, not a screen capture. Real screens from the Android beta are below; the recipe shown there is a built-in catalogue recipe.",
+  "visualNote": "Screens from the Android beta. The recipe shown is a built-in catalogue recipe, not a freshly generated one.",
   "cover": {
     "src": "../../assets/projects/cookfrom/promo.webp",
     "alt": "CookFrom promotional banner: the CookFrom logo with the tagline “Good food. Less waste. More ideas.”, four features — AI recipes from what you have, pantry, shopping list and preferences — and a phone showing an ingredient search, beside fresh tomatoes, basil and garlic.",
@@ -33,18 +33,12 @@
     "kind": "promo"
   },
   "hero": {
-    "src": "../../assets/projects/cookfrom/promo.webp",
-    "alt": "CookFrom promotional banner: the CookFrom logo with the tagline “Good food. Less waste. More ideas.”, four features — AI recipes from what you have, pantry, shopping list and preferences — and a phone showing an ingredient search, beside fresh tomatoes, basil and garlic.",
-    "caption": "CookFrom — promotional artwork",
-    "kind": "promo"
+    "src": "../../assets/projects/cookfrom/hero.webp",
+    "alt": "CookFrom: current application screens. Real Android beta · 0.11.78.",
+    "caption": "CookFrom — Android beta",
+    "kind": "composition"
   },
   "figures": [
-    {
-      "src": "../../assets/projects/cookfrom/hero.webp",
-      "alt": "CookFrom: current application screens. Real Android beta · 0.11.78.",
-      "caption": "CookFrom — Android beta",
-      "kind": "composition"
-    },
     {
       "src": "../../assets/projects/cookfrom/gallery-01-ingredients.webp",
       "alt": "Choose ingredients from the illustrated catalog.",

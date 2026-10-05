@@ -25,7 +25,7 @@
     "support": "/support/ops-planner/"
   },
   "supportSummary": "Help with sharing schedules and reports by email, export and import, moving to a new phone, deleting data, and reporting a bug.",
-  "visualNote": "Promotional artwork, not a screen capture. Real screens from a development build are below; the team, assignments and vacation shown are fictional sample data.",
+  "visualNote": "Screens from a development build. The team, assignments and vacation shown are fictional sample data.",
   "cover": {
     "src": "../../assets/projects/ops-planner/promo.webp",
     "alt": "Ops Planner promotional banner in Dutch: the Ops Planner logo, five features — clear planning, managing employees, tasks and shifts, reports and export, overview and progress — and two phones showing the weekly planner and the employee editor.",
@@ -33,18 +33,12 @@
     "kind": "promo"
   },
   "hero": {
-    "src": "../../assets/projects/ops-planner/promo.webp",
-    "alt": "Ops Planner promotional banner in Dutch: the Ops Planner logo, five features — clear planning, managing employees, tasks and shifts, reports and export, overview and progress — and two phones showing the weekly planner and the employee editor.",
-    "caption": "Ops Planner — promotional artwork (Dutch)",
-    "kind": "promo"
+    "src": "../../assets/projects/ops-planner/hero.webp",
+    "alt": "Ops Planner: current application screens. Real Android UI · fictional sample team.",
+    "caption": "Ops Planner — development build with a fictional sample team",
+    "kind": "composition"
   },
   "figures": [
-    {
-      "src": "../../assets/projects/ops-planner/hero.webp",
-      "alt": "Ops Planner: current application screens. Real Android UI · fictional sample team.",
-      "caption": "Ops Planner — development build with a fictional sample team",
-      "kind": "composition"
-    },
     {
       "src": "../../assets/projects/ops-planner/gallery-01-daily-planner.webp",
       "alt": "Daily task pool and workload calculated from fictional assignments.",
