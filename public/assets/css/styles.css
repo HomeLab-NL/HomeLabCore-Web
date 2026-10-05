@@ -770,8 +770,7 @@ img {
 }
 
 .room__title,
-.xhero__title,
-.xhero__sub {
+.xhero__title {
   font-family: "Bricolage Grotesque", var(--font);
   font-weight: 800;
   letter-spacing: -0.045em;
@@ -829,14 +828,7 @@ img {
 .xhero__title {
   font-size: clamp(3.4rem, 8.4vw, 7.4rem);
   line-height: 0.86;
-  margin: 0 0 0.6rem;
-}
-
-.xhero__sub {
-  font-size: clamp(1.7rem, 3.6vw, 3rem);
-  line-height: 1;
-  color: var(--r-muted);
-  margin: 0 0 1.6rem;
+  margin: 0 0 1.4rem;
 }
 
 .xhero__lead {
@@ -846,65 +838,38 @@ img {
   margin: 0;
 }
 
-/* Exhibit 01: reserved for the Codex animation; cycles one real visual per room. */
+/* Exhibit 01: the animated flask (Codex), cropped to the flask and shown large
+   on a light plate, so its dark outline reads in both themes. The SVG is
+   194 x 50; the crop window is x 12-42, y 0-46 (steam included). */
 .exhibit {
   margin: 0;
 }
 
-.exhibit__slides {
-  position: relative;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  aspect-ratio: 16 / 11;
+.exhibit__plate {
+  display: grid;
+  place-items: center;
+  padding: clamp(1.5rem, 4vw, 3rem);
   border-radius: 18px;
-  overflow: hidden;
-  background: var(--surface-2);
+  background: #f4f3ee;
+  background-image: radial-gradient(rgba(22, 25, 31, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
   box-shadow: var(--shadow-lift);
 }
 
-.exhibit__slide {
+.exhibit__crop {
+  position: relative;
+  width: clamp(150px, 55%, 300px);
+  aspect-ratio: 30 / 46;
+  overflow: hidden;
+}
+
+.exhibit__crop img {
   position: absolute;
-  inset: 0;
-  opacity: 0;
-}
-
-.exhibit__slide:first-child {
-  opacity: 1;
-}
-
-.exhibit__slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.exhibit__caption {
-  position: absolute;
-  left: 12px;
-  bottom: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.7rem;
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  visibility: hidden;
-}
-
-.exhibit__slide:first-child .exhibit__caption {
-  visibility: visible;
-}
-
-.exhibit__dot {
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 50%;
-  background: var(--p-fill);
+  top: 0;
+  left: calc(-100% * 12 / 30);
+  width: calc(100% * 194 / 30);
+  max-width: none;
+  height: auto;
 }
 
 .exhibit__label {
@@ -917,34 +882,6 @@ img {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--r-muted);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .exhibit__slide {
-    animation: x-fade 30s linear infinite;
-    animation-delay: calc(var(--n) * 5s - 1s);
-    animation-fill-mode: backwards;
-  }
-  .exhibit__caption {
-    animation: x-caption 30s step-end infinite;
-    animation-delay: calc(var(--n) * 5s - 1s);
-    animation-fill-mode: backwards;
-  }
-}
-
-@keyframes x-fade {
-  0% { opacity: 0; }
-  3% { opacity: 1; }
-  16.7% { opacity: 1; }
-  19.7% { opacity: 0; }
-  100% { opacity: 0; }
-}
-
-@keyframes x-caption {
-  0% { visibility: hidden; }
-  1% { visibility: visible; }
-  18% { visibility: hidden; }
-  100% { visibility: hidden; }
 }
 
 /* Floor plan: the rooms below, in order, with their wall colour. */
