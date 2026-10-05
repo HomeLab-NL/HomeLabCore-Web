@@ -1,6 +1,8 @@
 ---
 import { Picture, getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 
 // A captioned figure: "Fig. 01 — Caption · composed from real app screens".
 // Pass `image` for a real asset, or omit it and pass `missing` to render a
@@ -10,10 +12,7 @@ export type FigureKind = "screenshot" | "composition" | "illustration" | "diagra
 
 // Concept art and promotional artwork carry a visible marker: they must never
 // read as screenshots of the product. Other kinds are described by the caption.
-const BADGES: Partial<Record<FigureKind, string>> = {
-  concept: "Concept art · Not gameplay",
-  promo: "Promotional artwork",
-};
+const BADGES: Partial<Record<FigureKind, "concept" | "promo">> = { concept: "concept", promo: "promo" };
 
 interface Props {
   number?: number;
@@ -29,6 +28,7 @@ interface Props {
   /** Link the image to a full-size copy, for detailed compositions and diagrams. */
   zoom?: boolean;
   class?: string;
+  lang?: Locale;
 }
 
 const {
@@ -43,9 +43,11 @@ const {
   loading = "lazy",
   zoom = false,
   class: className,
+  lang = "en",
 } = Astro.props;
+const t = ui(lang).figure;
 
-const label = number !== undefined ? `Fig. ${String(number).padStart(2, "0")}` : undefined;
+const label = number !== undefined ? `${t.fig} ${String(number).padStart(2, "0")}` : undefined;
 const hasSlot = Astro.slots.has("default");
 const full = image && zoom ? await getImage({ src: image, format: "webp", width: image.width }) : undefined;
 const pictureWidths = image ? widths.filter((w) => w <= image.width) : [];
@@ -56,7 +58,7 @@ const pictureWidths = image ? widths.filter((w) => w <= image.width) : [];
       full ? (
         <a class="fig__zoom" href={full.src}>
           <Picture src={image} alt={alt} widths={pictureWidths} sizes={sizes} formats={["avif"]} fallbackFormat="webp" loading={loading} decoding="async" />
-          <span class="visually-hidden">(open full-size image)</span>
+          <span class="visually-hidden">{t.openFull}</span>
         </a>
       ) : (
         <Picture src={image} alt={alt} widths={pictureWidths} sizes={sizes} formats={["avif"]} fallbackFormat="webp" loading={loading} decoding="async" />
@@ -65,15 +67,15 @@ const pictureWidths = image ? widths.filter((w) => w <= image.width) : [];
       <slot />
     ) : (
       <div class="placeholder">
-        <span class="placeholder__label">Placeholder</span>
-        <span class="placeholder__text">{missing ?? "Visual not available yet."}</span>
+        <span class="placeholder__label">{t.placeholder}</span>
+        <span class="placeholder__text">{missing ?? t.notAvailable}</span>
       </div>
     )}
   </div>
   <figcaption class="fig__caption">
-    {kind && BADGES[kind] && <span class="badge">{BADGES[kind]}</span>}
+    {kind && BADGES[kind] && <span class="badge">{t[BADGES[kind]!]}</span>}
     {label && <span class="meta">{label} —</span>}
     <span>{caption}</span>
-    {!image && !hasSlot && <span class="meta">· placeholder</span>}
+    {!image && !hasSlot && <span class="meta">· {t.placeholder.toLowerCase()}</span>}
   </figcaption>
 </figure>

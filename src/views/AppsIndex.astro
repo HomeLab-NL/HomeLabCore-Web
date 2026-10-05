@@ -1,0 +1,45 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import SectionHead from "../components/SectionHead.astro";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+import { projectsIn } from "../lib/projects";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const COPY = {
+  en: {
+    title: "Apps — HomeLabCore",
+    description: "Apps by HomeLabCore: CookFrom, Ops Planner, AI Tutor and Keyboard Trainer — Android and web apps in testing and in development.",
+    og: "Android and web apps by HomeLabCore.",
+    intro: "Android and web apps by HomeLabCore. Released apps get a product page, a privacy policy and a support page.",
+  },
+  nl: {
+    title: "Apps — HomeLabCore",
+    description: "Apps van HomeLabCore: CookFrom, Ops Planner, AI Tutor en Keyboard Trainer — Android- en webapps in test en in ontwikkeling.",
+    og: "Android- en webapps van HomeLabCore.",
+    intro: "Android- en webapps van HomeLabCore. Uitgebrachte apps krijgen een productpagina, een privacybeleid en een supportpagina.",
+  },
+  uk: {
+    title: "Застосунки — HomeLabCore",
+    description: "Застосунки HomeLabCore: CookFrom, Ops Planner, AI Tutor і Keyboard Trainer — застосунки для Android і вебу на тестуванні та в розробці.",
+    og: "Застосунки HomeLabCore для Android і вебу.",
+    intro: "Застосунки HomeLabCore для Android і вебу. Для кожного випущеного застосунку є сторінка продукту, політика конфіденційності та сторінка підтримки.",
+  },
+}[lang];
+const apps = await projectsIn("apps", lang);
+const label = ui(lang).nav.apps;
+---
+<BaseLayout route="apps" lang={lang} title={COPY.title} description={COPY.description} ogDescription={COPY.og} navCurrent="apps">
+  <section class="section">
+    <div class="container">
+      <SectionHead label={label} title={label} level="h1">{COPY.intro}</SectionHead>
+      <div class="card-grid card-grid--2">
+        {apps.map((p) => <ProjectCard project={p} headingLevel="h2" sizes="(min-width: 720px) 50vw, 100vw" lang={lang} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

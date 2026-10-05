@@ -41,14 +41,18 @@ const titles = new Map();
 
 for (const p of pagePaths()) {
   const file = p.endsWith(".html") ? path.join(DIST, p) : path.join(DIST, p, "index.html");
-  const head = headOf(fs.readFileSync(file, "utf8"));
+  const html = fs.readFileSync(file, "utf8");
+  const head = headOf(html);
   const fail = (msg) => failures.push(`${p}: ${msg}`);
+  const lang = (/<html[^>]*\slang="([^"]+)"/.exec(html) ?? [])[1];
+  if (!["en", "nl", "uk"].includes(lang)) fail(`<html lang> is ${lang}`);
 
+  // Titles must be unique within a language; translations may share a project name.
   const title = decode((/<title>([^<]*)<\/title>/.exec(head) ?? [])[1] ?? "");
   const description = meta(head, "name", "description");
   if (!title) fail("missing <title>");
-  if (titles.has(title)) fail(`duplicate <title> (also ${titles.get(title)})`);
-  titles.set(title, p);
+  if (titles.has(`${lang}|${title}`)) fail(`duplicate <title> (also ${titles.get(`${lang}|${title}`)})`);
+  titles.set(`${lang}|${title}`, p);
   if (!description) fail("missing meta description");
   else if (description.length < 50 || description.length > 230) fail(`description length ${description.length} (want 50–230)`);
   if (!link(head, "icon")) fail("missing favicon");
@@ -65,6 +69,14 @@ for (const p of pagePaths()) {
   if (!canonical?.startsWith(SITE + "/")) fail(`canonical not absolute on ${SITE}: ${canonical}`);
   if (!sitemapUrls.has(canonical)) fail(`canonical ${canonical} not in sitemap.xml`);
 
+  // Translated pages: one alternate per language plus x-default, all in the sitemap, including this page.
+  const alternates = [...head.matchAll(/<link[^>]*rel="alternate"[^>]*hreflang="([^"]+)"[^>]*href="([^"]+)"/g)].map((m) => [m[1], m[2]]);
+  if (alternates.length) {
+    const langs = alternates.map(([h]) => h).sort().join(",");
+    if (langs !== "en,nl,uk,x-default") fail(`hreflang set is ${langs}`);
+    for (const [h, u] of alternates) if (!sitemapUrls.has(u)) fail(`hreflang ${h} ${u} not in sitemap.xml`);
+    if (!alternates.some(([h, u]) => h === lang && u === canonical)) fail(`no hreflang="${lang}" pointing at the canonical URL`);
+  }
   const og = Object.fromEntries(
     ["type", "site_name", "title", "description", "url", "image", "image:type", "image:width", "image:height", "image:alt"].map((k) => [k, meta(head, "property", `og:${k}`)]),
   );
@@ -101,4 +113,4 @@ if (failures.length) {
   console.error(failures.map((f) => `✗ ${f}`).join("\n"));
   process.exit(1);
 }
-console.log(`✓ metadata: ${rows.length} pages — unique titles, descriptions, canonical = og:url, complete OG/Twitter tags, og:image files exist at their declared size, sitemap/robots consistent.`);
+console.log(`✓ metadata: ${rows.length} pages — unique titles per language, descriptions, canonical = og:url, hreflang alternates, complete OG/Twitter tags, og:image files exist at their declared size, sitemap/robots consistent.`);

@@ -1,0 +1,107 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHead from "../components/SectionHead.astro";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+import { formatDate, isoDate } from "../lib/projects";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const COPY = {
+  en: {
+    title: "Benchmarks — HomeLabCore",
+    description: "Public workflow benchmarks comparing Claude, Codex and Qwen. No results have been published yet.",
+    h1: "AI workflow benchmarks",
+    intro: "Public comparisons of Claude, Codex and Qwen on development workflows.",
+    status: "Status · no results published yet",
+    prepTitle: "The first benchmark is in preparation",
+    prepText: "Nothing is published here until a run is complete. When it is, this page will list it with a link to the full write-up.",
+    includeTitle: "What every published run will include",
+    include: [
+      ["Systems", "Each tool and model compared, with the exact version used."],
+      ["Date", "When the run was carried out."],
+      ["Tasks", "The workflows each system was asked to complete, and how many."],
+      ["Scoring", "How results were judged — the methodology, written out."],
+      ["Results", "Charts with the underlying numbers in an accessible table."],
+      ["Raw data", "A downloadable file with the raw results."],
+    ],
+  },
+  nl: {
+    title: "Benchmarks — HomeLabCore",
+    description: "Openbare workflowbenchmarks die Claude, Codex en Qwen vergelijken. Er zijn nog geen resultaten gepubliceerd.",
+    h1: "Benchmarks van AI-workflows",
+    intro: "Openbare vergelijkingen van Claude, Codex en Qwen op ontwikkelworkflows.",
+    status: "Status · nog geen resultaten gepubliceerd",
+    prepTitle: "De eerste benchmark is in voorbereiding",
+    prepText: "Hier verschijnt niets totdat een run klaar is. Dan staat hij op deze pagina, met een link naar het volledige verslag.",
+    includeTitle: "Wat elke gepubliceerde run bevat",
+    include: [
+      ["Systemen", "Elk vergeleken hulpmiddel en model, met de exacte versie."],
+      ["Datum", "Wanneer de run is uitgevoerd."],
+      ["Taken", "Welke workflows elk systeem moest uitvoeren, en hoeveel."],
+      ["Beoordeling", "Hoe de resultaten zijn beoordeeld — de methode, uitgeschreven."],
+      ["Resultaten", "Grafieken met de onderliggende cijfers in een toegankelijke tabel."],
+      ["Ruwe data", "Een downloadbaar bestand met de ruwe resultaten."],
+    ],
+  },
+  uk: {
+    title: "Бенчмарки — HomeLabCore",
+    description: "Публічні бенчмарки робочих процесів, що порівнюють Claude, Codex і Qwen. Результатів ще не опубліковано.",
+    h1: "Бенчмарки AI-процесів",
+    intro: "Публічні порівняння Claude, Codex і Qwen на процесах розробки.",
+    status: "Статус · результатів ще не опубліковано",
+    prepTitle: "Перший бенчмарк готується",
+    prepText: "Тут нічого не з'явиться, доки запуск не буде завершено. Тоді він буде на цій сторінці з посиланням на повний звіт.",
+    includeTitle: "Що міститиме кожен опублікований запуск",
+    include: [
+      ["Системи", "Кожен інструмент і модель, які порівнюються, з точною версією."],
+      ["Дата", "Коли проводився запуск."],
+      ["Завдання", "Які процеси мала виконати кожна система і скільки їх було."],
+      ["Оцінювання", "Як оцінювали результати — методика, детально описана."],
+      ["Результати", "Графіки з вихідними числами в доступній таблиці."],
+      ["Сирі дані", "Файл із сирими результатами для завантаження."],
+    ],
+  },
+}[lang];
+const runs = (await getCollection("benchmarks")).sort((a, b) => b.data.published.getTime() - a.data.published.getTime());
+---
+<BaseLayout route="benchmarks" lang={lang} title={COPY.title} description={COPY.description} navCurrent="benchmarks">
+  <section class="section">
+    <div class="container">
+      <SectionHead label={ui(lang).nav.benchmarks} title={COPY.h1} level="h1">{COPY.intro}</SectionHead>
+
+      {runs.length === 0 ? (
+        <div class="split">
+          <div class="panel">
+            <p class="meta">{COPY.status}</p>
+            <h2>{COPY.prepTitle}</h2>
+            <p class="muted">{COPY.prepText}</p>
+          </div>
+          <div>
+            <h2>{COPY.includeTitle}</h2>
+            <dl class="meta-list">
+              {COPY.include.map(([term, text]) => (
+                <>
+                  <dt>{term}</dt>
+                  <dd>{text}</dd>
+                </>
+              ))}
+            </dl>
+          </div>
+        </div>
+      ) : (
+        <ul class="updates">
+          {runs.map((r) => (
+            <li>
+              <time datetime={isoDate(r.data.published)}>{formatDate(r.data.published)}</time>
+              <p><a href={`/benchmarks/${r.id}/`}>{r.data.title}</a> — {r.data.summary}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+</BaseLayout>

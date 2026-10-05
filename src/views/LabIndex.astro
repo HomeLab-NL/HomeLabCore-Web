@@ -1,0 +1,45 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import SectionHead from "../components/SectionHead.astro";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+import { projectsIn } from "../lib/projects";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const COPY = {
+  en: {
+    title: "Lab — HomeLabCore",
+    description: "HomeLabCore lab projects: experiments, infrastructure and games in development, including AgentLab and At the Mountains of Madness.",
+    og: "Experiments, infrastructure and games from HomeLabCore.",
+    intro: "Experiments, infrastructure and games. Lab projects are works in progress; some may become apps, some stay experiments.",
+  },
+  nl: {
+    title: "Lab — HomeLabCore",
+    description: "Labprojecten van HomeLabCore: experimenten, infrastructuur en games in ontwikkeling, waaronder AgentLab en At the Mountains of Madness.",
+    og: "Experimenten, infrastructuur en games van HomeLabCore.",
+    intro: "Experimenten, infrastructuur en games. Labprojecten zijn werk in uitvoering; sommige worden een app, andere blijven een experiment.",
+  },
+  uk: {
+    title: "Лабораторія — HomeLabCore",
+    description: "Проєкти лабораторії HomeLabCore: експерименти, інфраструктура та ігри в розробці, зокрема AgentLab і At the Mountains of Madness.",
+    og: "Експерименти, інфраструктура та ігри від HomeLabCore.",
+    intro: "Експерименти, інфраструктура та ігри. Проєкти лабораторії ще в роботі: деякі стануть застосунками, інші лишаться експериментами.",
+  },
+}[lang];
+const lab = await projectsIn("lab", lang);
+const label = ui(lang).nav.lab;
+---
+<BaseLayout route="lab" lang={lang} title={COPY.title} description={COPY.description} ogDescription={COPY.og} navCurrent="lab">
+  <section class="section">
+    <div class="container">
+      <SectionHead label={label} title={label} level="h1">{COPY.intro}</SectionHead>
+      <div class="card-grid card-grid--2">
+        {lab.map((p) => <ProjectCard project={p} headingLevel="h2" sizes="(min-width: 720px) 50vw, 100vw" lang={lang} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

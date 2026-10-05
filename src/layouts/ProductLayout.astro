@@ -3,6 +3,7 @@ import BaseLayout from "./BaseLayout.astro";
 import ProductPageBar, { type ProductTab } from "../components/ProductPageBar.astro";
 import type { RouteKey } from "../data/routes";
 import type { Project } from "../lib/projects";
+import type { Locale } from "../i18n/locales";
 
 // Pages that belong to one project: overview, privacy policy, support.
 // Applies the project accent, adds the breadcrumb + product sub-nav, and
@@ -16,12 +17,13 @@ interface Props {
   ogTitle?: string;
   ogDescription?: string;
   ogType?: "website" | "article";
+  lang?: Locale;
 }
 
-const { project, tab, ...meta } = Astro.props;
+const { project, tab, lang = "en", ...meta } = Astro.props;
 const navSection = tab === "support" ? "support" : project.data.section;
 ---
-<BaseLayout {...meta} project={project.id} navSection={navSection}>
-  <ProductPageBar slot="pagebar" project={project} tab={tab} />
+<BaseLayout {...meta} lang={lang} project={project.id} navSection={navSection}>
+  <ProductPageBar slot="pagebar" project={project} tab={tab} lang={lang} />
   <slot />
 </BaseLayout>

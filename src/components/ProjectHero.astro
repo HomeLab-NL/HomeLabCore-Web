@@ -2,6 +2,8 @@
 import Figure from "./Figure.astro";
 import ProjectMeta from "./ProjectMeta.astro";
 import type { Project } from "../lib/projects";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 
 // Project page header: title, lead and metadata, then the project's lead
 // image full width (or a marked placeholder), with its provenance note.
@@ -10,9 +12,10 @@ interface Props {
   eyebrow: string;
   title: string;
   lead: string;
+  lang?: Locale;
 }
 
-const { project, eyebrow, title, lead } = Astro.props;
+const { project, eyebrow, title, lead, lang = "en" } = Astro.props;
 const { name, hero, visualNote } = project.data;
 ---
 <section class="project-hero">
@@ -24,7 +27,7 @@ const { name, hero, visualNote } = project.data;
         <p class="lead">{lead}</p>
         <slot />
       </div>
-      <ProjectMeta project={project} />
+      <ProjectMeta project={project} lang={lang} />
     </div>
     <div class="project-hero__figure">
       {hero ? (
@@ -36,9 +39,10 @@ const { name, hero, visualNote } = project.data;
           sizes="(min-width: 1160px) 1100px, 100vw"
           loading="eager"
           zoom
+          lang={lang}
         />
       ) : (
-        <Figure caption={name} missing={`No ${name} screenshots or visuals have been published yet.`} />
+        <Figure caption={name} missing={ui(lang).project.noVisuals(name)} lang={lang} />
       )}
       {visualNote && hero && <p class="visual-note">{visualNote}</p>}
     </div>

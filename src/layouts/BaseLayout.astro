@@ -5,6 +5,8 @@ import { ROUTES, type RouteKey } from "../data/routes";
 import { SITE_URL, THEME_STORAGE_KEY, type NavKey } from "../data/site";
 import { accentCss, allProjects } from "../lib/projects";
 import { socialImage } from "../lib/social";
+import { LOCALES, LOCALE_INFO, TRANSLATED_PATHS, localizedPath, type Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 
 interface Props {
   route: RouteKey;
@@ -18,6 +20,7 @@ interface Props {
   project?: string;
   navCurrent?: NavKey;
   navSection?: NavKey;
+  lang?: Locale;
 }
 
 const {
@@ -30,10 +33,15 @@ const {
   project,
   navCurrent,
   navSection,
+  lang = "en",
 } = Astro.props;
 
 const { path, indexed } = ROUTES[route];
-const url = SITE_URL + path;
+const url = SITE_URL + localizedPath(path, lang);
+// Translated pages list every language version (and English as the default).
+const alternates = indexed && TRANSLATED_PATHS.has(path)
+  ? [...LOCALES.map((l) => ({ hreflang: LOCALE_INFO[l].hreflang, href: SITE_URL + localizedPath(path, l) })), { hreflang: "x-default", href: SITE_URL + path }]
+  : [];
 const accents = accentCss(await allProjects());
 // Social preview image: the project's own image if it has one, otherwise the
 // global HomeLabCore image. Absolute URLs; independent of the site theme.
@@ -46,7 +54,7 @@ const og = await socialImage(project);
 const themeInit = `(function(){var d=document.documentElement;d.classList.add("js");var t;try{t=localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)})}catch(e){}if(t==="dark"||t==="light"){d.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#0b0d10":"#fafaf7")}})();`;
 ---
 <!DOCTYPE html>
-<html lang="en" data-theme="light" data-project={project}>
+<html lang={LOCALE_INFO[lang].hreflang} data-theme="light" data-project={project}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -55,10 +63,12 @@ const themeInit = `(function(){var d=document.documentElement;d.classList.add("j
   <title>{title}</title>
   <meta name="description" content={description}>
   {indexed ? <link rel="canonical" href={url}> : <meta name="robots" content="noindex">}
+  {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href}>)}
   {indexed && (
     <>
       <meta property="og:type" content={ogType}>
       <meta property="og:site_name" content="HomeLabCore">
+      <meta property="og:locale" content={LOCALE_INFO[lang].ogLocale}>
       <meta property="og:title" content={ogTitle}>
       <meta property="og:description" content={ogDescription}>
       <meta property="og:url" content={url}>
@@ -79,9 +89,9 @@ const themeInit = `(function(){var d=document.documentElement;d.classList.add("j
   <style is:inline set:html={accents}></style>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main">{ui(lang).skip}</a>
 
-  <SiteHeader current={navCurrent} section={navSection} />
+  <SiteHeader current={navCurrent} section={navSection} lang={lang} path={path} />
 
   <slot name="pagebar" />
 
@@ -89,7 +99,7 @@ const themeInit = `(function(){var d=document.documentElement;d.classList.add("j
     <slot />
   </main>
 
-  <SiteFooter />
+  <SiteFooter lang={lang} />
 
   <script is:inline src="/assets/js/main.js" defer></script>
 </body>

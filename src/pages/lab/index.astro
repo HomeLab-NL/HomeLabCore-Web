@@ -1,26 +1,4 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import ProjectCard from "../../components/ProjectCard.astro";
-import SectionHead from "../../components/SectionHead.astro";
-import { projectsIn } from "../../lib/projects";
-
-const lab = await projectsIn("lab");
+import LabIndex from "../../views/LabIndex.astro";
 ---
-<BaseLayout
-  route="lab"
-  title="Lab — HomeLabCore"
-  description="HomeLabCore lab projects: experiments, infrastructure and games in development, including AgentLab and At the Mountains of Madness."
-  ogDescription="Experiments, infrastructure and games from HomeLabCore."
-  navCurrent="lab"
->
-  <section class="section">
-    <div class="container">
-      <SectionHead label="Lab" title="Lab" level="h1">
-        Experiments, infrastructure and games. Lab projects are works in progress; some may become apps, some stay experiments.
-      </SectionHead>
-      <div class="card-grid card-grid--2">
-        {lab.map((p) => <ProjectCard project={p} headingLevel="h2" sizes="(min-width: 720px) 50vw, 100vw" />)}
-      </div>
-    </div>
-  </section>
-</BaseLayout>
+<LabIndex lang="en" />

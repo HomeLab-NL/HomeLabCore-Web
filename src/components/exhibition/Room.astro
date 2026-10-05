@@ -1,6 +1,13 @@
 ---
 import type { Project } from "../../lib/projects";
 import Status from "../Status.astro";
+import type { Locale } from "../../i18n/locales";
+
+const LABELS = {
+  en: { room: "Room", open: (name: string) => `Open ${name}` },
+  nl: { room: "Zaal", open: (name: string) => `Open ${name}` },
+  uk: { room: "Зала", open: (name: string) => `Відкрити ${name}` },
+};
 
 // One exhibition room on the homepage: a wall label (room number, domain,
 // status), a large title, the project's own summary and a link, next to the
@@ -19,8 +26,10 @@ interface Props {
   layout?: "split" | "split-reverse" | "stage" | "full";
   /** Previous room id, for the colour seam above this room. */
   prev: string;
+  lang?: Locale;
 }
-const { project, id, number, domain, title = project?.data.name, summary = project?.data.summary, href = project?.data.urls.overview, linkText, layout = "split", prev } = Astro.props;
+const { project, id, number, domain, title = project?.data.name, summary = project?.data.summary, href = project?.data.urls.overview, linkText, layout = "split", prev, lang = "en" } = Astro.props;
+const L = LABELS[lang];
 const headingId = `room-${id}-title`;
 ---
 <div class="seam" style={`--seam-from:var(--room-${prev}-bg);--seam-to:var(--room-${id}-bg)`} aria-hidden="true"></div>
@@ -28,14 +37,14 @@ const headingId = `room-${id}-title`;
   <div class="room__inner container">
     <div class="room__text">
       <p class="room__label">
-        <span>Room {String(number).padStart(2, "0")}</span>
+        <span>{L.room} {String(number).padStart(2, "0")}</span>
         <span>{domain}</span>
-        {project && <Status status={project.data.status} platforms={project.data.platforms} />}
+        {project && <Status status={project.data.status} platforms={project.data.platforms} lang={lang} />}
       </p>
       <h2 class="room__title" id={headingId}>{title}</h2>
       {summary && <p class="room__summary">{summary}</p>}
       <slot name="text" />
-      {href && <p><a class="room__link" href={href}>{linkText ?? `Open ${title}`}<span aria-hidden="true"> →</span></a></p>}
+      {href && <p><a class="room__link" href={href}>{linkText ?? L.open(title!)}<span aria-hidden="true"> →</span></a></p>}
     </div>
     <div class="room__visual">
       <slot />

@@ -2,25 +2,30 @@
 import { Picture } from "astro:assets";
 import type { Project } from "../lib/projects";
 import Status from "./Status.astro";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 
 // Project card: description first, screenshot below. The title link covers the whole card.
 interface Props {
   project: Project;
   headingLevel?: "h2" | "h3";
   sizes?: string;
+  lang?: Locale;
 }
 
 const {
   project,
   headingLevel = "h3",
   sizes = "(min-width: 1040px) 33vw, (min-width: 720px) 50vw, 100vw",
+  lang = "en",
 } = Astro.props;
+const t = ui(lang);
 const { name, status, platforms, summary, cover, urls } = project.data;
 const Heading = headingLevel;
 ---
 <article class="pcard" data-project={project.id}>
   <div class="pcard__text">
-    <Status status={status} platforms={platforms} />
+    <Status status={status} platforms={platforms} lang={lang} />
     <Heading class="pcard__title"><a href={urls.overview}>{name}</a></Heading>
     <p class="pcard__summary">{summary}</p>
   </div>
@@ -28,12 +33,12 @@ const Heading = headingLevel;
     {cover ? (
       <>
         <Picture src={cover.src} alt={cover.alt} widths={[400, 640, 960, 1280].filter((w) => w <= cover.src.width)} sizes={sizes} formats={["avif"]} fallbackFormat="webp" loading="lazy" decoding="async" />
-        {cover.kind === "concept" && <span class="badge pcard__badge">Concept art · Not gameplay</span>}
+        {cover.kind === "concept" && <span class="badge pcard__badge">{t.figure.concept}</span>}
       </>
     ) : (
       <div class="placeholder">
-        <span class="placeholder__label">Placeholder</span>
-        <span class="placeholder__text">No {name} visuals published yet.</span>
+        <span class="placeholder__label">{t.figure.placeholder}</span>
+        <span class="placeholder__text">{t.card.noVisuals(name)}</span>
       </div>
     )}
   </div>

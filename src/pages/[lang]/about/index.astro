@@ -1,0 +1,10 @@
+---
+import type { GetStaticPaths } from "astro";
+import About from "../../../views/About.astro";
+import { TRANSLATED_LOCALES, type Locale } from "../../../i18n/locales";
+
+export const getStaticPaths = (() => TRANSLATED_LOCALES.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const lang = Astro.params.lang as Locale;
+---
+<About lang={lang} />

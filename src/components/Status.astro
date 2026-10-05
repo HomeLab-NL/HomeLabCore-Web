@@ -1,14 +1,18 @@
 ---
 import type { Project } from "../lib/projects";
 import { statusLabel } from "../lib/projects";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 
 // One metadata line: "CLOSED TESTING · ANDROID". Platform is left out when
 // it has not been announced.
 interface Props {
   status: Project["data"]["status"];
   platforms?: string[];
+  lang?: Locale;
 }
-const { status, platforms = [] } = Astro.props;
-const text = [statusLabel(status), platforms.join(", ")].filter(Boolean).join(" · ");
+const { status, platforms = [], lang = "en" } = Astro.props;
+const names = ui(lang).platform;
+const text = [statusLabel(status, lang), platforms.map((p) => names[p] ?? p).join(", ")].filter(Boolean).join(" · ");
 ---
 <span class="status" data-status={status}>{text}</span>

@@ -531,6 +531,103 @@ img {
   letter-spacing: 0.04em;
 }
 
+/* Theme button and language menu, side by side. */
+.nav__tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Language menu: a <details> disclosure styled like the theme button. */
+.lang-switch {
+  position: relative;
+}
+
+.lang-switch__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 36px;
+  padding: 0 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  list-style: none;
+}
+
+.lang-switch__button::-webkit-details-marker {
+  display: none;
+}
+
+.lang-switch__button:hover {
+  border-color: var(--text-faint);
+}
+
+.lang-switch__button svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.15s ease;
+}
+
+.lang-switch[open] .lang-switch__button svg {
+  transform: rotate(180deg);
+}
+
+.lang-switch__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 110;
+  min-width: 13rem;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-lift);
+}
+
+.lang-switch__menu a {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 40px;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.lang-switch__menu a:hover {
+  background: var(--surface-2);
+}
+
+.lang-switch__menu a[aria-current="true"] {
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.lang-switch__short {
+  min-width: 1.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.lang-switch__note {
+  padding: 0.5rem 0.6rem 0.3rem;
+  border-top: 1px solid var(--border);
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
 .nav__toggle {
   display: none;
   align-items: center;
@@ -631,9 +728,14 @@ img {
     height: 1px;
   }
 
-  .theme-toggle {
-    align-self: flex-start;
+  .theme-toggle,
+  .lang-switch__button {
     height: 44px;
+  }
+
+  .lang-switch__menu {
+    left: 0;
+    right: auto;
   }
 }
 

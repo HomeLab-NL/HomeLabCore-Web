@@ -1,32 +1,36 @@
 ---
 import type { Project } from "../lib/projects";
+import { href, type Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 
 export type ProductTab = "overview" | "privacy" | "support";
 
 interface Props {
   project: Project;
   tab: ProductTab;
+  lang?: Locale;
 }
 
-const { project, tab } = Astro.props;
+const { project, tab, lang = "en" } = Astro.props;
+const t = ui(lang);
 const { name, urls, section } = project.data;
-const sectionLabel = section === "apps" ? "Apps" : "Lab";
+const sectionLabel = section === "apps" ? t.nav.apps : t.nav.lab;
 
 const TABS = (
   [
-    { key: "overview", label: "Overview", href: urls.overview },
-    { key: "privacy", label: "Privacy Policy", href: urls.privacy },
-    { key: "support", label: "Support", href: urls.support },
+    { key: "overview", label: t.product.overview, href: urls.overview },
+    { key: "privacy", label: t.product.privacy, href: urls.privacy },
+    { key: "support", label: t.product.support, href: urls.support },
   ] as { key: ProductTab; label: string; href?: string }[]
 ).filter((t) => t.href);
 const currentLabel = TABS.find((t) => t.key === tab)!.label;
 ---
 <div class="pagebar">
   <div class="container">
-    <nav class="crumbs" aria-label="Breadcrumb">
+    <nav class="crumbs" aria-label={t.product.breadcrumb}>
       <ol>
-        <li><a href="/">HomeLabCore</a></li>
-        <li><a href={`/${section}/`}>{sectionLabel}</a></li>
+        <li><a href={href("/", lang)}>HomeLabCore</a></li>
+        <li><a href={href(`/${section}/`, lang)}>{sectionLabel}</a></li>
         {tab === "overview" ? (
           <li aria-current="page">{name}</li>
         ) : (
@@ -38,7 +42,7 @@ const currentLabel = TABS.find((t) => t.key === tab)!.label;
       </ol>
     </nav>
     {TABS.length > 1 && (
-      <nav class="subnav" aria-label={`${name} pages`}>
+      <nav class="subnav" aria-label={t.product.pages(name)}>
         {TABS.map((t) => (
           <a href={t.href} aria-current={t.key === tab ? "page" : undefined}>{t.label}</a>
         ))}

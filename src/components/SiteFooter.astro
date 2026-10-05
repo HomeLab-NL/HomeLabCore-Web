@@ -1,9 +1,16 @@
 ---
 import { CONTACT } from "../data/site";
+import { href, type Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 import { projectsIn } from "../lib/projects";
 
-const apps = await projectsIn("apps");
-const lab = await projectsIn("lab");
+interface Props {
+  lang?: Locale;
+}
+const { lang = "en" } = Astro.props;
+const t = ui(lang);
+const apps = await projectsIn("apps", lang);
+const lab = await projectsIn("lab", lang);
 const legal = apps.filter((p) => p.data.urls.privacy);
 ---
 <footer class="site-footer">
@@ -15,33 +22,34 @@ const legal = apps.filter((p) => p.data.urls.privacy);
           <img class="footer-brand__mark brand__mark--dark" src="/assets/brand/homelab-flask-mark-dark.png" width="18" height="28" alt="">
           <span>HomeLab<span class="brand__core">Core</span></span>
         </p>
-        <p class="footer-desc">An independent software lab: apps, experiments, games and AI benchmarks.</p>
+        <p class="footer-desc">{t.footer.desc}</p>
+        {lang !== "en" && <p class="footer-desc">{t.footer.englishOnly}</p>}
       </div>
-      <nav class="footer-grid" aria-label="Footer">
+      <nav class="footer-grid" aria-label={t.footer.label}>
         <div class="footer-col">
-          <h2>Apps</h2>
+          <h2>{t.footer.apps}</h2>
           <ul>
             {apps.map((p) => <li><a href={p.data.urls.overview}>{p.data.name}</a></li>)}
           </ul>
         </div>
         <div class="footer-col">
-          <h2>Lab</h2>
+          <h2>{t.footer.lab}</h2>
           <ul>
             {lab.map((p) => <li><a href={p.data.urls.overview}>{p.data.name}</a></li>)}
-            <li><a href="/benchmarks/">Benchmarks</a></li>
+            <li><a href={href("/benchmarks/", lang)}>{t.nav.benchmarks}</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h2>Privacy</h2>
+          <h2>{t.footer.privacy}</h2>
           <ul>
-            {legal.map((p) => <li><a href={p.data.urls.privacy}>{p.data.name}</a></li>)}
+            {legal.map((p) => <li><a href={p.data.urls.privacy} hreflang={lang !== "en" ? "en" : undefined}>{p.data.name}</a></li>)}
           </ul>
         </div>
         <div class="footer-col">
-          <h2>Studio</h2>
+          <h2>{t.footer.studio}</h2>
           <ul>
-            <li><a href="/about">About</a></li>
-            <li><a href="/support/">Support</a></li>
+            <li><a href={href("/about", lang)}>{t.nav.about}</a></li>
+            <li><a href="/support/" hreflang={lang !== "en" ? "en" : undefined}>{t.nav.support}</a></li>
             <li><a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a></li>
             <li><a href={`mailto:${CONTACT.privacy}`}>{CONTACT.privacy}</a></li>
           </ul>

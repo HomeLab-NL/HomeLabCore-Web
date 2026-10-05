@@ -5,9 +5,16 @@
 // liquid and steam rises; it stays still when reduced motion is preferred.
 // The site header already shows the wordmark, so the frame crops the SVG to
 // the flask and shows it large, without a frame or caption.
+import type { Locale } from "../../i18n/locales";
+const ALT = {
+  en: "The HomeLabCore flask: coding symbols move gently in its blue liquid while steam rises from the neck.",
+  nl: "De HomeLabCore-kolf: codesymbolen bewegen zacht in de blauwe vloeistof terwijl er damp uit de hals opstijgt.",
+  uk: "Колба HomeLabCore: символи коду м'яко рухаються в синій рідині, а з горлечка піднімається пара.",
+};
+const { lang = "en" } = Astro.props as { lang?: Locale };
 ---
 <div class="exhibit">
   <div class="exhibit__crop">
-    <img src="/assets/brand/homelabcore-animated.svg" width="194" height="50" alt="The HomeLabCore flask: coding symbols move gently in its blue liquid while steam rises from the neck." decoding="async">
+    <img src="/assets/brand/homelabcore-animated.svg" width="194" height="50" alt={ALT[lang]} decoding="async">
   </div>
 </div>
