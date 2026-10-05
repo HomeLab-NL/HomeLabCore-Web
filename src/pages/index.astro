@@ -1,14 +1,14 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import LabLoop from "../components/LabLoop.astro";
+import LabFlask from "../components/LabFlask.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import SectionHead from "../components/SectionHead.astro";
 import { CONTACT } from "../data/site";
 import { formatDate, isoDate, projectsIn } from "../lib/projects";
 
 // Each project is presented once with a card: apps in 01, lab projects in 02.
-// The hero schematic names every project but shows no images.
+// The hero illustration names every project but shows no images.
 const apps = (await projectsIn("apps")).filter((p) => p.data.featured);
 const lab = (await projectsIn("lab")).filter((p) => p.data.featured);
 const benchmarks = (await getCollection("benchmarks")).sort((a, b) => b.data.published.getTime() - a.data.published.getTime());
@@ -32,7 +32,7 @@ const updates = (await getCollection("updates")).sort((a, b) => b.data.date.getT
           <li><span class="meta">03</span><a href="/benchmarks/">Benchmarks</a></li>
         </ul>
       </div>
-      <LabLoop />
+      <LabFlask />
     </div>
   </section>
 
