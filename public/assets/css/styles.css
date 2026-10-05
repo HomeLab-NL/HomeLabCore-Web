@@ -1002,27 +1002,7 @@ img {
   text-transform: uppercase;
 }
 
-/* CookFrom: banner on top, two screens pinned below at a slight angle. */
-.collage--cook {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(0.8rem, 2vw, 1.4rem);
-}
-
-.collage--cook .frame--wide {
-  grid-column: 1 / -1;
-}
-
-.frame--tilt-l {
-  rotate: -2.2deg;
-  margin-top: -6%;
-}
-
-.frame--tilt-r {
-  rotate: 1.8deg;
-}
-
-/* Ops Planner: a week grid on the wall behind two planner screens. */
+/* Ops Planner: a week grid on the wall behind the banner. */
 .weekgrid {
   position: absolute;
   inset: -2rem -1rem;
@@ -1043,11 +1023,6 @@ img {
 .stack {
   position: relative;
   padding-top: 2rem;
-}
-
-.frame--offset {
-  width: 58%;
-  margin: -16% 0 0 auto;
 }
 
 /* AI Tutor: the real flow, one step after another. */

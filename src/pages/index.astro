@@ -45,11 +45,9 @@ const pic = (fig: { src: ImageMetadata }, sizes: string, widths = [480, 800, 120
 const half = "(min-width: 1100px) 600px, (min-width: 820px) 55vw, 92vw";
 const third = "(min-width: 1100px) 360px, (min-width: 820px) 30vw, 80vw";
 
-const cookCooking = figureOf(cookfrom, "gallery-04-cooking");
-const cookRecipe = figureOf(cookfrom, "gallery-03-recipe");
-const cookPromo = figureOf(cookfrom, "promo");
-const opsWeek = figureOf(ops, "gallery-02-weekly-planner");
-const opsEmployee = figureOf(ops, "gallery-03-employee-week");
+// CookFrom and Ops Planner: the approved promotional banners (their card covers).
+const cookPromo = cookfrom.data.cover!;
+const opsPromo = ops.data.cover!;
 const tutorSteps = [
   { fig: figureOf(tutor, "gallery-02-step"), label: "Step" },
   { fig: figureOf(tutor, "gallery-03-hint"), label: "Hint" },
@@ -94,11 +92,7 @@ const BENCH_COLUMNS = ["Model", "Planner · builder · reviewer", "Time", "Cost"
   </section>
 
   <Room project={cookfrom} id="cookfrom" number={1} domain="Apps" prev="hall">
-    <div class="collage collage--cook">
-      <div class="frame frame--wide reveal"><Picture {...pic(cookPromo, half)} alt={cookPromo.alt} /><span class="frame__tag">Promotional artwork</span></div>
-      <div class="frame frame--tilt-l reveal"><Picture {...pic(cookCooking, third, [480, 800])} alt={cookCooking.alt} /></div>
-      <div class="frame frame--tilt-r reveal"><Picture {...pic(cookRecipe, third, [480, 800])} alt={cookRecipe.alt} /></div>
-    </div>
+    <div class="frame frame--banner reveal"><Picture {...pic(cookPromo, half, [480, 800, 1200, 1600])} alt={cookPromo.alt} /><span class="frame__tag">Promotional artwork</span></div>
   </Room>
 
   <Room project={ops} id="ops-planner" number={2} domain="Apps" layout="split-reverse" prev="cookfrom">
@@ -106,8 +100,7 @@ const BENCH_COLUMNS = ["Model", "Planner · builder · reviewer", "Time", "Cost"
       {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => <span>{d}</span>)}
     </div>
     <div class="stack">
-      <div class="frame reveal"><Picture {...pic(opsWeek, half)} alt={opsWeek.alt} /></div>
-      <div class="frame frame--offset reveal"><Picture {...pic(opsEmployee, third, [480, 800])} alt={opsEmployee.alt} /></div>
+      <div class="frame frame--banner reveal"><Picture {...pic(opsPromo, half, [480, 800, 1200, 1600])} alt={opsPromo.alt} /><span class="frame__tag">Promotional artwork</span></div>
     </div>
   </Room>
 
