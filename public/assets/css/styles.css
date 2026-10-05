@@ -1054,6 +1054,11 @@ img {
   gap: 0.9rem;
 }
 
+/* Text grows so screenshots line up across a row, whatever the summary length. */
+.pcard__text {
+  flex: 1;
+}
+
 .pcard__visual {
   border: 1px solid var(--border);
   border-radius: var(--radius);

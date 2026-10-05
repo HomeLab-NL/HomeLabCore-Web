@@ -3,7 +3,7 @@ import { Picture } from "astro:assets";
 import type { Project } from "../lib/projects";
 import Status from "./Status.astro";
 
-// Screenshot-led project card. The title link covers the whole card.
+// Project card: description first, screenshot below. The title link covers the whole card.
 interface Props {
   project: Project;
   headingLevel?: "h2" | "h3";
@@ -19,6 +19,11 @@ const { name, status, platforms, summary, cover, urls } = project.data;
 const Heading = headingLevel;
 ---
 <article class="pcard" data-project={project.id}>
+  <div class="pcard__text">
+    <Status status={status} platforms={platforms} />
+    <Heading class="pcard__title"><a href={urls.overview}>{name}</a></Heading>
+    <p class="pcard__summary">{summary}</p>
+  </div>
   <div class:list={["pcard__visual", { "pcard__visual--illustration": cover?.kind === "illustration" }]}>
     {cover ? (
       <>
@@ -31,10 +36,5 @@ const Heading = headingLevel;
         <span class="placeholder__text">No {name} visuals published yet.</span>
       </div>
     )}
-  </div>
-  <div>
-    <Status status={status} platforms={platforms} />
-    <Heading class="pcard__title"><a href={urls.overview}>{name}</a></Heading>
-    <p class="pcard__summary">{summary}</p>
   </div>
 </article>
