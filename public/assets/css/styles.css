@@ -810,13 +810,25 @@ img {
 
 /* ---------- homepage: exhibition rooms ---------- */
 
-/* Display face for the homepage titles only (SIL OFL, see fonts/). */
+/* Display face for the homepage titles (SIL OFL, see fonts/): Bricolage
+   Grotesque for Latin, Geologica for Cyrillic. unicode-range means each file
+   is only downloaded by pages that use those letters. */
 @font-face {
-  font-family: "Bricolage Grotesque";
+  font-family: "HLC Display";
   src: url("/assets/fonts/bricolage-grotesque-latin-800-normal.woff2") format("woff2");
   font-weight: 800;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215;
+}
+
+@font-face {
+  font-family: "HLC Display";
+  src: url("/assets/fonts/geologica-cyrillic-800-normal.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
 /* Each room maps its own tokens onto --r-*; components below use only --r-*.
@@ -874,7 +886,7 @@ img {
 
 .room__title,
 .xhero__title {
-  font-family: "Bricolage Grotesque", var(--font);
+  font-family: "HLC Display", var(--font);
   font-weight: 800;
   letter-spacing: -0.045em;
   text-wrap: balance;
@@ -882,7 +894,7 @@ img {
 
 .room__title {
   font-size: clamp(2.6rem, 6.4vw, 5.6rem);
-  line-height: 0.92;
+  line-height: 0.98;
   margin: 0 0 1.25rem;
   color: var(--r-fg);
 }
@@ -930,7 +942,7 @@ img {
 
 .xhero__title {
   font-size: clamp(3.4rem, 8.4vw, 7.4rem);
-  line-height: 0.86;
+  line-height: 0.95;
   margin: 0 0 1.4rem;
 }
 
