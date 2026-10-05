@@ -2,7 +2,7 @@
 //   - first visit -> light, even when the OS prefers dark
 //   - the saved theme is applied before first paint (no flash), on every page
 //   - the toggle works by keyboard, persists across pages and visits
-//   - the toggle's accessible name and pressed state
+//   - the toggle's accessible name names the theme it switches to
 //   - blocked storage falls back to light without errors
 //   - the inline theme script precedes the stylesheet in every page
 
@@ -52,8 +52,7 @@ try {
     }));
     assert(state.theme === "light", `data-theme is ${state.theme}`);
     assert(state.bg === LIGHT_BG, `body background is ${state.bg}`);
-    const pressed = await page.locator("[data-theme-toggle]").getAttribute("aria-pressed");
-    assert(pressed === "false", `aria-pressed is ${pressed}`);
+    assert((await page.getByRole("button", { name: "Dark theme" }).count()) === 1, "toggle is not named 'Dark theme' in light theme");
     await ctx.close();
   });
 
@@ -72,7 +71,7 @@ try {
     await ctx.close();
   });
 
-  await test("toggle has a fixed accessible name and is a button", async () => {
+  await test("toggle is a button named after the theme it switches to", async () => {
     const ctx = await browser.newContext();
     const page = await ctx.newPage();
     await page.goto(base + "/");
@@ -97,16 +96,16 @@ try {
     await page.keyboard.press("Space");
     let s = await page.evaluate((k) => ({
       theme: document.documentElement.getAttribute("data-theme"),
-      pressed: document.querySelector("[data-theme-toggle]").getAttribute("aria-pressed"),
       stored: localStorage.getItem(k),
       meta: document.querySelector('meta[name="theme-color"]').content,
     }), STORAGE_KEY);
-    assert(s.theme === "dark" && s.pressed === "true" && s.stored === "dark", `after Space: ${JSON.stringify(s)}`);
+    assert(s.theme === "dark" && s.stored === "dark", `after Space: ${JSON.stringify(s)}`);
+    assert((await page.getByRole("button", { name: "Light theme" }).count()) === 1, "toggle not renamed 'Light theme' in dark theme");
     assert(s.meta === "#0b0d10", `theme-color meta is ${s.meta}`);
 
     await page.goto(base + "/privacy/cookfrom");
     assert((await page.evaluate(() => window.__themeAtBody)) === "dark", "dark not kept on next page before paint");
-    assert((await page.locator("[data-theme-toggle]").getAttribute("aria-pressed")) === "true", "pressed state not restored");
+    assert((await page.getByRole("button", { name: "Light theme" }).count()) === 1, "toggle label not restored on the next page");
 
     const page2 = await ctx.newPage(); // a later visit in the same browser
     await page2.goto(base + "/apps/");

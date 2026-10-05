@@ -44,10 +44,6 @@
     root.setAttribute("data-theme", theme);
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", THEME_COLOR[theme]);
-    var buttons = document.querySelectorAll("[data-theme-toggle]");
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-    }
   }
 
   var themeButtons = document.querySelectorAll("[data-theme-toggle]");
