@@ -29,7 +29,6 @@ const Heading = headingLevel;
       <>
         <Picture src={cover.src} alt={cover.alt} widths={[400, 640, 960, 1280].filter((w) => w <= cover.src.width)} sizes={sizes} formats={["avif"]} fallbackFormat="webp" loading="lazy" decoding="async" />
         {cover.kind === "concept" && <span class="badge pcard__badge">Concept art · Not gameplay</span>}
-        {cover.kind === "promo" && <span class="badge pcard__badge">Promotional artwork</span>}
       </>
     ) : (
       <div class="placeholder">
