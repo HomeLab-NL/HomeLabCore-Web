@@ -1080,6 +1080,11 @@ img {
   padding: 1rem;
 }
 
+/* Wide promotional banners: show the whole artwork, no side cropping. */
+.pcard__visual--promo img {
+  object-fit: contain;
+}
+
 .pcard__visual .placeholder {
   height: 100%;
   min-height: 0;

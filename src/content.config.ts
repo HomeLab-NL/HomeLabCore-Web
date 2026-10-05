@@ -53,8 +53,10 @@ const projects = defineCollection({
        * diagram      — a source-backed architecture/workflow diagram, not a screenshot
        * concept      — concept / development art: intended visual direction,
        *                not a screenshot, render or implemented content
+       * promo        — promotional artwork supplied by the owner (banners, store
+       *                graphics); labelled as such, never presented as a screenshot
        */
-      kind: z.enum(["screenshot", "composition", "illustration", "diagram", "concept"]),
+      kind: z.enum(["screenshot", "composition", "illustration", "diagram", "concept", "promo"]),
     });
     return z.object({
       name: z.string(),
