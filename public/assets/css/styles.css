@@ -66,6 +66,17 @@
   --shadow-lift: 0 1px 2px rgba(22, 25, 31, 0.06), 0 12px 32px rgba(22, 25, 31, 0.08);
   --stripe: rgba(22, 25, 31, 0.035);
   --dot-grid: rgba(22, 25, 31, 0.07);
+
+  /* Exhibition rooms (homepage): background / text / muted / accent per room.
+     The game room and the Mountains room are dark in both themes. */
+  --room-hall-bg: #fafaf7;
+  --room-cookfrom-bg: #f7e1d3; --room-cookfrom-fg: #2b1206; --room-cookfrom-muted: #6a3518; --room-cookfrom-accent: #9c3a07;
+  --room-ops-planner-bg: #dcefeb; --room-ops-planner-fg: #06291f; --room-ops-planner-muted: #275a50; --room-ops-planner-accent: #0e6455;
+  --room-ai-tutor-bg: #e8e3f6; --room-ai-tutor-fg: #1a1240; --room-ai-tutor-muted: #463a7d; --room-ai-tutor-accent: #4f35c4;
+  --room-keyboard-trainer-bg: #130e34; --room-keyboard-trainer-fg: #f1eeff; --room-keyboard-trainer-muted: #bfb7f0; --room-keyboard-trainer-accent: #b39dff;
+  --room-agentlab-bg: #dde6f4; --room-agentlab-fg: #0a1d42; --room-agentlab-muted: #2f4a78; --room-agentlab-accent: #234ea8;
+  --room-at-the-mountains-of-madness-bg: #1a2228; --room-at-the-mountains-of-madness-fg: #f2f5f7; --room-at-the-mountains-of-madness-muted: #c3ccd2; --room-at-the-mountains-of-madness-accent: #a9c4e0;
+  --room-benchmarks-bg: #efeee9; --room-benchmarks-fg: #16191f; --room-benchmarks-muted: #4a5160; --room-benchmarks-accent: #2b5cc4;
 }
 
 [data-theme="dark"] {
@@ -94,6 +105,13 @@
   --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.45), 0 16px 40px rgba(0, 0, 0, 0.35);
   --stripe: rgba(255, 255, 255, 0.035);
   --dot-grid: rgba(255, 255, 255, 0.06);
+
+  --room-hall-bg: #0b0d10;
+  --room-cookfrom-bg: #241109; --room-cookfrom-fg: #fbe8dc; --room-cookfrom-muted: #e2b195; --room-cookfrom-accent: #ff9a62;
+  --room-ops-planner-bg: #0a221f; --room-ops-planner-fg: #def5f0; --room-ops-planner-muted: #9bcdc3; --room-ops-planner-accent: #5fd3c2;
+  --room-ai-tutor-bg: #161030; --room-ai-tutor-fg: #ece8ff; --room-ai-tutor-muted: #b8adef; --room-ai-tutor-accent: #a891ff;
+  --room-agentlab-bg: #0a1630; --room-agentlab-fg: #e3ecff; --room-agentlab-muted: #a8bce4; --room-agentlab-accent: #8fb0f0;
+  --room-benchmarks-bg: #121419; --room-benchmarks-fg: #eef0f3; --room-benchmarks-muted: #a1a8b4; --room-benchmarks-accent: #8fb0f0;
 }
 
 /* Project accent. Defaults to the studio colour; a [data-project] element
@@ -687,239 +705,690 @@ img {
   margin-right: 0.4rem;
 }
 
-/* ---------- home hero ---------- */
+/* ---------- homepage: exhibition rooms ---------- */
 
-.hero {
-  padding-block: clamp(2.25rem, 6vw, 4.5rem) clamp(2rem, 4.5vw, 3.5rem);
-  border-bottom: 1px solid var(--border);
+/* Display face for the homepage titles only (SIL OFL, see fonts/). */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/bricolage-grotesque-latin-800-normal.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
 }
 
-.hero__grid {
+/* Each room maps its own tokens onto --r-*; components below use only --r-*.
+   The game room and the Mountains room stay dark in both themes. */
+[data-room] {
+  --r-bg: var(--room-hall-bg);
+  --r-fg: var(--text);
+  --r-muted: var(--text-muted);
+  --r-accent: var(--studio-text);
+}
+[data-room="cookfrom"] { --r-bg: var(--room-cookfrom-bg); --r-fg: var(--room-cookfrom-fg); --r-muted: var(--room-cookfrom-muted); --r-accent: var(--room-cookfrom-accent); }
+[data-room="ops-planner"] { --r-bg: var(--room-ops-planner-bg); --r-fg: var(--room-ops-planner-fg); --r-muted: var(--room-ops-planner-muted); --r-accent: var(--room-ops-planner-accent); }
+[data-room="ai-tutor"] { --r-bg: var(--room-ai-tutor-bg); --r-fg: var(--room-ai-tutor-fg); --r-muted: var(--room-ai-tutor-muted); --r-accent: var(--room-ai-tutor-accent); }
+[data-room="keyboard-trainer"] { --r-bg: var(--room-keyboard-trainer-bg); --r-fg: var(--room-keyboard-trainer-fg); --r-muted: var(--room-keyboard-trainer-muted); --r-accent: var(--room-keyboard-trainer-accent); }
+[data-room="agentlab"] { --r-bg: var(--room-agentlab-bg); --r-fg: var(--room-agentlab-fg); --r-muted: var(--room-agentlab-muted); --r-accent: var(--room-agentlab-accent); }
+[data-room="at-the-mountains-of-madness"] { --r-bg: var(--room-at-the-mountains-of-madness-bg); --r-fg: var(--room-at-the-mountains-of-madness-fg); --r-muted: var(--room-at-the-mountains-of-madness-muted); --r-accent: var(--room-at-the-mountains-of-madness-accent); }
+[data-room="benchmarks"] { --r-bg: var(--room-benchmarks-bg); --r-fg: var(--room-benchmarks-fg); --r-muted: var(--room-benchmarks-muted); --r-accent: var(--room-benchmarks-accent); }
+
+.room,
+.xhero,
+.mountains,
+.logroom {
+  background: var(--r-bg);
+  color: var(--r-fg);
+}
+
+.room a,
+.xhero a,
+.logroom a {
+  color: var(--r-accent);
+}
+
+/* Colour seam: the wall colour of one room flows into the next. */
+.seam {
+  height: clamp(56px, 9vw, 140px);
+  background: linear-gradient(var(--seam-from), var(--seam-to));
+}
+
+/* Wall label: room number, domain, status. */
+.room__label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin: 0 0 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--r-muted);
+}
+
+.room__label .status {
+  color: var(--r-accent);
+}
+
+.room__title,
+.xhero__title,
+.xhero__sub {
+  font-family: "Bricolage Grotesque", var(--font);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.room__title {
+  font-size: clamp(2.6rem, 6.4vw, 5.6rem);
+  line-height: 0.92;
+  margin: 0 0 1.25rem;
+  color: var(--r-fg);
+}
+
+.room__title--sm {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.room__summary {
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  max-width: 44ch;
+  color: var(--r-muted);
+  margin: 0 0 1.4rem;
+}
+
+.room__note {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--r-muted);
+  margin: 0 0 1.2rem;
+}
+
+.room__link {
+  font-weight: 600;
+  text-underline-offset: 0.25em;
+}
+
+/* ----- hall (hero) ----- */
+.xhero {
+  padding-block: clamp(2.5rem, 7vw, 6rem) clamp(2rem, 5vw, 4rem);
+  overflow: hidden;
+}
+
+.xhero__grid {
   display: grid;
   gap: clamp(2rem, 5vw, 4rem);
   align-items: center;
 }
 
-@media (min-width: 960px) {
-  .hero__grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+@media (min-width: 900px) {
+  .xhero__grid {
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
   }
 }
 
-.hero__title {
-  font-size: clamp(2.1rem, 4.2vw, 3rem);
-  margin-bottom: 1rem;
+.xhero__title {
+  font-size: clamp(3.4rem, 8.4vw, 7.4rem);
+  line-height: 0.86;
+  margin: 0 0 0.6rem;
 }
 
-.hero .lead {
-  margin-bottom: 0;
+.xhero__sub {
+  font-size: clamp(1.7rem, 3.6vw, 3rem);
+  line-height: 1;
+  color: var(--r-muted);
+  margin: 0 0 1.6rem;
 }
 
-/* Homepage hero illustration (LabFlask): the brand flask with moving liquid
-   and bubbles beside a measuring scale; projects float beside it. CSS-only;
-   static with reduced motion. */
-.lab-flask {
+.xhero__lead {
+  max-width: 40ch;
+  font-size: 1.1rem;
+  color: var(--r-muted);
   margin: 0;
 }
 
-.lab-flask__svg {
+/* Exhibit 01: reserved for the Codex animation; cycles one real visual per room. */
+.exhibit {
+  margin: 0;
+}
+
+.exhibit__slides {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  aspect-ratio: 16 / 11;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--surface-2);
+  box-shadow: var(--shadow-lift);
+}
+
+.exhibit__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.exhibit__slide:first-child {
+  opacity: 1;
+}
+
+.exhibit__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.exhibit__caption {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  visibility: hidden;
+}
+
+.exhibit__slide:first-child .exhibit__caption {
+  visibility: visible;
+}
+
+.exhibit__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--p-fill);
+}
+
+.exhibit__label {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--r-muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .exhibit__slide {
+    animation: x-fade 30s linear infinite;
+    animation-delay: calc(var(--n) * 5s - 1s);
+    animation-fill-mode: backwards;
+  }
+  .exhibit__caption {
+    animation: x-caption 30s step-end infinite;
+    animation-delay: calc(var(--n) * 5s - 1s);
+    animation-fill-mode: backwards;
+  }
+}
+
+@keyframes x-fade {
+  0% { opacity: 0; }
+  3% { opacity: 1; }
+  16.7% { opacity: 1; }
+  19.7% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes x-caption {
+  0% { visibility: hidden; }
+  1% { visibility: visible; }
+  18% { visibility: hidden; }
+  100% { visibility: hidden; }
+}
+
+/* Floor plan: the rooms below, in order, with their wall colour. */
+.plan {
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.plan__title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--r-muted);
+  margin: 0 0 0.8rem;
+}
+
+.plan__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.6rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plan__list a {
+  display: grid;
+  gap: 0.15rem;
+  height: 100%;
+  padding: 0.8rem 0.9rem 0.9rem;
+  border: 1px solid var(--border);
+  border-top: 8px solid var(--dot);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.plan__list a:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+}
+
+.plan__no,
+.plan__domain {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.plan__name {
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+/* ----- rooms ----- */
+.room {
+  padding-block: clamp(3rem, 8vw, 7rem);
+  overflow: hidden;
+}
+
+.room__inner {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .room--split .room__inner {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+  .room--split-reverse .room__inner {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  }
+  .room--split-reverse .room__text {
+    order: 2;
+  }
+}
+
+.room--stage .room__text {
+  max-width: 62ch;
+}
+
+.room__visual {
+  position: relative;
+  min-width: 0;
+}
+
+/* A framed piece on the wall. */
+.frame {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 28px 56px -18px rgba(0, 0, 0, 0.38);
+}
+
+.frame img {
   display: block;
   width: 100%;
   height: auto;
-  overflow: visible;
-  font-family: var(--font);
 }
 
-.lf-glass {
-  fill: var(--surface);
-  opacity: 0.85;
+.frame__tag {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #16191f;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.lf-outline,
-.lf-rim {
-  fill: none;
-  stroke: var(--text);
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+/* CookFrom: banner on top, two screens pinned below at a slight angle. */
+.collage--cook {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(0.8rem, 2vw, 1.4rem);
 }
 
-.lf-stop-top {
-  stop-color: var(--studio-fill);
+.collage--cook .frame--wide {
+  grid-column: 1 / -1;
 }
 
-.lf-stop-bottom {
-  stop-color: var(--hlc-navy);
+.frame--tilt-l {
+  rotate: -2.2deg;
+  margin-top: -6%;
 }
 
-[data-theme="dark"] .lf-stop-bottom {
-  stop-color: #1d3f86;
+.frame--tilt-r {
+  rotate: 1.8deg;
 }
 
-.lf-wave {
-  animation: lf-wave 3.2s linear infinite;
+/* Ops Planner: a week grid on the wall behind two planner screens. */
+.weekgrid {
+  position: absolute;
+  inset: -2rem -1rem;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--r-muted);
 }
 
-.lf-wave--back {
-  fill: var(--studio-fill);
-  opacity: 0.35;
-  animation-duration: 4.6s;
-  animation-direction: reverse;
+.weekgrid span {
+  border-left: 1px solid color-mix(in srgb, var(--r-muted) 30%, transparent);
+  padding: 0.3rem 0.5rem;
 }
 
-.lf-level {
-  animation: lf-level 7s ease-in-out infinite alternate;
+.stack {
+  position: relative;
+  padding-top: 2rem;
 }
 
-.lf-bubble,
-.lf-steam {
-  fill: none;
-  stroke: #ffffff;
-  stroke-width: 2;
-  opacity: 0;
-  transform-box: fill-box;
-  animation: lf-bubble 3.6s ease-in infinite;
-  animation-delay: var(--d, 0s);
+.frame--offset {
+  width: 58%;
+  margin: -16% 0 0 auto;
 }
 
-.lf-steam {
-  stroke: var(--studio-fill);
-  animation-name: lf-steam;
-  animation-duration: 3.6s;
+/* AI Tutor: the real flow, one step after another. */
+.tutor-steps {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 1.6rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.lf-scale__axis,
-.lf-scale__tick {
-  fill: none;
-  stroke: var(--text-faint);
-  stroke-width: 2;
-  stroke-linecap: round;
-}
-
-.lf-scale__marker {
-  fill: var(--studio-fill);
-  animation: lf-level 7s ease-in-out infinite alternate;
-}
-
-.lf-chip {
-  animation: lf-float 5s ease-in-out infinite alternate;
-  animation-delay: calc(var(--i, 0) * -0.8s);
-}
-
-.lf-chip__box {
-  fill: var(--surface);
-  stroke: var(--border-strong);
-  stroke-width: 1;
-}
-
-.lf-chip__dot {
-  fill: var(--p-fill);
-}
-
-.lf-chip__name {
-  font-size: 16px;
-  font-weight: 600;
-  fill: var(--text);
-}
-
-@keyframes lf-wave {
-  from {
-    transform: translateX(0);
+@media (min-width: 820px) {
+  .tutor-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  to {
-    transform: translateX(-80px);
+  .tutor-steps li:nth-child(2) {
+    margin-top: 3rem;
+  }
+  .tutor-steps li:nth-child(3) {
+    margin-top: 6rem;
   }
 }
 
-@keyframes lf-level {
-  from {
-    transform: translateY(6px);
-  }
-  to {
-    transform: translateY(-10px);
-  }
+.tutor-steps__no {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--r-accent);
 }
 
-@keyframes lf-bubble {
-  0% {
-    transform: translateY(0) scale(0.6);
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.9;
-  }
-  80% {
-    opacity: 0.9;
-  }
-  100% {
-    transform: translateY(-120px) scale(1);
-    opacity: 0;
-  }
+/* Keyboard Trainer: a dark stage lit by the game's own colour. */
+.stage-glow {
+  position: relative;
+  padding-bottom: 12%;
 }
 
-@keyframes lf-steam {
-  0% {
-    transform: translate(0, 0) scale(0.5);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.8;
-  }
-  100% {
-    transform: translate(var(--dx, 0), -120px) scale(1.2);
-    opacity: 0;
-  }
+.stage-glow::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--r-accent) 38%, transparent), transparent);
+  pointer-events: none;
 }
 
-@keyframes lf-float {
-  from {
-    transform: translateY(-3px);
-  }
-  to {
-    transform: translateY(3px);
-  }
+.frame--glow {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--r-accent) 40%, transparent), 0 30px 80px -20px color-mix(in srgb, var(--r-accent) 55%, transparent);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .lf-wave,
-  .lf-level,
-  .lf-scale__marker,
-  .lf-chip {
-    animation: none;
+.frame--float {
+  position: absolute;
+  width: 46%;
+  right: -2%;
+  bottom: 0;
+}
+
+/* AgentLab: blueprint wall; the diagram is revealed as it scrolls in. */
+.room[data-room="agentlab"] {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--r-fg) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--r-fg) 7%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.frame--plain {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--r-fg) 18%, transparent);
+}
+
+.blueprint__tag {
+  margin: 0.8rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  color: var(--r-muted);
+}
+
+/* At the Mountains of Madness: a full-bleed interruption. */
+.mountains {
+  position: relative;
+  display: grid;
+  align-items: end;
+  min-height: clamp(520px, 92vh, 920px);
+  overflow: hidden;
+}
+
+.mountains__art {
+  position: absolute;
+  inset: -8% 0;
+}
+
+.mountains__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 45%;
+}
+
+.mountains__text {
+  position: relative;
+  padding-block: 2rem clamp(2rem, 5vw, 4rem);
+}
+
+.mountains__text > * {
+  max-width: 40rem;
+}
+
+.mountains__text .room__label,
+.mountains__text .room__title,
+.mountains__text .room__summary,
+.mountains__text p:last-child {
+  width: fit-content;
+  background: var(--r-bg);
+  padding: 0.3rem 0.8rem;
+  margin-bottom: 0;
+}
+
+.mountains__text .room__title {
+  padding: 0.4rem 0.8rem 0.6rem;
+}
+
+.mountains__text .room__summary {
+  padding-block: 0.6rem;
+}
+
+.mountains a {
+  color: var(--r-accent);
+}
+
+/* Benchmarks: a room in preparation, with the columns runs will fill. */
+.bench-wall {
+  border: 1px dashed color-mix(in srgb, var(--r-muted) 55%, transparent);
+  border-radius: 16px;
+  padding: clamp(1.2rem, 3vw, 2rem);
+}
+
+.bench-wall__state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--r-accent);
+}
+
+.bench-wall__pulse {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--r-accent);
+}
+
+.bench-wall__intro {
+  margin: 0.8rem 0 1.4rem;
+  color: var(--r-muted);
+}
+
+.bench-wall__cols,
+.bench-wall__row {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.bench-wall__cols {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0.7rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--r-muted) 40%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--r-muted);
+}
+
+.bench-wall__row {
+  padding-block: 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--r-muted) 18%, transparent);
+}
+
+.bench-wall__row span {
+  height: 0.7rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--r-muted) 16%, transparent);
+}
+
+@media (max-width: 719px) {
+  .bench-wall__cols,
+  .bench-wall__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .lf-bubble,
-  .lf-steam {
-    animation: none;
+  .bench-wall__row span:nth-child(n + 3) {
     display: none;
   }
 }
 
-/* Compact benchmarks strip until real results exist. */
-.bench-strip {
+/* Lab log + about on the hall wall. */
+.logroom {
+  padding-block: clamp(3rem, 7vw, 6rem);
+}
+
+.logroom__grid {
   display: grid;
-  gap: 1rem 3rem;
-  padding: clamp(1.25rem, 3vw, 1.75rem) 0;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  gap: 3rem;
 }
 
 @media (min-width: 900px) {
-  .bench-strip {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    align-items: center;
+  .logroom__grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
   }
 }
 
-.bench-strip h2 {
-  margin-bottom: 0.4rem;
+/* ----- motion ----- */
+@media (prefers-reduced-motion: no-preference) {
+  .frame--float {
+    animation: x-float 7s ease-in-out infinite alternate;
+  }
+  .bench-wall__pulse {
+    animation: x-pulse 2.4s ease-in-out infinite;
+  }
+  .bench-wall__row span {
+    background-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--r-muted) 22%, transparent), transparent);
+    background-size: 200% 100%;
+    animation: x-sweep 3.2s linear infinite;
+  }
 }
 
-.bench-strip p {
-  margin: 0;
+/* Scroll-driven reveals where supported; content is complete without them. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: x-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+    .draw {
+      animation: x-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 45%;
+    }
+    .mountains__art img {
+      animation: x-parallax linear both;
+      animation-timeline: view(block);
+    }
+  }
 }
 
-.bench-strip__status .meta {
-  margin-right: 0.6rem;
+@keyframes x-rise {
+  from { transform: translateY(56px) scale(0.96); }
+  to { transform: none; }
+}
+
+@keyframes x-draw {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes x-parallax {
+  from { transform: translateY(-6%); }
+  to { transform: translateY(6%); }
+}
+
+@keyframes x-float {
+  from { transform: translateY(-8px); }
+  to { transform: translateY(8px); }
+}
+
+@keyframes x-pulse {
+  50% { opacity: 0.35; }
+}
+
+@keyframes x-sweep {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
 }
 
 /* ---------- figures ---------- */
@@ -1010,78 +1479,6 @@ img {
   max-width: 34ch;
 }
 
-/* HTML illustration of an app flow (used where no screenshot exists). */
-.mock {
-  width: min(360px, 100%);
-  margin-inline: auto;
-  padding: 1.1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-
-.mock__head {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 650;
-  font-size: 0.95rem;
-  margin-bottom: 0.9rem;
-}
-
-.mock__label {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin: 0 0 0.3rem;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.chip {
-  padding: 0.25rem 0.55rem;
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.mock__flow {
-  display: grid;
-  gap: 0.45rem;
-  margin-top: 0.9rem;
-}
-
-.mock__arrow {
-  justify-self: center;
-  color: var(--text-faint);
-  line-height: 1;
-}
-
-.mock__step {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 0.65rem 0.8rem;
-  background: var(--surface-2);
-  font-size: 0.9rem;
-}
-
-.mock__step .mock__label {
-  margin-bottom: 0.15rem;
-}
-
-.mock__step--accent {
-  border-color: var(--p-fill);
-  box-shadow: inset 3px 0 0 var(--p-fill);
-}
-
 /* ---------- status & metadata ---------- */
 
 .status {
@@ -1108,13 +1505,6 @@ img {
 .status[data-status="experiment"]::before {
   background: transparent;
   box-shadow: inset 0 0 0 1.5px var(--p-fill);
-}
-
-.meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem 1.1rem;
 }
 
 .meta-list {
@@ -1151,18 +1541,6 @@ img {
 @media (min-width: 720px) {
   .card-grid--2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 720px) {
-  .card-grid--3 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1040px) {
-  .card-grid--3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -1209,12 +1587,6 @@ img {
   min-height: 0;
   border: 0;
   border-radius: 0;
-}
-
-.pcard__visual .mock {
-  margin-top: 1rem;
-  transform: scale(0.92);
-  transform-origin: top center;
 }
 
 .pcard:hover .pcard__visual {

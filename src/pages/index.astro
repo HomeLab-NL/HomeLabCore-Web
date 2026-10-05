@@ -1,18 +1,66 @@
 ---
-import { getCollection } from "astro:content";
+import { Picture } from "astro:assets";
+import { getCollection, getEntry } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import LabFlask from "../components/LabFlask.astro";
-import ProjectCard from "../components/ProjectCard.astro";
-import SectionHead from "../components/SectionHead.astro";
+import HeroExhibit from "../components/exhibition/HeroExhibit.astro";
+import Room from "../components/exhibition/Room.astro";
 import { CONTACT } from "../data/site";
-import { formatDate, isoDate, projectsIn } from "../lib/projects";
+import { figureOf, formatDate, isoDate } from "../lib/projects";
 
-// Each project is presented once with a card: apps in 01, lab projects in 02.
-// The hero illustration names every project but shows no images.
-const apps = (await projectsIn("apps")).filter((p) => p.data.featured);
-const lab = (await projectsIn("lab")).filter((p) => p.data.featured);
-const benchmarks = (await getCollection("benchmarks")).sort((a, b) => b.data.published.getTime() - a.data.published.getTime());
-const updates = (await getCollection("updates")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 4);
+// Homepage prototype, "Exhibition Rooms" direction: every project is a room
+// with its own palette and composition; the HomeLabCore system is the wall
+// label, the type and the rhythm between rooms. Content comes from the
+// collections; nothing is invented. Benchmarks is shown as a room in
+// preparation, with the columns future runs will fill.
+const project = async (id: string) => (await getEntry("projects", id))!;
+const cookfrom = await project("cookfrom");
+const ops = await project("ops-planner");
+const tutor = await project("ai-tutor");
+const keyquest = await project("keyboard-trainer");
+const agentlab = await project("agentlab");
+const mountains = await project("at-the-mountains-of-madness");
+
+const benchmarks = await getCollection("benchmarks");
+const updates = (await getCollection("updates")).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 3);
+
+const rooms = [
+  { id: "cookfrom", name: "CookFrom", domain: "Apps" },
+  { id: "ops-planner", name: "Ops Planner", domain: "Apps" },
+  { id: "ai-tutor", name: "AI Tutor", domain: "Apps" },
+  { id: "keyboard-trainer", name: "Keyboard Trainer", domain: "Games" },
+  { id: "agentlab", name: "AgentLab", domain: "Lab · AI workflows" },
+  { id: "at-the-mountains-of-madness", name: "At the Mountains of Madness", domain: "Games" },
+  { id: "benchmarks", name: "Benchmarks", domain: "Benchmarks" },
+];
+
+const pic = (fig: { src: ImageMetadata }, sizes: string, widths = [480, 800, 1200]) => ({
+  src: fig.src,
+  sizes,
+  widths: widths.filter((w) => w <= fig.src.width),
+  formats: ["avif"] as ("avif")[],
+  fallbackFormat: "webp" as const,
+  loading: "lazy" as const,
+  decoding: "async" as const,
+});
+const half = "(min-width: 1100px) 600px, (min-width: 820px) 55vw, 92vw";
+const third = "(min-width: 1100px) 360px, (min-width: 820px) 30vw, 80vw";
+
+const cookCooking = figureOf(cookfrom, "gallery-04-cooking");
+const cookRecipe = figureOf(cookfrom, "gallery-03-recipe");
+const cookPromo = figureOf(cookfrom, "promo");
+const opsWeek = figureOf(ops, "gallery-02-weekly-planner");
+const opsEmployee = figureOf(ops, "gallery-03-employee-week");
+const tutorSteps = [
+  { fig: figureOf(tutor, "gallery-02-step"), label: "Step" },
+  { fig: figureOf(tutor, "gallery-03-hint"), label: "Hint" },
+  { fig: figureOf(tutor, "gallery-04-explain-differently"), label: "Explain differently" },
+];
+const kqMap = figureOf(keyquest, "gallery-02-quest-map");
+const kqTyping = figureOf(keyquest, "gallery-03-typing");
+const agentHero = agentlab.data.hero!;
+const mountainsArt = figureOf(mountains, "concept-expedition");
+
+const BENCH_COLUMNS = ["Model", "Planner · builder · reviewer", "Time", "Cost", "Repair loops", "Success rate"];
 ---
 <BaseLayout
   route="home"
@@ -20,66 +68,110 @@ const updates = (await getCollection("updates")).sort((a, b) => b.data.date.getT
   description="HomeLabCore is an independent software lab: Android and web apps, experiments and games, and public benchmarks of AI-assisted development workflows."
   navCurrent="home"
 >
-  <section class="hero">
-    <div class="container hero__grid">
+  <section class="xhero" data-room="hall" aria-labelledby="xhero-title">
+    <div class="container xhero__grid">
+      <div class="xhero__text">
+        <p class="room__label"><span>HomeLabCore</span><span>Independent software &amp; AI lab</span></p>
+        <h1 class="xhero__title" id="xhero-title">We build things.</h1>
+        <p class="xhero__sub">Then measure how we built them.</p>
+        <p class="xhero__lead">Apps, games and AI development experiments, shown room by room. Benchmarks of the workflows behind them are being prepared.</p>
+      </div>
+      <HeroExhibit />
+    </div>
+    <nav class="container plan" aria-label="Rooms on this page">
+      <p class="plan__title">Floor plan</p>
+      <ol class="plan__list">
+        {rooms.map((r, i) => (
+          <li style={`--dot:var(--room-${r.id}-bg)`}>
+            <a href={`#${r.id}`}>
+              <span class="plan__no">{String(i + 1).padStart(2, "0")}</span>
+              <span class="plan__name">{r.name}</span>
+              <span class="plan__domain">{r.domain}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </section>
+
+  <Room project={cookfrom} id="cookfrom" number={1} domain="Apps" prev="hall">
+    <div class="collage collage--cook">
+      <div class="frame frame--wide reveal"><Picture {...pic(cookPromo, half)} alt={cookPromo.alt} /><span class="frame__tag">Promotional artwork</span></div>
+      <div class="frame frame--tilt-l reveal"><Picture {...pic(cookCooking, third, [480, 800])} alt={cookCooking.alt} /></div>
+      <div class="frame frame--tilt-r reveal"><Picture {...pic(cookRecipe, third, [480, 800])} alt={cookRecipe.alt} /></div>
+    </div>
+  </Room>
+
+  <Room project={ops} id="ops-planner" number={2} domain="Apps" layout="split-reverse" prev="cookfrom">
+    <div class="weekgrid" aria-hidden="true">
+      {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => <span>{d}</span>)}
+    </div>
+    <div class="stack">
+      <div class="frame reveal"><Picture {...pic(opsWeek, half)} alt={opsWeek.alt} /></div>
+      <div class="frame frame--offset reveal"><Picture {...pic(opsEmployee, third, [480, 800])} alt={opsEmployee.alt} /></div>
+    </div>
+  </Room>
+
+  <Room project={tutor} id="ai-tutor" number={3} domain="Apps" layout="stage" prev="ops-planner">
+    <ol class="tutor-steps">
+      {tutorSteps.map((s, i) => (
+        <li class="reveal" style={`--d:${i}`}>
+          <span class="tutor-steps__no">{i + 1} · {s.label}</span>
+          <div class="frame"><Picture {...pic(s.fig, third, [480, 800])} alt={s.fig.alt} /></div>
+        </li>
+      ))}
+    </ol>
+    <p class="room__note" slot="text">Screens from the app's built-in sample mode.</p>
+  </Room>
+
+  <Room project={keyquest} id="keyboard-trainer" number={4} domain="Games" layout="split" prev="ai-tutor">
+    <div class="stage-glow">
+      <div class="frame frame--glow reveal"><Picture {...pic(kqTyping, half)} alt={kqTyping.alt} /></div>
+      <div class="frame frame--float reveal"><Picture {...pic(kqMap, third, [480, 800])} alt={kqMap.alt} /></div>
+    </div>
+  </Room>
+
+  <Room project={agentlab} id="agentlab" number={5} domain="Lab · AI workflows" layout="stage" prev="keyboard-trainer">
+    <div class="blueprint">
+      <div class="frame frame--plain draw"><Picture {...pic(agentHero, "(min-width: 1100px) 1040px, 94vw", [800, 1200, 1600])} alt={agentHero.alt} /></div>
+      <p class="blueprint__tag">Architecture diagram · drawn from the gateway source, not a screenshot</p>
+    </div>
+  </Room>
+
+  <div class="seam" style="--seam-from:var(--room-agentlab-bg);--seam-to:var(--room-at-the-mountains-of-madness-bg)" aria-hidden="true"></div>
+  <section class="mountains" id="at-the-mountains-of-madness" data-room="at-the-mountains-of-madness" aria-labelledby="room-mountains-title">
+    <div class="mountains__art">
+      <Picture {...pic(mountainsArt, "100vw", [800, 1200, 1600])} alt={mountainsArt.alt} />
+    </div>
+    <div class="mountains__text container">
+      <p class="room__label"><span>Room 06</span><span>Games</span><span class="badge">Concept art · Not gameplay</span></p>
+      <h2 class="room__title" id="room-mountains-title">{mountains.data.name}</h2>
+      <p class="room__summary">{mountains.data.summary}</p>
+      <p><a class="room__link" href={mountains.data.urls.overview}>Open the project<span aria-hidden="true"> →</span></a></p>
+    </div>
+  </section>
+
+  <Room id="benchmarks" number={7} domain="Benchmarks" title="Benchmarks" summary="Public comparisons of AI-assisted development workflows: which models and role combinations build what, how fast, at what cost, and how often they need repair." href="/benchmarks/" linkText="How runs will be reported" layout="stage" prev="at-the-mountains-of-madness">
+    <div class="bench-wall">
+      <div class="bench-wall__head">
+        <span class="bench-wall__state"><span class="bench-wall__pulse" aria-hidden="true"></span>{benchmarks.length === 0 ? "In preparation · no results published" : `${benchmarks.length} published`}</span>
+      </div>
+      <p class="bench-wall__intro">Each published run will fill these columns, with its setup, method and raw data.</p>
+      <ul class="bench-wall__cols" aria-label="Planned comparison columns">
+        {BENCH_COLUMNS.map((c) => <li>{c}</li>)}
+      </ul>
+      <div class="bench-wall__rows" aria-hidden="true">
+        {[0, 1, 2].map(() => <div class="bench-wall__row">{BENCH_COLUMNS.map(() => <span></span>)}</div>)}
+      </div>
+    </div>
+  </Room>
+
+  <div class="seam" style="--seam-from:var(--room-benchmarks-bg);--seam-to:var(--room-hall-bg)" aria-hidden="true"></div>
+  <section class="logroom" data-room="hall" aria-labelledby="log-title">
+    <div class="container logroom__grid">
       <div>
-        <span class="eyebrow">HomeLabCore · independent software lab</span>
-        <h1 class="hero__title">We build things.<br>Then measure how we built them.</h1>
-        <p class="lead">HomeLabCore is an independent software lab. It makes small Android and web apps, runs experiments and games in the lab, and is preparing public benchmarks of the AI-assisted workflows behind them.</p>
-        <ul class="link-list" aria-label="Explore">
-          <li><span class="meta">01</span><a href="/apps/">Apps</a></li>
-          <li><span class="meta">02</span><a href="/lab/">Lab</a></li>
-          <li><span class="meta">03</span><a href="/benchmarks/">Benchmarks</a></li>
-        </ul>
-      </div>
-      <LabFlask />
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="apps-title">
-    <div class="container">
-      <SectionHead index={1} label="Apps" title="Apps" id="apps-title" link={{ href: "/apps/", text: "All apps" }}>
-        Android and web apps, from closed testing to early development.
-      </SectionHead>
-      <div class="card-grid card-grid--2">
-        {apps.map((p) => <ProjectCard project={p} sizes="(min-width: 1160px) 545px, (min-width: 720px) 50vw, 100vw" />)}
-      </div>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="lab-title">
-    <div class="container">
-      <SectionHead index={2} label="Lab" title="From the Lab" id="lab-title" link={{ href: "/lab/", text: "All lab projects" }}>
-        Infrastructure, experiments and games that are not products.
-      </SectionHead>
-      <div class="card-grid card-grid--2">
-        {lab.map((p) => <ProjectCard project={p} sizes="(min-width: 1160px) 545px, (min-width: 720px) 50vw, 100vw" />)}
-      </div>
-    </div>
-  </section>
-
-  <section class="section section--tight" aria-labelledby="bench-title">
-    <div class="container">
-      <div class="bench-strip">
-        <div>
-          <span class="eyebrow">03 / Benchmarks</span>
-          <h2 id="bench-title">AI workflow benchmarks</h2>
-          <p class="muted">Public comparisons of Claude, Codex and Qwen on development workflows. Each run will publish its setup, method and raw data alongside the results.</p>
-        </div>
-        {benchmarks.length === 0 ? (
-          <p class="bench-strip__status"><span class="meta">Status</span> No results published yet · <a href="/benchmarks/">How runs will be reported</a></p>
-        ) : (
-          <p class="bench-strip__status"><span class="meta">{formatDate(benchmarks[0].data.published)}</span> <a href={`/benchmarks/${benchmarks[0].id}/`}>{benchmarks[0].data.title}</a></p>
-        )}
-      </div>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="updates-title">
-    <div class="container split">
-      <div>
-        <span class="eyebrow">04 / Log</span>
-        <h2 id="updates-title">Recent updates</h2>
+        <p class="room__label"><span>Lab log</span></p>
+        <h2 class="room__title room__title--sm" id="log-title">Recent updates</h2>
         <ul class="updates">
           {updates.map((u) => (
             <li>
@@ -90,18 +182,10 @@ const updates = (await getCollection("updates")).sort((a, b) => b.data.date.getT
         </ul>
       </div>
       <div>
-        <span class="eyebrow">About</span>
-        <h2 id="about-title">About HomeLabCore</h2>
-        <p class="muted">HomeLabCore is a small, independent software studio. It builds a short list of focused apps and experiments, keeps them maintained, and is clear about how each one handles your data.</p>
-        <p><a href="/about">More about HomeLabCore <span aria-hidden="true">→</span></a></p>
-        <dl class="meta-list">
-          <dt>Support</dt>
-          <dd><a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a></dd>
-          <dt>Privacy</dt>
-          <dd><a href={`mailto:${CONTACT.privacy}`}>{CONTACT.privacy}</a></dd>
-          <dt>Help</dt>
-          <dd><a href="/support/">Support pages for each app</a></dd>
-        </dl>
+        <p class="room__label"><span>About</span></p>
+        <h2 class="room__title room__title--sm" id="about-title">A small, independent lab</h2>
+        <p class="room__summary">HomeLabCore builds a short list of focused apps and experiments, keeps them maintained, and is clear about how each one handles your data.</p>
+        <p><a href="/about">More about HomeLabCore <span aria-hidden="true">→</span></a> · <a href="/support/">Support</a> · <a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a></p>
       </div>
     </div>
   </section>

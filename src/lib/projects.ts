@@ -46,3 +46,11 @@ export function formatDate(d: Date): string {
 export function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
+
+/** A project's figure (or hero/cover) by file name; build fails if it is missing. */
+export function figureOf(project: Project, file: string) {
+  const { hero, cover, figures } = project.data;
+  const hit = [hero, cover, ...figures].find((f) => f && f.src.src.includes(file));
+  if (!hit) throw new Error(`${project.id}: no figure matching ${file}`);
+  return hit;
+}

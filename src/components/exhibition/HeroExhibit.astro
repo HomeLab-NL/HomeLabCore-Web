@@ -1,0 +1,37 @@
+---
+import { Picture } from "astro:assets";
+import { getEntry } from "astro:content";
+import { figureOf } from "../../lib/projects";
+
+// "Exhibit 01" — the hero frame. It is reserved for the Codex animation; until
+// that is supplied, it cycles through one real visual from each room (a slow
+// cross-fade, CSS only). Captions switch without fading, so text is always
+// fully opaque. With reduced motion only the first exhibit is shown.
+const pick = async (id: string, file: string, caption: string) => {
+  const project = (await getEntry("projects", id))!;
+  const fig = figureOf(project, file);
+  return { id, caption, fig, concept: fig.kind === "concept" };
+};
+const slides = await Promise.all([
+  pick("cookfrom", "gallery-04-cooking", "CookFrom · Android app"),
+  pick("ops-planner", "gallery-02-weekly-planner", "Ops Planner · Android app"),
+  pick("ai-tutor", "gallery-02-step", "AI Tutor · Android app"),
+  pick("keyboard-trainer", "gallery-02-quest-map", "Keyboard Trainer · Web game"),
+  pick("agentlab", "hero", "AgentLab · Architecture diagram"),
+  pick("at-the-mountains-of-madness", "concept-expedition", "At the Mountains of Madness · Concept art, not gameplay"),
+]);
+---
+<figure class="exhibit" style={`--slides:${slides.length}`}>
+  <ul class="exhibit__slides">
+    {slides.map((s, i) => (
+      <li class="exhibit__slide" style={`--n:${i}`} data-project={s.id}>
+        <Picture src={s.fig.src} alt={s.fig.alt} widths={[480, 720, 960]} sizes="(min-width: 1100px) 560px, (min-width: 760px) 50vw, 92vw" formats={["avif"]} fallbackFormat="webp" loading={i === 0 ? "eager" : "lazy"} decoding="async" />
+        <span class="exhibit__caption"><span class="exhibit__dot" aria-hidden="true"></span>{s.caption}</span>
+      </li>
+    ))}
+  </ul>
+  <figcaption class="exhibit__label">
+    <span>Exhibit 01</span>
+    <span>One real visual from each room</span>
+  </figcaption>
+</figure>
