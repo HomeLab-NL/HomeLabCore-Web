@@ -1243,6 +1243,30 @@ img {
   color: var(--r-accent);
 }
 
+/* Phones: the art sits above the text, framed on the expedition (left side
+   of the painting), so the people are not hidden behind the text panel. */
+@media (max-width: 719px) {
+  .mountains {
+    display: block;
+    min-height: 0;
+  }
+
+  .mountains__art {
+    position: relative;
+    inset: auto;
+    height: min(78vh, 560px);
+  }
+
+  .mountains__art img {
+    object-position: 8% 62%;
+    animation: none;
+  }
+
+  .mountains__text {
+    margin-top: -2.5rem;
+  }
+}
+
 /* Benchmarks: a room in preparation, with the columns runs will fill. */
 .bench-wall {
   border: 1px dashed color-mix(in srgb, var(--r-muted) 55%, transparent);
