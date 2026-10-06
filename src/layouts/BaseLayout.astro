@@ -45,7 +45,7 @@ const alternates = indexed && TRANSLATED_PATHS.has(path)
 const accents = accentCss(await allProjects());
 // Social preview image: the project's own image if it has one, otherwise the
 // global HomeLabCore image. Absolute URLs; independent of the site theme.
-const og = await socialImage(project);
+const og = await socialImage(project, lang);
 
 // Runs before the stylesheet and before <body> exists: applies a saved manual
 // theme choice so the first paint is already in that theme. No saved choice

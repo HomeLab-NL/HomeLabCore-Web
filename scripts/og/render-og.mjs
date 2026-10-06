@@ -1,5 +1,7 @@
 // Renders the Open Graph / social preview images (1200×630) into public/og/:
-//   homelabcore.png  — global HomeLabCore image (light lab-notebook style)
+//   homelabcore.png, homelabcore-nl.png, homelabcore-uk.png — the global
+//                      HomeLabCore image per language, in the style of the
+//                      homepage: big "We build ideas." title and the flask
 //   <project>.jpg    — one per project, from that project's verified cover
 //                      image in src/content/projects/*.json. Handoff covers
 //                      already carry the project name and HomeLabCore, so
@@ -31,25 +33,32 @@ const base = `
   body { font-family: ${FONT}; color: #16191f; background: #fafaf7; overflow: hidden; }
 `;
 
-const globalHtml = `<!doctype html><html><head><meta charset="utf-8"><style>${base}
-  body {
-    background-color: #fafaf7;
-    background-image: radial-gradient(rgba(22,25,31,0.09) 1.2px, transparent 1.2px);
-    background-size: 22px 22px;
-    padding: 72px 80px;
-    display: flex; flex-direction: column; justify-content: space-between;
-  }
-  .brand { display: flex; align-items: center; gap: 22px; }
-  .brand img { height: 92px; width: auto; }
-  .brand span { font-size: 56px; font-weight: 700; letter-spacing: -0.02em; }
+const font = (file) => dataUri(`public/assets/fonts/${file}`).replace("data:image/woff2", "data:font/woff2");
+// The homepage hero: label, huge display title and the brand flask (a still
+// of the animated SVG), on the light "hall" wall.
+const GLOBAL_COPY = {
+  en: { label: "Independent software & AI lab", title: "We build ideas." },
+  nl: { label: "Onafhankelijk software- & AI-lab", title: "We bouwen ideeën." },
+  uk: { label: "Незалежна лабораторія програмного забезпечення та AI", title: "Ми будуємо ідеї." },
+};
+const animatedFlask = dataUri("public/assets/brand/homelabcore-animated.svg").replace("data:image/svg", "data:image/svg+xml");
+const globalHtml = ({ label, title }) => `<!doctype html><html><head><meta charset="utf-8"><style>${base}
+  @font-face { font-family: "HLC Display"; font-weight: 800; src: url(${font("bricolage-grotesque-latin-800-normal.woff2")}) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+  @font-face { font-family: "HLC Display"; font-weight: 800; src: url(${font("geologica-cyrillic-800-normal.woff2")}) format("woff2"); unicode-range: U+0400-045F, U+0490-0491; }
+  body { padding: 64px 80px 56px; display: grid; grid-template-columns: 1fr 300px; grid-template-rows: auto 1fr auto; column-gap: 40px; }
+  .label { grid-column: 1 / -1; font-family: ${MONO}; font-size: 24px; letter-spacing: 0.1em; text-transform: uppercase; color: #4a5160; }
+  h1 { align-self: center; font-family: "HLC Display", ${FONT}; font-weight: 800; font-size: 132px; line-height: 0.95; letter-spacing: -0.045em; }
+  .crop { align-self: center; justify-self: end; position: relative; width: 250px; aspect-ratio: 30 / 46; overflow: hidden; }
+  .crop img { position: absolute; top: 0; left: calc(-100% * 12 / 30); width: calc(100% * 194 / 30); max-width: none; }
+  .foot { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline; border-top: 2px solid #e3e2dc; padding-top: 22px; }
+  .brand { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; }
   .brand b { color: #2b5cc4; font-weight: 700; }
-  h1 { font-size: 66px; line-height: 1.08; font-weight: 700; letter-spacing: -0.03em; white-space: nowrap; }
-  .rule { height: 2px; background: #3f74d8; width: 120px; margin-bottom: 28px; }
-  .foot { display: flex; justify-content: space-between; font-family: ${MONO}; font-size: 24px; color: #4a5160; letter-spacing: 0.04em; }
+  .site { font-family: ${MONO}; font-size: 24px; color: #4a5160; letter-spacing: 0.04em; }
 </style></head><body>
-  <div class="brand"><img src="${flask}" alt=""><span>HomeLab<b>Core</b></span></div>
-  <div><div class="rule"></div><h1>We build things.<br>Then measure how we built them.</h1></div>
-  <div class="foot"><span>INDEPENDENT SOFTWARE LAB</span><span>homelabcore.dev</span></div>
+  <div class="label">${label}</div>
+  <h1>${title}</h1>
+  <div class="crop"><img src="${animatedFlask}" alt=""></div>
+  <div class="foot"><span class="brand">HomeLab<b>Core</b></span><span class="site">homelabcore.dev</span></div>
 </body></html>`;
 
 const projectHtml = (image, name, label) => `<!doctype html><html><head><meta charset="utf-8"><style>${base}
@@ -91,7 +100,9 @@ async function render(html, file, type) {
   console.log(`${file}  ${(fs.statSync(path.join(OUT, file)).size / 1024).toFixed(0)} KB`);
 }
 
-await render(globalHtml, "homelabcore.png", "png");
+for (const [lang, copy] of Object.entries(GLOBAL_COPY)) {
+  await render(globalHtml(copy), lang === "en" ? "homelabcore.png" : `homelabcore-${lang}.png`, "png");
+}
 
 const dir = "src/content/projects";
 for (const f of fs.readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
