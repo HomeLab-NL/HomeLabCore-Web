@@ -940,6 +940,46 @@ img {
   }
 }
 
+/* Below 900px the flask stands beside the title, as on desktop: the text
+   block's children join the hero grid (label and lead span both columns). */
+@media (max-width: 899px) {
+  .xhero__grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "label label"
+      "title flask"
+      "lead lead";
+    column-gap: 1rem;
+    row-gap: 0;
+  }
+
+  .xhero__text {
+    display: contents;
+  }
+
+  .xhero__text > .room__label {
+    grid-area: label;
+  }
+
+  .xhero__title {
+    grid-area: title;
+  }
+
+  .xhero__lead {
+    grid-area: lead;
+  }
+
+  .exhibit {
+    grid-area: flask;
+    align-self: center;
+    margin-bottom: 1.4rem;
+  }
+
+  .xhero .exhibit__crop {
+    width: clamp(84px, 24vw, 170px);
+  }
+}
+
 .xhero__title {
   font-size: clamp(3.4rem, 8.4vw, 7.4rem);
   line-height: 0.95;
@@ -2090,6 +2130,12 @@ img {
 }
 
 /* ---------- footer ---------- */
+
+/* Long email addresses may break so narrow phones never scroll sideways. */
+.footer-col a {
+  overflow-wrap: anywhere;
+}
+
 
 .site-footer {
   border-top: 1px solid var(--border);
