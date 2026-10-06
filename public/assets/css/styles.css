@@ -953,6 +953,20 @@ img {
   margin: 0;
 }
 
+/* Phones get the short form of a long hero label (Ukrainian "ПЗ"). */
+.xhero__eyebrow-short {
+  display: none;
+}
+
+@media (max-width: 719px) {
+  .xhero__eyebrow-long {
+    display: none;
+  }
+  .xhero__eyebrow-short {
+    display: inline;
+  }
+}
+
 /* Desktop: the one-sentence lead stays on a single line. */
 @media (min-width: 1100px) {
   .xhero__lead {
