@@ -1,0 +1,57 @@
+{
+  "name": "AI Tutor",
+  "section": "apps",
+  "kind": "Android app",
+  "platforms": [
+    "Android"
+  ],
+  "status": "active-development",
+  "summary": "An Android app in development that helps students work through maths problems one step at a time — with Hint and Explain Differently — instead of revealing the final answer straight away.",
+  "order": 3,
+  "featured": true,
+  "urls": {
+    "overview": "/apps/ai-tutor/"
+  },
+  "visualNote": "Shown in the app's built-in sample mode with the example problem 3x + 7 = 22 — these are not live AI responses. The app currently shows its development name, Homework Tutor.",
+  "cover": {
+    "src": "../../assets/projects/ai-tutor/cover.webp",
+    "alt": "AI Tutor: Enter a math problem in the real app; built-in sample shown.",
+    "caption": "AI Tutor: Enter a math problem in the real app; built-in sample shown.",
+    "kind": "composition"
+  },
+  "hero": {
+    "src": "../../assets/projects/ai-tutor/hero.webp",
+    "alt": "AI Tutor: current application screens. Real application UI · built-in sample mode.",
+    "caption": "AI Tutor — built-in sample mode",
+    "kind": "composition"
+  },
+  "figures": [
+    {
+      "src": "../../assets/projects/ai-tutor/gallery-02-step.webp",
+      "alt": "The first tutoring step for the built-in sample equation.",
+      "caption": "The first tutoring step for the built-in sample equation.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/ai-tutor/gallery-03-hint.webp",
+      "alt": "Level 1 Hint in the built-in sample tutoring flow.",
+      "caption": "Level 1 Hint in the built-in sample tutoring flow.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/ai-tutor/gallery-04-explain-differently.webp",
+      "alt": "Explain Differently in the built-in sample mode; no live AI response.",
+      "caption": "Explain Differently in the built-in sample mode; no live AI response.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/ai-tutor/gallery-05-result.webp",
+      "alt": "The result after completing both steps of the built-in sample.",
+      "caption": "The result after completing both steps of the built-in sample.",
+      "kind": "composition"
+    }
+  ],
+  "missing": [
+    "Public release or store listing"
+  ]
+}

@@ -1,0 +1,8 @@
+# Cloudflare Pages response headers.
+# Preview and *.pages.dev hosts must never be indexed; canonical URLs always
+# point at https://homelabcore.dev. homelabcore.dev itself is unaffected.
+https://:version.homelabcore-web.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://homelabcore-web.pages.dev/*
+  X-Robots-Tag: noindex

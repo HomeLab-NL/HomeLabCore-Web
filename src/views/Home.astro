@@ -1,0 +1,290 @@
+---
+import { Picture, getImage } from "astro:assets";
+import { getCollection, getEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroExhibit from "../components/exhibition/HeroExhibit.astro";
+import Room from "../components/exhibition/Room.astro";
+import { CONTACT } from "../data/site";
+import { href, type Locale } from "../i18n/locales";
+import { UPDATE_TEXT } from "../i18n/projects";
+import { ui } from "../i18n/ui";
+import { figureOf, formatDate, isoDate, localizeProject } from "../lib/projects";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+
+const COPY = {
+  en: {
+    title: "HomeLabCore — We build ideas.",
+    description: "HomeLabCore is an independent software lab: Android and web apps, experiments and games, and public benchmarks of AI-assisted development workflows.",
+    eyebrow: "Independent software & AI lab",
+    h1: "We build ideas.",
+    lead: "Apps, games and AI development experiments.",
+    planLabel: "Rooms on this page",
+    plan: "Floor plan",
+    domains: { apps: "Apps", games: "Games", lab: "Lab · AI workflows", bench: "Benchmarks" },
+    days: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+    steps: ["Step", "Hint", "Explain differently"],
+    tutorNote: "Screens from the app's built-in sample mode.",
+    archTag: "Architecture diagram · drawn from the gateway source, not a screenshot",
+    openProject: "Open the project",
+    benchTitle: "Benchmarks",
+    benchSummary: "Public comparisons of AI-assisted development workflows: which models and role combinations build what, how fast, at what cost, and how often they need repair.",
+    benchLink: "How runs will be reported",
+    benchNone: "In preparation · no results published",
+    benchCount: (n: number) => `${n} published`,
+    benchIntro: "Each published run will fill these columns, with its setup, method and raw data.",
+    benchColsLabel: "Planned comparison columns",
+    benchCols: ["Model", "Planner · builder · reviewer", "Time", "Cost", "Repair loops", "Success rate"],
+    logLabel: "Lab log",
+    logTitle: "Recent updates",
+    aboutLabel: "About",
+    aboutTitle: "A small, independent lab",
+    aboutText: "HomeLabCore builds a short list of focused apps and experiments, keeps them maintained, and is clear about how each one handles your data.",
+    aboutMore: "More about HomeLabCore",
+  },
+  nl: {
+    title: "HomeLabCore — We bouwen ideeën.",
+    description: "HomeLabCore is een onafhankelijk softwarelab: Android- en webapps, experimenten en games, en openbare benchmarks van AI-ondersteunde ontwikkelworkflows.",
+    eyebrow: "Onafhankelijk software- & AI-lab",
+    h1: "We bouwen ideeën.",
+    lead: "Apps, games en experimenten met AI-ontwikkeling.",
+    planLabel: "Zalen op deze pagina",
+    plan: "Plattegrond",
+    domains: { apps: "Apps", games: "Games", lab: "Lab · AI-workflows", bench: "Benchmarks" },
+    days: ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"],
+    steps: ["Stap", "Hint", "Anders uitleggen"],
+    tutorNote: "Schermen uit de ingebouwde voorbeeldmodus van de app.",
+    archTag: "Architectuurdiagram · getekend op basis van de gateway-broncode, geen schermafbeelding",
+    openProject: "Bekijk het project",
+    benchTitle: "Benchmarks",
+    benchSummary: "Openbare vergelijkingen van AI-ondersteunde ontwikkelworkflows: welke modellen en rolcombinaties wat bouwen, hoe snel, tegen welke kosten en hoe vaak er gerepareerd moet worden.",
+    benchLink: "Hoe runs worden gerapporteerd",
+    benchNone: "In voorbereiding · nog geen resultaten",
+    benchCount: (n: number) => `${n} gepubliceerd`,
+    benchIntro: "Elke gepubliceerde run vult deze kolommen, met de opzet, de methode en de ruwe data.",
+    benchColsLabel: "Geplande vergelijkingskolommen",
+    benchCols: ["Model", "Planner · bouwer · reviewer", "Tijd", "Kosten", "Reparatierondes", "Slagingspercentage"],
+    logLabel: "Labjournaal",
+    logTitle: "Recente updates",
+    aboutLabel: "Over ons",
+    aboutTitle: "Een klein, onafhankelijk lab",
+    aboutText: "HomeLabCore bouwt een korte lijst gerichte apps en experimenten, onderhoudt ze en is duidelijk over hoe elk ervan met je gegevens omgaat.",
+    aboutMore: "Meer over HomeLabCore",
+  },
+  uk: {
+    title: "HomeLabCore — Ми будуємо ідеї.",
+    description: "HomeLabCore — незалежна програмна лабораторія: застосунки для Android і вебу, експерименти та ігри, а також публічні бенчмарки робочих процесів розробки з AI.",
+    eyebrow: "Незалежна лабораторія програмного забезпечення та AI",
+    h1: "Ми будуємо ідеї.",
+    lead: "Застосунки, ігри та експерименти з розробкою за допомогою AI.",
+    planLabel: "Зали на цій сторінці",
+    plan: "План поверху",
+    domains: { apps: "Застосунки", games: "Ігри", lab: "Лабораторія · AI-процеси", bench: "Бенчмарки" },
+    days: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
+    steps: ["Крок", "Підказка", "Пояснити інакше"],
+    tutorNote: "Екрани з вбудованого демо-режиму застосунку.",
+    archTag: "Архітектурна схема · за вихідним кодом шлюзу, не скриншот",
+    openProject: "Відкрити проєкт",
+    benchTitle: "Бенчмарки",
+    benchSummary: "Публічні порівняння робочих процесів розробки з AI: які моделі й комбінації ролей що створюють, як швидко, за яку ціну і як часто потребують виправлень.",
+    benchLink: "Як ми звітуватимемо про запуски",
+    benchNone: "У підготовці · результатів ще немає",
+    benchCount: (n: number) => `Опубліковано: ${n}`,
+    benchIntro: "Кожен опублікований запуск заповнить ці колонки — з налаштуваннями, методикою та сирими даними.",
+    benchColsLabel: "Заплановані колонки порівняння",
+    benchCols: ["Модель", "Планувальник · виконавець · рецензент", "Час", "Вартість", "Цикли виправлень", "Успішність"],
+    logLabel: "Журнал лабораторії",
+    logTitle: "Останні оновлення",
+    aboutLabel: "Про нас",
+    aboutTitle: "Невелика незалежна лабораторія",
+    aboutText: "HomeLabCore створює невеликий набір зосереджених застосунків і експериментів, підтримує їх і чесно пояснює, як кожен із них поводиться з вашими даними.",
+    aboutMore: "Більше про HomeLabCore",
+  },
+}[lang];
+const t = ui(lang);
+
+// Homepage prototype, "Exhibition Rooms" direction: every project is a room
+// with its own palette and composition; the HomeLabCore system is the wall
+// label, the type and the rhythm between rooms. Content comes from the
+// collections; nothing is invented. Benchmarks is shown as a room in
+// preparation, with the columns future runs will fill.
+const project = async (id: string) => localizeProject((await getEntry("projects", id))!, lang);
+const cookfrom = await project("cookfrom");
+const ops = await project("ops-planner");
+const tutor = await project("ai-tutor");
+const keyquest = await project("keyboard-trainer");
+const agentlab = await project("agentlab");
+const mountains = await project("at-the-mountains-of-madness");
+
+const benchmarks = await getCollection("benchmarks");
+const updates = (await getCollection("updates"))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3)
+  .map((u) => ({ ...u.data, title: lang === "en" ? u.data.title : UPDATE_TEXT[lang][u.id] ?? u.data.title, href: u.data.href && href(u.data.href, lang) }));
+
+const D = COPY.domains;
+const rooms = [
+  { id: "cookfrom", name: "CookFrom", domain: D.apps },
+  { id: "ops-planner", name: "Ops Planner", domain: D.apps },
+  { id: "ai-tutor", name: "AI Tutor", domain: D.apps },
+  { id: "keyboard-trainer", name: "Keyboard Trainer", domain: D.games },
+  { id: "agentlab", name: "AgentLab", domain: D.lab },
+  { id: "at-the-mountains-of-madness", name: "At the Mountains of Madness", domain: D.games },
+  { id: "benchmarks", name: COPY.benchTitle, domain: D.bench },
+];
+
+const pic = (fig: { src: ImageMetadata }, sizes: string, widths = [480, 800, 1200]) => ({
+  src: fig.src,
+  sizes,
+  widths: widths.filter((w) => w <= fig.src.width),
+  formats: ["avif"] as ("avif")[],
+  fallbackFormat: "webp" as const,
+  loading: "lazy" as const,
+  decoding: "async" as const,
+});
+const half = "(min-width: 1100px) 600px, (min-width: 820px) 55vw, 92vw";
+const third = "(min-width: 1100px) 360px, (min-width: 820px) 30vw, 80vw";
+
+// CookFrom and Ops Planner: the approved promotional banners (their card covers).
+const cookPromo = cookfrom.data.cover!;
+const opsPromo = ops.data.cover!;
+const tutorSteps = [
+  { fig: figureOf(tutor, "gallery-02-step"), label: COPY.steps[0] },
+  { fig: figureOf(tutor, "gallery-03-hint"), label: COPY.steps[1] },
+  { fig: figureOf(tutor, "gallery-04-explain-differently"), label: COPY.steps[2] },
+];
+const kqMap = figureOf(keyquest, "gallery-02-quest-map");
+const kqTyping = figureOf(keyquest, "gallery-03-typing");
+const agentHero = agentlab.data.hero!;
+// The diagram's small labels need zoom on phones: it links to the full-size image.
+const agentFull = await getImage({ src: agentHero.src, format: "webp", width: agentHero.src.width });
+const mountainsArt = figureOf(mountains, "concept-expedition");
+
+const BENCH_COLUMNS = COPY.benchCols;
+---
+<BaseLayout
+  route="home"
+  lang={lang}
+  title={COPY.title}
+  description={COPY.description}
+  navCurrent="home"
+>
+  <section class="xhero" data-room="hall" aria-labelledby="xhero-title">
+    <div class="container xhero__grid">
+      <div class="xhero__text">
+        <p class="room__label"><span>{COPY.eyebrow}</span></p>
+        <h1 class="xhero__title" id="xhero-title">{COPY.h1}</h1>
+        <p class="xhero__lead">{COPY.lead}</p>
+      </div>
+      <HeroExhibit lang={lang} />
+    </div>
+    <nav class="container plan" aria-label={COPY.planLabel}>
+      <p class="plan__title">{COPY.plan}</p>
+      <ol class="plan__list">
+        {rooms.map((r, i) => (
+          <li style={`--dot:var(--room-${r.id}-bg)`}>
+            <a href={`#${r.id}`}>
+              <span class="plan__no">{String(i + 1).padStart(2, "0")}</span>
+              <span class="plan__name">{r.name}</span>
+              <span class="plan__domain">{r.domain}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </section>
+
+  <Room project={cookfrom} id="cookfrom" number={1} domain={D.apps} prev="hall" lang={lang}>
+    <div class="frame frame--banner reveal"><Picture {...pic(cookPromo, half, [480, 800, 1200, 1600])} alt={cookPromo.alt} /></div>
+  </Room>
+
+  <Room project={ops} id="ops-planner" number={2} domain={D.apps} layout="split-reverse" prev="cookfrom" lang={lang}>
+    <div class="weekgrid" aria-hidden="true">
+      {COPY.days.map((d) => <span>{d}</span>)}
+    </div>
+    <div class="stack">
+      <div class="frame frame--banner reveal"><Picture {...pic(opsPromo, half, [480, 800, 1200, 1600])} alt={opsPromo.alt} /></div>
+    </div>
+  </Room>
+
+  <Room project={tutor} id="ai-tutor" number={3} domain={D.apps} layout="stage" prev="ops-planner" lang={lang}>
+    <ol class="tutor-steps">
+      {tutorSteps.map((s, i) => (
+        <li class="reveal" style={`--d:${i}`}>
+          <span class="tutor-steps__no">{i + 1} · {s.label}</span>
+          <div class="frame"><Picture {...pic(s.fig, third, [480, 800])} alt={s.fig.alt} /></div>
+        </li>
+      ))}
+    </ol>
+    <p class="room__note" slot="text">{COPY.tutorNote}</p>
+  </Room>
+
+  <Room project={keyquest} id="keyboard-trainer" number={4} domain={D.games} layout="split" prev="ai-tutor" lang={lang}>
+    <div class="stage-glow">
+      <div class="frame frame--glow reveal"><Picture {...pic(kqTyping, half)} alt={kqTyping.alt} /></div>
+      <div class="frame frame--float reveal"><Picture {...pic(kqMap, third, [480, 800])} alt={kqMap.alt} /></div>
+    </div>
+  </Room>
+
+  <Room project={agentlab} id="agentlab" number={5} domain={D.lab} layout="stage" prev="keyboard-trainer" lang={lang}>
+    <div class="blueprint">
+      <a class="frame frame--plain frame--zoom reveal" href={agentFull.src}><Picture {...pic(agentHero, "(min-width: 1100px) 1040px, 94vw", [800, 1200, 1600])} alt={agentHero.alt} /><span class="visually-hidden">{t.figure.openFull}</span></a>
+      <p class="blueprint__tag">{COPY.archTag}</p>
+    </div>
+  </Room>
+
+  <div class="seam" style="--seam-from:var(--room-agentlab-bg);--seam-to:var(--room-at-the-mountains-of-madness-bg)" aria-hidden="true"></div>
+  <section class="mountains" id="at-the-mountains-of-madness" data-room="at-the-mountains-of-madness" aria-labelledby="room-mountains-title">
+    <div class="mountains__art">
+      <Picture {...pic(mountainsArt, "100vw", [800, 1200, 1600])} alt={mountainsArt.alt} />
+    </div>
+    <div class="mountains__text container">
+      <p class="room__label"><span>{lang === "nl" ? "Zaal" : lang === "uk" ? "Зала" : "Room"} 06</span><span>{D.games}</span><span class="badge">{t.figure.concept}</span></p>
+      <h2 class="room__title" id="room-mountains-title">{mountains.data.name}</h2>
+      <p class="room__summary">{mountains.data.summary}</p>
+      <p><a class="room__link" href={mountains.data.urls.overview}>{COPY.openProject}<span aria-hidden="true"> →</span></a></p>
+    </div>
+  </section>
+
+  <Room id="benchmarks" number={7} domain={D.bench} title={COPY.benchTitle} summary={COPY.benchSummary} href={href("/benchmarks/", lang)} linkText={COPY.benchLink} layout="stage" prev="at-the-mountains-of-madness" lang={lang}>
+    <div class="bench-wall">
+      <div class="bench-wall__head">
+        <span class="bench-wall__state"><span class="bench-wall__pulse" aria-hidden="true"></span>{benchmarks.length === 0 ? COPY.benchNone : COPY.benchCount(benchmarks.length)}</span>
+      </div>
+      <p class="bench-wall__intro">{COPY.benchIntro}</p>
+      <ul class="bench-wall__cols" aria-label={COPY.benchColsLabel}>
+        {BENCH_COLUMNS.map((c) => <li>{c}</li>)}
+      </ul>
+      <div class="bench-wall__rows" aria-hidden="true">
+        {[0, 1, 2].map(() => <div class="bench-wall__row">{BENCH_COLUMNS.map(() => <span></span>)}</div>)}
+      </div>
+    </div>
+  </Room>
+
+  <div class="seam" style="--seam-from:var(--room-benchmarks-bg);--seam-to:var(--room-hall-bg)" aria-hidden="true"></div>
+  <section class="logroom" data-room="hall" aria-labelledby="log-title">
+    <div class="container logroom__grid">
+      <div>
+        <p class="room__label"><span>{COPY.logLabel}</span></p>
+        <h2 class="room__title room__title--sm" id="log-title">{COPY.logTitle}</h2>
+        <ul class="updates">
+          {updates.map((u) => (
+            <li>
+              <time datetime={isoDate(u.date)}>{formatDate(u.date)}</time>
+              <p>{u.href ? <a href={u.href}>{u.title}</a> : u.title}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <p class="room__label"><span>{COPY.aboutLabel}</span></p>
+        <h2 class="room__title room__title--sm" id="about-title">{COPY.aboutTitle}</h2>
+        <p class="room__summary">{COPY.aboutText}</p>
+        <p><a href={href("/about", lang)}>{COPY.aboutMore} <span aria-hidden="true">→</span></a> · <a href="/support/" hreflang={lang !== "en" ? "en" : undefined}>{t.nav.support}</a> · <a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a></p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

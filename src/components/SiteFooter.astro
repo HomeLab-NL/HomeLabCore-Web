@@ -1,44 +1,64 @@
 ---
-import Icon from "./Icon.astro";
 import { CONTACT } from "../data/site";
+import { href, type Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+import { projectsIn } from "../lib/projects";
+
+interface Props {
+  lang?: Locale;
+}
+const { lang = "en" } = Astro.props;
+const t = ui(lang);
+const apps = await projectsIn("apps", lang);
+const lab = await projectsIn("lab", lang);
+const legal = apps.filter((p) => p.data.urls.privacy);
 ---
 <footer class="site-footer">
   <div class="container">
     <div class="footer-top">
       <div>
-        <p class="footer-brand">
-          <img class="footer-brand__mark" src="/assets/brand/homelab-flask.png" width="256" height="403" alt="" aria-hidden="true">
+        <p class="footer-brand" translate="no">
+          <img class="footer-brand__mark brand__mark--light" src="/assets/brand/homelab-flask-mark.png" width="18" height="28" alt="">
+          <img class="footer-brand__mark brand__mark--dark" src="/assets/brand/homelab-flask-mark-dark.png" width="18" height="28" alt="">
           <span>HomeLab<span class="brand__core">Core</span></span>
         </p>
-        <p class="footer-tag">we code ideas</p>
-        <p class="footer-desc">A small independent software studio building practical tools for everyday problems.</p>
+        <p class="footer-desc">{t.footer.desc}</p>
+        {lang !== "en" && <p class="footer-desc">{t.footer.englishOnly}</p>}
       </div>
-      <nav class="footer-grid" aria-label="Footer">
+      <nav class="footer-grid" aria-label={t.footer.label}>
         <div class="footer-col">
-          <h2>Home</h2>
+          <h2>{t.footer.apps}</h2>
           <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/apps/">Apps</a></li>
-            <li><a href="/about">About</a></li>
+            {apps.map((p) => <li><a href={p.data.urls.overview}>{p.data.name}</a></li>)}
           </ul>
         </div>
         <div class="footer-col">
-          <h2 class="footer-col__cf">CookFrom</h2>
+          <h2>{t.footer.lab}</h2>
           <ul>
-            <li><a href="/apps/cookfrom">CookFrom</a></li>
-            <li><a href="/privacy/cookfrom">Privacy Policy</a></li>
-            <li><a href="/support/cookfrom">Support</a></li>
+            {lab.map((p) => <li><a href={p.data.urls.overview}>{p.data.name}</a></li>)}
+            <li><a href={href("/benchmarks/", lang)}>{t.nav.benchmarks}</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h2>Contact</h2>
-          <ul class="footer-contact">
-            <li><a href={`mailto:${CONTACT.privacy}`}><Icon name="mail" /> {CONTACT.privacy}</a></li>
-            <li><a href={`mailto:${CONTACT.support}`}><Icon name="mail" /> {CONTACT.support}</a></li>
+          <h2>{t.footer.privacy}</h2>
+          <ul>
+            {legal.map((p) => <li><a href={p.data.urls.privacy} hreflang={lang !== "en" ? "en" : undefined}>{p.data.name}</a></li>)}
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>{t.footer.studio}</h2>
+          <ul>
+            <li><a href={href("/about", lang)}>{t.nav.about}</a></li>
+            <li><a href="/support/" hreflang={lang !== "en" ? "en" : undefined}>{t.nav.support}</a></li>
+            <li><a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a></li>
+            <li><a href={`mailto:${CONTACT.privacy}`}>{CONTACT.privacy}</a></li>
           </ul>
         </div>
       </nav>
     </div>
-    <div class="footer-copy">&copy; <span data-year>2026</span> HomeLabCore</div>
+    <div class="footer-copy">
+      <span>&copy; <span data-year>2026</span> HomeLabCore</span>
+      <span>we code ideas</span>
+    </div>
   </div>
 </footer>

@@ -1,0 +1,15 @@
+---
+import type { GetStaticPaths } from "astro";
+import ProjectPage from "../../../components/ProjectPage.astro";
+import { TRANSLATED_LOCALES, type Locale } from "../../../i18n/locales";
+import { projectsIn, type Project } from "../../../lib/projects";
+
+export const getStaticPaths = (async () => {
+  const projects = (await projectsIn("lab"));
+  return TRANSLATED_LOCALES.flatMap((lang) => projects.map((project) => ({ params: { lang, slug: project.id }, props: { project } })));
+}) satisfies GetStaticPaths;
+
+const { project } = Astro.props as { project: Project };
+const lang = Astro.params.lang as Locale;
+---
+<ProjectPage project={project} lang={lang} />

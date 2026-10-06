@@ -1,0 +1,69 @@
+{
+  "name": "Keyboard Trainer",
+  "section": "apps",
+  "kind": "Web app",
+  "platforms": [
+    "Web"
+  ],
+  "status": "active-development",
+  "summary": "A desktop-first typing game for children aged 6–12: ten keyboard challenges of increasing difficulty, with stars, XP and coins to earn on the way. Progress is stored only in the browser.",
+  "workingTitle": "KeyQuest",
+  "order": 4,
+  "featured": true,
+  "accent": {
+    "light": {
+      "fill": "#7c5cff",
+      "text": "#5a3fd0"
+    },
+    "dark": {
+      "fill": "#8b6cff",
+      "text": "#a891ff"
+    }
+  },
+  "urls": {
+    "overview": "/apps/keyboard-trainer/"
+  },
+  "visualNote": "Screens from the current development build, which runs under the working title KeyQuest.",
+  "cover": {
+    "src": "../../assets/projects/keyboard-trainer/cover.webp",
+    "alt": "KeyQuest: The first typing challenge with its highlighted target key.",
+    "caption": "KeyQuest: The first typing challenge with its highlighted target key.",
+    "kind": "composition"
+  },
+  "hero": {
+    "src": "../../assets/projects/keyboard-trainer/hero.webp",
+    "alt": "KeyQuest: current application screens. Real browser application · development build.",
+    "caption": "Keyboard Trainer — development build (working title KeyQuest)",
+    "kind": "composition"
+  },
+  "figures": [
+    {
+      "src": "../../assets/projects/keyboard-trainer/gallery-01-home.webp",
+      "alt": "The current KeyQuest home screen.",
+      "caption": "The current KeyQuest home screen.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/keyboard-trainer/gallery-02-quest-map.webp",
+      "alt": "The real ten-level quest map with its initial unlock state.",
+      "caption": "The real ten-level quest map with its initial unlock state.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/keyboard-trainer/gallery-03-typing.webp",
+      "alt": "The first typing challenge with its highlighted target key.",
+      "caption": "The first typing challenge with its highlighted target key.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/keyboard-trainer/gallery-04-completed.webp",
+      "alt": "A result earned by typing the actual first challenge; sample session only.",
+      "caption": "A result earned by typing the actual first challenge; sample session only.",
+      "kind": "composition"
+    }
+  ],
+  "missing": [
+    "Public web URL (not deployed yet)",
+    "Confirmed product name (the app currently shows the working title KeyQuest)"
+  ]
+}

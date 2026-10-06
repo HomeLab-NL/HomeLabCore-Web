@@ -1,0 +1,29 @@
+---
+import type { Project } from "../lib/projects";
+import { platformLabel } from "../lib/projects";
+import Status from "./Status.astro";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  project: Project;
+  lang?: Locale;
+}
+const { project, lang = "en" } = Astro.props;
+const t = ui(lang).meta;
+const { kind, status, workingTitle } = project.data;
+---
+<dl class="meta-list">
+  <dt>{t.status}</dt>
+  <dd><Status status={status} lang={lang} /></dd>
+  <dt>{t.type}</dt>
+  <dd>{kind}</dd>
+  <dt>{t.platform}</dt>
+  <dd>{platformLabel(project, lang)}</dd>
+  {workingTitle && (
+    <>
+      <dt>{t.workingTitle}</dt>
+      <dd>{workingTitle}</dd>
+    </>
+  )}
+</dl>

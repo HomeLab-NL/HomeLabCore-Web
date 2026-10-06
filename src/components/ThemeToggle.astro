@@ -1,0 +1,24 @@
+---
+import Icon from "./Icon.astro";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+// One button that names the theme it switches to: "Dark theme" (moon) while
+// the light theme is on, "Light theme" (sun) while the dark theme is on. Both
+// labels are in the markup and CSS shows the right one from data-theme, so
+// the label is correct before any script runs. Hidden until main.js wires it
+// up (it needs JS).
+interface Props {
+  lang?: Locale;
+}
+const { theme } = ui(Astro.props.lang ?? "en");
+---
+<button class="theme-toggle" type="button" data-theme-toggle hidden>
+  <span class="theme-toggle__state theme-toggle__state--to-dark">
+    <Icon name="moon" />
+    <span class="theme-toggle__label">{theme.dark}</span><span class="visually-hidden"> {theme.word}</span>
+  </span>
+  <span class="theme-toggle__state theme-toggle__state--to-light">
+    <Icon name="sun" />
+    <span class="theme-toggle__label">{theme.light}</span><span class="visually-hidden"> {theme.word}</span>
+  </span>
+</button>

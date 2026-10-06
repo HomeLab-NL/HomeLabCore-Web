@@ -1,0 +1,32 @@
+{
+  "name": "At the Mountains of Madness",
+  "section": "lab",
+  "kind": "Game",
+  "platforms": [],
+  "status": "active-development",
+  "summary": "A game in active development. Its intended visual direction: watercolor, restrained psychological horror, and an Antarctic expedition dwarfed by monumental ancient ruins.",
+  "order": 2,
+  "featured": true,
+  "urls": {
+    "overview": "/lab/at-the-mountains-of-madness/"
+  },
+  "visualNote": "Concept art for the game's intended look and atmosphere. It is not gameplay and does not show content already in the game.",
+  "cover": {
+    "src": "../../assets/projects/at-the-mountains-of-madness/concept-expedition.webp",
+    "alt": "Watercolor concept art of an Antarctic expedition crossing a frozen landscape toward monumental ancient ruins in the mountains.",
+    "caption": "Concept art — Antarctic expedition approaching the ancient ruins. Watercolor visual direction for At the Mountains of Madness.",
+    "kind": "concept"
+  },
+  "hero": {
+    "src": "../../assets/projects/at-the-mountains-of-madness/concept-expedition.webp",
+    "alt": "Watercolor concept art of an Antarctic expedition crossing a frozen landscape toward monumental ancient ruins in the mountains.",
+    "caption": "Antarctic expedition approaching the ancient ruins — watercolor visual direction",
+    "kind": "concept"
+  },
+  "figures": [],
+  "missing": [
+    "Game description",
+    "Platform",
+    "Gameplay screenshots (none yet)"
+  ]
+}

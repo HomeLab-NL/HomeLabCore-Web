@@ -1,0 +1,40 @@
+---
+import Figure from "./Figure.astro";
+import SectionHead from "./SectionHead.astro";
+import type { Project } from "../lib/projects";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  project: Project;
+  index?: number;
+  lang?: Locale;
+}
+
+const { project, index, lang = "en" } = Astro.props;
+const t = ui(lang).gallery;
+const { name, figures } = project.data;
+const allScreens = figures.every((f) => f.kind === "composition" || f.kind === "screenshot");
+---
+{figures.length > 0 && (
+  <section class="section" aria-labelledby="gallery-title">
+    <div class="container">
+      <SectionHead index={index} label={t.label} title={allScreens ? t.screens(name) : t.visuals(name)} id="gallery-title">
+        {t.hint}
+      </SectionHead>
+      <div class="gallery">
+        {figures.map((f) => (
+          <Figure
+            image={f.src}
+            alt={f.alt}
+            caption={f.caption}
+            kind={f.kind}
+            sizes="(min-width: 1160px) 545px, (min-width: 720px) 50vw, 100vw"
+            zoom
+            lang={lang}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+)}

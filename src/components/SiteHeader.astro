@@ -1,38 +1,61 @@
 ---
 import Icon from "./Icon.astro";
-import { NAV, type NavKey } from "../data/site";
+import LangSwitch from "./LangSwitch.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+import { PRIMARY_NAV, SECONDARY_NAV, type NavKey } from "../data/site";
+import { href, type Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 
 interface Props {
   /** The nav item for this exact page (aria-current="page"). */
   current?: NavKey;
   /** The nav item for the section a deeper page belongs to. */
   section?: NavKey;
+  lang?: Locale;
+  /** English path of the current page, for the language menu. */
+  path: string;
 }
 
-const { current, section } = Astro.props;
+const { current, section, lang = "en", path } = Astro.props;
+const t = ui(lang);
+const attrs = (key: NavKey) => ({
+  "aria-current": key === current ? ("page" as const) : undefined,
+  class: key === section ? "is-section" : undefined,
+});
 ---
 <header class="site-header">
   <div class="container nav">
-    <a class="brand" href="/">
-      <img class="brand__mark" src="/assets/brand/homelab-flask.png" width="256" height="403" alt="" aria-hidden="true">
+    <a class="brand" href={href("/", lang)} translate="no">
+      <img class="brand__mark brand__mark--light" src="/assets/brand/homelab-flask-mark.png" width="18" height="28" alt="">
+      <img class="brand__mark brand__mark--dark" src="/assets/brand/homelab-flask-mark-dark.png" width="18" height="28" alt="">
       <span class="brand__name">HomeLab<span class="brand__core">Core</span></span>
     </a>
 
-    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label={t.menu} hidden>
       <Icon name="menu" />
       <Icon name="close" />
     </button>
 
-    <ul class="nav__links" id="nav-links">
-      {NAV.map((item) => (
-        <li>
-          <a
-            href={item.href}
-            aria-current={item.key === current ? "page" : undefined}
-            class={item.key === section ? "is-section" : undefined}
-          >{item.label}</a>
-        </li>
-      ))}
-    </ul>
+    <div class="nav__menu" id="nav-menu">
+      <nav aria-label={t.navPrimary}>
+        <ul class="nav__links">
+          {PRIMARY_NAV.map((item) => (
+            <li><a href={href(item.href, lang)} {...attrs(item.key)}>{t.nav[item.key]}</a></li>
+          ))}
+        </ul>
+      </nav>
+      <span class="nav__divider" aria-hidden="true"></span>
+      <nav aria-label={t.navSecondary}>
+        <ul class="nav__secondary">
+          {SECONDARY_NAV.map((item) => (
+            <li><a href={href(item.href, lang)} {...attrs(item.key)}>{t.nav[item.key]}</a></li>
+          ))}
+        </ul>
+      </nav>
+      <div class="nav__tools">
+        <ThemeToggle lang={lang} />
+        <LangSwitch lang={lang} path={path} />
+      </div>
+    </div>
   </div>
 </header>

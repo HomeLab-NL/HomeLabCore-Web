@@ -1,0 +1,199 @@
+---
+import { getEntry } from "astro:content";
+import ProductLayout from "../layouts/ProductLayout.astro";
+import ProjectGallery from "../components/ProjectGallery.astro";
+import ProjectHero from "../components/ProjectHero.astro";
+import SectionHead from "../components/SectionHead.astro";
+import { CONTACT } from "../data/site";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+import { localizeProject } from "../lib/projects";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const project = localizeProject((await getEntry("projects", "ops-planner"))!, lang);
+const t = ui(lang);
+
+const COPY = {
+  en: {
+    title: "Ops Planner — Plan your team's week",
+    description: "Ops Planner is an Android app for distributing a department's tasks, duties, and events among employees across the week. All data stays on your device — no account, no server.",
+    og: "Distribute a department's tasks, duties, and events among employees across the week. Local-only: no account, no server.",
+    h1: "Plan your team's week.",
+    lead: "Ops Planner helps you share out a department's tasks, duties, and events among employees, day by day. Drag a task onto a person, see everyone's workload at a glance, and send each person their schedule.",
+    howLabel: "How it works",
+    howTitle: "From a list of work to a weekly plan",
+    steps: [
+      ["Add your team", "Enter employees with their position, department, working days and hours, email address, and vacation periods."],
+      ["Build the pool", "Create the recurring work of your department as tasks, duties, and events, with estimated hours and times."],
+      ["Assign and share", "Drag items onto employees for a day or the whole week, then email each person their schedule or send a workload report to the manager."],
+    ],
+    featLabel: "Features",
+    featTitle: "What Ops Planner includes",
+    features: [
+      ["Drag-and-drop weekly planning", "Assign a task, duty, or event to an employee for one day, the whole working week, or any set of days you pick. The same item can go to several people."],
+      ["Workload at a glance", "Each employee shows a workload percentage calculated from assigned hours and their own working schedule, so over- and under-loaded people stand out."],
+      ["Employees, departments & schedules", "Keep employees grouped by department, with individual working days, hours, and breaks."],
+      ["Vacations & public holidays", "Record vacation periods — the planner won't assign work to someone who is away. Public holidays for Ukraine or the Netherlands are marked on the calendar."],
+      ["Task status & transfer", "Mark assigned tasks as done or in progress, and transfer an assignment to another employee for one day or the whole week."],
+      ["Share schedules by email", "Send an employee their schedule for a day or the week. Ops Planner prepares the message and opens it in your own email app for you to review and send."],
+      ["Excel workload report", "Generate an .xlsx report of assignments and workload for the selected days and attach it to an email to the manager, again through your own email app."],
+      ["Export & import", "Save a full copy of your data to a JSON file wherever you choose, and restore it later — for example when moving to a new phone."],
+    ],
+    localLabel: "03 / Local-first",
+    localTitle: "Your plan stays on your phone",
+    localLead: "No account. No server.",
+    localText: "Everything you enter in Ops Planner is stored only on your device. There is no sign-up, no cloud sync, no advertising, and no analytics. Data leaves the device only when you choose to send an email or export a file.",
+    localTags: ["No account needed", "No ads or tracking", "Ukrainian, English, Dutch", "Light & dark theme"],
+    dataLabel: "Your data",
+    data: ["Stored on this device", "Only when you choose: email via your mail app, or an export file"],
+    readPolicy: ["Read the", "."],
+    availTitle: "Availability",
+    availText: "Ops Planner is built for Android and is currently in testing on Google Play. A store link will be added here once the listing is public. For help in the meantime, visit",
+    supportLink: "Ops Planner Support",
+    orEmail: "or email",
+  },
+  nl: {
+    title: "Ops Planner — Plan de week van je team",
+    description: "Ops Planner is een Android-app om de taken, diensten en evenementen van een afdeling over de week onder medewerkers te verdelen. Alle gegevens blijven op je toestel — geen account, geen server.",
+    og: "Verdeel de taken, diensten en evenementen van een afdeling over de week onder medewerkers. Alleen lokaal: geen account, geen server.",
+    h1: "Plan de week van je team.",
+    lead: "Ops Planner helpt je om de taken, diensten en evenementen van een afdeling dag voor dag over medewerkers te verdelen. Sleep een taak naar een persoon, zie ieders werkdruk in één oogopslag en stuur iedereen zijn rooster.",
+    howLabel: "Zo werkt het",
+    howTitle: "Van een lijst met werk naar een weekplanning",
+    steps: [
+      ["Voeg je team toe", "Voer medewerkers in met functie, afdeling, werkdagen en -uren, e-mailadres en vakantieperiodes."],
+      ["Vul de pool", "Leg het terugkerende werk van je afdeling vast als taken, diensten en evenementen, met geschatte uren en tijden."],
+      ["Toewijzen en delen", "Sleep items naar medewerkers voor een dag of de hele week en mail daarna iedereen zijn rooster of stuur een werkdrukrapport naar de manager."],
+    ],
+    featLabel: "Functies",
+    featTitle: "Wat Ops Planner biedt",
+    features: [
+      ["Weekplanning met slepen en neerzetten", "Wijs een taak, dienst of evenement toe aan een medewerker voor één dag, de hele werkweek of de dagen die je kiest. Hetzelfde item kan naar meerdere mensen."],
+      ["Werkdruk in één oogopslag", "Bij elke medewerker staat een werkdrukpercentage, berekend uit de toegewezen uren en het eigen rooster, zodat over- en onderbelasting opvalt."],
+      ["Medewerkers, afdelingen & roosters", "Groepeer medewerkers per afdeling, met eigen werkdagen, uren en pauzes."],
+      ["Vakanties & feestdagen", "Leg vakantieperiodes vast — de planner wijst geen werk toe aan wie afwezig is. Feestdagen in Oekraïne of Nederland staan in de kalender."],
+      ["Taakstatus & overdracht", "Markeer toegewezen taken als klaar of bezig, en draag een toewijzing voor één dag of de hele week over aan een andere medewerker."],
+      ["Roosters delen per e-mail", "Stuur een medewerker het rooster voor een dag of de week. Ops Planner zet het bericht klaar en opent het in je eigen e-mailapp, zodat je het kunt nalezen en versturen."],
+      ["Werkdrukrapport in Excel", "Maak een .xlsx-rapport van toewijzingen en werkdruk voor de gekozen dagen en voeg het toe aan een e-mail aan de manager, ook via je eigen e-mailapp."],
+      ["Export & import", "Bewaar een volledige kopie van je gegevens als JSON-bestand waar je maar wilt en zet het later terug — bijvoorbeeld bij een nieuwe telefoon."],
+    ],
+    localLabel: "03 / Lokaal eerst",
+    localTitle: "Je planning blijft op je telefoon",
+    localLead: "Geen account. Geen server.",
+    localText: "Alles wat je in Ops Planner invoert, wordt alleen op je toestel opgeslagen. Er is geen registratie, geen cloudsynchronisatie, geen advertenties en geen analytics. Gegevens verlaten je toestel alleen als jij een e-mail verstuurt of een bestand exporteert.",
+    localTags: ["Geen account nodig", "Geen advertenties of tracking", "Oekraïens, Engels, Nederlands", "Licht & donker thema"],
+    dataLabel: "Jouw gegevens",
+    data: ["Opgeslagen op dit toestel", "Alleen als jij dat kiest: e-mail via je mailapp of een exportbestand"],
+    readPolicy: ["Lees het", " (Engels)."],
+    availTitle: "Beschikbaarheid",
+    availText: "Ops Planner is gemaakt voor Android en wordt nu getest op Google Play. Een link naar de appwinkel volgt hier zodra de vermelding openbaar is. Hulp nodig in de tussentijd? Ga naar",
+    supportLink: "Ops Planner Support (Engels)",
+    orEmail: "of mail naar",
+  },
+  uk: {
+    title: "Ops Planner — Плануйте тиждень команди",
+    description: "Ops Planner — застосунок для Android, щоб розподіляти завдання, чергування й події відділу між працівниками на тиждень. Усі дані лишаються на вашому пристрої — без акаунта й сервера.",
+    og: "Розподіляйте завдання, чергування й події відділу між працівниками на тиждень. Лише локально: без акаунта й сервера.",
+    h1: "Плануйте тиждень команди.",
+    lead: "Ops Planner допомагає розподіляти завдання, чергування й події відділу між працівниками день за днем. Перетягніть завдання на людину, бачте навантаження кожного з першого погляду й надсилайте кожному його розклад.",
+    howLabel: "Як це працює",
+    howTitle: "Від переліку робіт до тижневого плану",
+    steps: [
+      ["Додайте команду", "Внесіть працівників із посадою, відділом, робочими днями й годинами, електронною адресою та відпустками."],
+      ["Сформуйте пул", "Опишіть регулярну роботу відділу як завдання, чергування й події з орієнтовними годинами та часом."],
+      ["Призначайте й діліться", "Перетягуйте пункти на працівників на день чи весь тиждень, а потім надішліть кожному розклад або звіт про навантаження керівнику."],
+    ],
+    featLabel: "Можливості",
+    featTitle: "Що вміє Ops Planner",
+    features: [
+      ["Тижневе планування перетягуванням", "Призначайте завдання, чергування чи подію працівнику на один день, на весь робочий тиждень або на будь-які вибрані дні. Один пункт можна дати кільком людям."],
+      ["Навантаження з першого погляду", "Біля кожного працівника — відсоток навантаження, порахований із призначених годин і його власного графіка, тож перевантаження й недовантаження одразу помітні."],
+      ["Працівники, відділи й графіки", "Групуйте працівників за відділами, з індивідуальними робочими днями, годинами й перервами."],
+      ["Відпустки й державні свята", "Вносьте періоди відпусток — планувальник не призначить роботу тому, хто відсутній. Державні свята України чи Нідерландів позначені в календарі."],
+      ["Статус і передача завдань", "Позначайте призначені завдання як виконані чи в роботі та передавайте призначення іншому працівнику на день або весь тиждень."],
+      ["Розклади поштою", "Надішліть працівнику розклад на день чи тиждень. Ops Planner підготує лист і відкриє його у вашому поштовому застосунку, щоб ви перевірили й надіслали."],
+      ["Звіт про навантаження в Excel", "Створіть звіт .xlsx про призначення й навантаження за вибрані дні та додайте його до листа керівнику — так само через ваш поштовий застосунок."],
+      ["Експорт та імпорт", "Збережіть повну копію даних у файл JSON будь-куди й відновіть пізніше — наприклад, при переході на новий телефон."],
+    ],
+    localLabel: "03 / Спершу локально",
+    localTitle: "Ваш план лишається на телефоні",
+    localLead: "Без акаунта. Без сервера.",
+    localText: "Усе, що ви вносите в Ops Planner, зберігається лише на вашому пристрої. Немає реєстрації, хмарної синхронізації, реклами чи аналітики. Дані залишають пристрій тільки тоді, коли ви самі надсилаєте лист або експортуєте файл.",
+    localTags: ["Акаунт не потрібен", "Без реклами й стеження", "Українська, англійська, нідерландська", "Світла й темна тема"],
+    dataLabel: "Ваші дані",
+    data: ["Зберігаються на цьому пристрої", "Лише коли ви вирішите: лист через ваш поштовий застосунок або файл експорту"],
+    readPolicy: ["Прочитайте", " (англійською)."],
+    availTitle: "Доступність",
+    availText: "Ops Planner створено для Android, зараз він на тестуванні в Google Play. Посилання на магазин з'явиться тут, щойно сторінка стане публічною. Якщо потрібна допомога вже зараз, відкрийте",
+    supportLink: "Ops Planner Support (англійською)",
+    orEmail: "або напишіть на",
+  },
+}[lang];
+const en = lang !== "en" ? "en" : undefined;
+---
+<ProductLayout project={project} tab="overview" route="opsPlanner" lang={lang} title={COPY.title} description={COPY.description} ogDescription={COPY.og}>
+  <ProjectHero project={project} eyebrow="Ops Planner" title={COPY.h1} lead={COPY.lead} lang={lang}>
+    <div class="btn-row">
+      <a class="btn btn--primary" href="/support/ops-planner/" hreflang={en}>{t.project.getSupport}</a>
+      <a class="btn btn--ghost" href="/privacy/ops-planner/" hreflang={en}>{t.product.privacy}</a>
+    </div>
+  </ProjectHero>
+
+  <section class="section" aria-labelledby="how-title">
+    <div class="container">
+      <SectionHead index={1} label={COPY.howLabel} title={COPY.howTitle} id="how-title" />
+      <ol class="steps">
+        {COPY.steps.map(([h, p]) => (
+          <li>
+            <h3>{h}</h3>
+            <p>{p}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="features-title">
+    <div class="container">
+      <SectionHead index={2} label={COPY.featLabel} title={COPY.featTitle} id="features-title" />
+      <dl class="features">
+        {COPY.features.map(([term, text]) => <div><dt>{term}</dt><dd>{text}</dd></div>)}
+      </dl>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="local-title">
+    <div class="container split">
+      <div>
+        <span class="eyebrow">{COPY.localLabel}</span>
+        <h2 id="local-title">{COPY.localTitle}</h2>
+        <p class="lead">{COPY.localLead}</p>
+        <p class="muted">{COPY.localText}</p>
+        <ul class="tag-list">
+          {COPY.localTags.map((tag) => <li>{tag}</li>)}
+        </ul>
+      </div>
+      <div class="panel panel--note">
+        <p class="meta">{COPY.dataLabel}</p>
+        <ol class="steps steps--plain">
+          {COPY.data.map((d) => <li><h3>{d}</h3></li>)}
+        </ol>
+        <p class="muted small">{COPY.readPolicy[0]} <a href="/privacy/ops-planner/" hreflang={en}>{t.product.privacy}</a>{COPY.readPolicy[1]}</p>
+      </div>
+    </div>
+  </section>
+
+  <ProjectGallery project={project} index={4} lang={lang} />
+
+  <section class="section section--tight" aria-labelledby="availability-title">
+    <div class="container">
+      <div class="panel measure">
+        <h2 id="availability-title">{COPY.availTitle}</h2>
+        <p class="muted">{COPY.availText} <a href="/support/ops-planner/" hreflang={en}>{COPY.supportLink}</a> {COPY.orEmail} <a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a>.</p>
+      </div>
+    </div>
+  </section>
+</ProductLayout>

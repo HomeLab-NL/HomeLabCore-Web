@@ -2,7 +2,11 @@
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import { ROUTES, type RouteKey } from "../data/routes";
-import { SITE_URL, type NavKey } from "../data/site";
+import { SITE_URL, THEME_STORAGE_KEY, type NavKey } from "../data/site";
+import { accentCss, allProjects } from "../lib/projects";
+import { socialImage } from "../lib/social";
+import { LOCALES, LOCALE_INFO, TRANSLATED_PATHS, localizedPath, type Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 
 interface Props {
   route: RouteKey;
@@ -12,10 +16,11 @@ interface Props {
   ogTitle?: string;
   ogDescription?: string;
   ogType?: "website" | "article";
-  /** Product accent, set as <html data-brand>. */
-  brand?: "cookfrom" | "opsplanner";
+  /** Project id: applies that project's accent to the whole page. */
+  project?: string;
   navCurrent?: NavKey;
   navSection?: NavKey;
+  lang?: Locale;
 }
 
 const {
@@ -25,40 +30,68 @@ const {
   ogTitle = title,
   ogDescription = description,
   ogType = "website",
-  brand,
+  project,
   navCurrent,
   navSection,
+  lang = "en",
 } = Astro.props;
 
 const { path, indexed } = ROUTES[route];
-const url = SITE_URL + path;
+const url = SITE_URL + localizedPath(path, lang);
+// Translated pages list every language version (and English as the default).
+const alternates = indexed && TRANSLATED_PATHS.has(path)
+  ? [...LOCALES.map((l) => ({ hreflang: LOCALE_INFO[l].hreflang, href: SITE_URL + localizedPath(path, l) })), { hreflang: "x-default", href: SITE_URL + path }]
+  : [];
+const accents = accentCss(await allProjects());
+// Social preview image: the project's own image if it has one, otherwise the
+// global HomeLabCore image. Absolute URLs; independent of the site theme.
+const og = await socialImage(project);
+
+// Runs before the stylesheet and before <body> exists: applies a saved manual
+// theme choice so the first paint is already in that theme. No saved choice
+// (or no storage) -> the light default in the markup stays. The OS
+// prefers-color-scheme setting is deliberately not consulted.
+const themeInit = `(function(){var d=document.documentElement;d.classList.add("js");var t;try{t=localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)})}catch(e){}if(t==="dark"||t==="light"){d.setAttribute("data-theme",t);var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#0b0d10":"#fafaf7")}})();`;
 ---
 <!DOCTYPE html>
-<html lang="en" data-brand={brand}>
+<html lang={LOCALE_INFO[lang].hreflang} data-theme="light" data-project={project}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafaf7">
+  <script is:inline set:html={themeInit}></script>
   <title>{title}</title>
   <meta name="description" content={description}>
   {indexed ? <link rel="canonical" href={url}> : <meta name="robots" content="noindex">}
-  <meta name="theme-color" content="#0b0d10">
+  {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href}>)}
   {indexed && (
     <>
       <meta property="og:type" content={ogType}>
       <meta property="og:site_name" content="HomeLabCore">
+      <meta property="og:locale" content={LOCALE_INFO[lang].ogLocale}>
       <meta property="og:title" content={ogTitle}>
       <meta property="og:description" content={ogDescription}>
       <meta property="og:url" content={url}>
-      <meta name="twitter:card" content="summary">
+      <meta property="og:image" content={og.url}>
+      <meta property="og:image:type" content={og.type}>
+      <meta property="og:image:width" content={String(og.width)}>
+      <meta property="og:image:height" content={String(og.height)}>
+      <meta property="og:image:alt" content={og.alt}>
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content={ogTitle}>
+      <meta name="twitter:description" content={ogDescription}>
+      <meta name="twitter:image" content={og.url}>
+      <meta name="twitter:image:alt" content={og.alt}>
     </>
   )}
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <style is:inline set:html={accents}></style>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main">{ui(lang).skip}</a>
 
-  <SiteHeader current={navCurrent} section={navSection} />
+  <SiteHeader current={navCurrent} section={navSection} lang={lang} path={path} />
 
   <slot name="pagebar" />
 
@@ -66,7 +99,7 @@ const url = SITE_URL + path;
     <slot />
   </main>
 
-  <SiteFooter />
+  <SiteFooter lang={lang} />
 
   <script is:inline src="/assets/js/main.js" defer></script>
 </body>

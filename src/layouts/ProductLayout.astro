@@ -1,14 +1,15 @@
 ---
-import type { CollectionEntry } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
 import ProductPageBar, { type ProductTab } from "../components/ProductPageBar.astro";
 import type { RouteKey } from "../data/routes";
+import type { Project } from "../lib/projects";
+import type { Locale } from "../i18n/locales";
 
-// Pages that belong to one app: product overview, privacy policy, support.
-// Adds the app accent, the breadcrumb + product sub-nav, and highlights the
-// app's parent section in the global nav.
+// Pages that belong to one project: overview, privacy policy, support.
+// Applies the project accent, adds the breadcrumb + product sub-nav, and
+// highlights the project's section in the global nav.
 interface Props {
-  app: CollectionEntry<"apps">;
+  project: Project;
   tab: ProductTab;
   route: RouteKey;
   title: string;
@@ -16,11 +17,13 @@ interface Props {
   ogTitle?: string;
   ogDescription?: string;
   ogType?: "website" | "article";
+  lang?: Locale;
 }
 
-const { app, tab, ...meta } = Astro.props;
+const { project, tab, lang = "en", ...meta } = Astro.props;
+const navSection = tab === "support" ? "support" : project.data.section;
 ---
-<BaseLayout {...meta} brand={app.data.brand} navSection={tab === "support" ? "support" : "apps"}>
-  <ProductPageBar slot="pagebar" app={app} tab={tab} />
+<BaseLayout {...meta} lang={lang} project={project.id} navSection={navSection}>
+  <ProductPageBar slot="pagebar" project={project} tab={tab} lang={lang} />
   <slot />
 </BaseLayout>

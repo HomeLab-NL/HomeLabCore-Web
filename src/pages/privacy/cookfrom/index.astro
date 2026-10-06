@@ -2,10 +2,10 @@
 import { getEntry } from "astro:content";
 import ProductLayout from "../../../layouts/ProductLayout.astro";
 
-const app = (await getEntry("apps", "cookfrom"))!;
+const project = (await getEntry("projects", "cookfrom"))!;
 ---
 <ProductLayout
-  app={app}
+  project={project}
   tab="privacy"
   route="privacyCookfrom"
   title="CookFrom Privacy Policy — HomeLabCore"

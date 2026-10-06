@@ -1,0 +1,51 @@
+---
+import ProductLayout from "../layouts/ProductLayout.astro";
+import ProjectGallery from "./ProjectGallery.astro";
+import ProjectHero from "./ProjectHero.astro";
+import { routeForPath } from "../data/routes";
+import { CONTACT } from "../data/site";
+import { localizeProject, type Project } from "../lib/projects";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+
+// Generic overview page for projects without a hand-written page. It shows
+// only what the project entry states; missing information is listed openly.
+interface Props {
+  /** The English entry; texts are localized here. */
+  project: Project;
+  lang?: Locale;
+}
+
+const { lang = "en" } = Astro.props;
+const enUrl = Astro.props.project.data.urls.overview;
+const project = localizeProject(Astro.props.project, lang);
+const { name, summary, kind, missing } = project.data;
+const t = ui(lang).project;
+---
+<ProductLayout
+  project={project}
+  tab="overview"
+  route={routeForPath(enUrl)}
+  lang={lang}
+  title={`${name} — HomeLabCore`}
+  description={summary}
+>
+  <ProjectHero project={project} eyebrow={kind} title={name} lead={summary} lang={lang} />
+
+  <ProjectGallery project={project} index={1} lang={lang} />
+
+  {missing.length > 0 && (
+    <section class="section section--tight">
+      <div class="container">
+        <div class="panel panel--note measure">
+          <h2>{t.moreTitle}</h2>
+          <p class="muted">{t.moreIntro(name)}</p>
+          <ul class="muted">
+            {missing.map((m) => <li>{m}</li>)}
+          </ul>
+          <p class="small">{t.questions} <a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a>.</p>
+        </div>
+      </div>
+    </section>
+  )}
+</ProductLayout>

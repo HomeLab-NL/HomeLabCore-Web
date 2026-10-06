@@ -1,0 +1,70 @@
+{
+  "name": "CookFrom",
+  "section": "apps",
+  "kind": "Android app",
+  "platforms": [
+    "Android"
+  ],
+  "status": "closed-testing",
+  "summary": "Cook with what you already have. Choose or photograph your ingredients and get an AI-assisted recipe you can adjust, save, and cook from step by step.",
+  "order": 1,
+  "featured": true,
+  "accent": {
+    "light": {
+      "fill": "#ff7a33",
+      "text": "#a8490c"
+    },
+    "dark": {
+      "fill": "#ff7a33",
+      "text": "#ff7a33"
+    }
+  },
+  "urls": {
+    "overview": "/apps/cookfrom",
+    "privacy": "/privacy/cookfrom",
+    "support": "/support/cookfrom"
+  },
+  "supportSummary": "Troubleshooting for AI recipe generation, ingredient photo recognition, Pro entitlement and purchase restoration, and application data.",
+  "visualNote": "Screens from the Android beta. The recipe shown is a built-in catalogue recipe, not a freshly generated one.",
+  "cover": {
+    "src": "../../assets/projects/cookfrom/promo.webp",
+    "alt": "CookFrom promotional banner: the CookFrom logo with the tagline “Good food. Less waste. More ideas.”, four features — AI recipes from what you have, pantry, shopping list and preferences — and a phone showing an ingredient search, beside fresh tomatoes, basil and garlic.",
+    "caption": "CookFrom — promotional artwork",
+    "kind": "promo"
+  },
+  "hero": {
+    "src": "../../assets/projects/cookfrom/hero.webp",
+    "alt": "CookFrom: current application screens. Real Android beta · 0.11.78.",
+    "caption": "CookFrom — Android beta",
+    "kind": "composition"
+  },
+  "figures": [
+    {
+      "src": "../../assets/projects/cookfrom/gallery-01-ingredients.webp",
+      "alt": "Choose ingredients from the illustrated catalog.",
+      "caption": "Choose ingredients from the illustrated catalog.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/cookfrom/gallery-02-dishes.webp",
+      "alt": "Browse the existing dish catalog.",
+      "caption": "Browse the existing dish catalog.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/cookfrom/gallery-03-recipe.webp",
+      "alt": "A built-in Ukrainian Borscht recipe with servings and ingredients.",
+      "caption": "A built-in Ukrainian Borscht recipe with servings and ingredients.",
+      "kind": "composition"
+    },
+    {
+      "src": "../../assets/projects/cookfrom/gallery-04-cooking.webp",
+      "alt": "Follow the recipe one cooking step at a time.",
+      "caption": "Follow the recipe one cooking step at a time.",
+      "kind": "composition"
+    }
+  ],
+  "missing": [
+    "Google Play store URL (listing not public yet)"
+  ]
+}

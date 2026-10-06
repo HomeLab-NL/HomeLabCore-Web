@@ -1,0 +1,53 @@
+[
+  {
+    "id": "2026-10-04-mountains-concept-art",
+    "date": "2026-10-04",
+    "title": "Concept art added for At the Mountains of Madness, setting its intended visual direction.",
+    "projects": [
+      "at-the-mountains-of-madness"
+    ],
+    "href": "/lab/at-the-mountains-of-madness/"
+  },
+  {
+    "id": "2026-10-03-project-visuals",
+    "date": "2026-10-03",
+    "title": "Real application screens added for CookFrom, Ops Planner, AI Tutor and Keyboard Trainer, and architecture diagrams for AgentLab.",
+    "projects": [
+      "cookfrom",
+      "ops-planner",
+      "ai-tutor",
+      "keyboard-trainer",
+      "agentlab"
+    ],
+    "href": "/apps/"
+  },
+  {
+    "id": "2026-10-03-new-projects",
+    "date": "2026-10-03",
+    "title": "AI Tutor, Keyboard Trainer, AgentLab and At the Mountains of Madness are now listed on HomeLabCore.",
+    "projects": [
+      "ai-tutor",
+      "keyboard-trainer",
+      "agentlab",
+      "at-the-mountains-of-madness"
+    ]
+  },
+  {
+    "id": "2026-09-24-ops-planner",
+    "date": "2026-09-24",
+    "title": "Ops Planner product page, privacy policy and support page published.",
+    "projects": [
+      "ops-planner"
+    ],
+    "href": "/apps/ops-planner/"
+  },
+  {
+    "id": "2026-09-01-cookfrom",
+    "date": "2026-09-01",
+    "title": "CookFrom product page, privacy policy and support page published.",
+    "projects": [
+      "cookfrom"
+    ],
+    "href": "/apps/cookfrom"
+  }
+]

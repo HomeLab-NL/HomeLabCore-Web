@@ -1,0 +1,196 @@
+---
+import { getEntry } from "astro:content";
+import ProductLayout from "../layouts/ProductLayout.astro";
+import ProjectGallery from "../components/ProjectGallery.astro";
+import ProjectHero from "../components/ProjectHero.astro";
+import SectionHead from "../components/SectionHead.astro";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+import { localizeProject } from "../lib/projects";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const project = localizeProject((await getEntry("projects", "cookfrom"))!, lang);
+const t = ui(lang);
+
+const COPY = {
+  en: {
+    title: "CookFrom — Cook with what you already have",
+    description: "CookFrom is a cooking assistant that helps you cook from ingredients you already have: choose or photograph ingredients, get AI-assisted recipes, and manage a pantry, shopping list, and favorites.",
+    og: "A cooking assistant that helps you cook from ingredients you already have, with AI-assisted recipes, a pantry, shopping list, and favorites.",
+    h1: "Cook with what you already have.",
+    lead: "Pick the ingredients in your kitchen or scan them from a photo. CookFrom drafts an AI-assisted recipe you can adjust, save, and cook from step by step.",
+    howLabel: "How it works",
+    howTitle: "From ingredients to a recipe",
+    steps: [
+      ["Choose ingredients", "Select the ingredients you already have, or point your camera at them and let CookFrom recognize ingredients from a photo."],
+      ["Generate a recipe", "CookFrom uses AI-assisted recipe generation to suggest something you can make, taking your dietary preferences and allergies into account."],
+      ["Cook and adjust", "Adjust servings, edit the recipe, and switch to Cooking Mode to follow the steps while you work."],
+    ],
+    featLabel: "Features",
+    featTitle: "What CookFrom includes",
+    features: [
+      ["Ingredients & photo recognition", "Choose ingredients from a list, or recognize ingredients from a photo to build your selection faster."],
+      ["AI-assisted recipe generation", "Turn your selected ingredients into a recipe suggestion, then regenerate or refine it."],
+      ["Pantry & inventory", "Keep track of what is in your kitchen so recipe suggestions match what you actually have."],
+      ["Shopping list", "Collect the items you still need into a shopping list you can take to the store."],
+      ["Favorites & recipe history", "Save recipes you like and look back at ones you generated before."],
+      ["Dietary preferences & allergies", "Set dietary preferences, allergies, and dislikes so recipes are drafted with them in mind."],
+      ["Servings adjustment & recipe editing", "Scale a recipe up or down for the number of people you are cooking for, and edit the details to suit you."],
+      ["Cooking Mode", "Follow a recipe step by step in a view designed for use while you cook."],
+    ],
+    proTitle: "A little more, when you need it",
+    proLead: "Optional, not required.",
+    proText: "CookFrom Pro is optional. It provides additional AI usage and access to selected premium and experimental AI capabilities.",
+    proTags: ["Additional AI usage", "Premium and experimental AI capabilities"],
+    proNote: "Pro is offered as a Google Play subscription; your Pro status is tied to your purchase and verified through Google Play.",
+    coreLabel: "Core workflow",
+    core: ["Choose ingredients", "Generate a recipe", "Cook step by step"],
+    coreNote: "Available without a subscription.",
+    availTitle: "Availability",
+    availText: "CookFrom is built for Android. Store links will be added here once the listing is public. For help in the meantime, visit",
+    supportLink: "CookFrom Support",
+  },
+  nl: {
+    title: "CookFrom — Kook met wat je al in huis hebt",
+    description: "CookFrom is een kookassistent die je helpt koken met ingrediënten die je al hebt: kies of fotografeer ingrediënten, krijg recepten met hulp van AI en beheer een voorraadkast, boodschappenlijst en favorieten.",
+    og: "Een kookassistent om te koken met wat je al hebt, met recepten met hulp van AI, een voorraadkast, boodschappenlijst en favorieten.",
+    h1: "Kook met wat je al in huis hebt.",
+    lead: "Kies de ingrediënten in je keuken of scan ze vanaf een foto. CookFrom stelt met hulp van AI een recept op dat je kunt aanpassen, bewaren en stap voor stap kunt volgen.",
+    howLabel: "Zo werkt het",
+    howTitle: "Van ingrediënten naar een recept",
+    steps: [
+      ["Kies ingrediënten", "Selecteer de ingrediënten die je al hebt, of richt je camera erop en laat CookFrom ze herkennen op een foto."],
+      ["Maak een recept", "CookFrom stelt met hulp van AI een recept voor dat je kunt maken, rekening houdend met je dieetvoorkeuren en allergieën."],
+      ["Koken en aanpassen", "Pas het aantal porties aan, bewerk het recept en schakel over naar de kookmodus om de stappen tijdens het koken te volgen."],
+    ],
+    featLabel: "Functies",
+    featTitle: "Wat CookFrom biedt",
+    features: [
+      ["Ingrediënten & fotoherkenning", "Kies ingrediënten uit een lijst of herken ze op een foto om je selectie sneller samen te stellen."],
+      ["Recepten met hulp van AI", "Maak van je gekozen ingrediënten een receptvoorstel en genereer het opnieuw of verfijn het."],
+      ["Voorraadkast", "Houd bij wat er in je keuken is, zodat receptvoorstellen passen bij wat je echt hebt."],
+      ["Boodschappenlijst", "Zet wat je nog nodig hebt op een boodschappenlijst die je mee naar de winkel neemt."],
+      ["Favorieten & receptgeschiedenis", "Bewaar recepten die je lekker vindt en kijk terug naar recepten die je eerder maakte."],
+      ["Dieetvoorkeuren & allergieën", "Stel dieetvoorkeuren, allergieën en dingen die je niet lust in, zodat recepten daar rekening mee houden."],
+      ["Porties aanpassen & recepten bewerken", "Schaal een recept op of af naar het aantal mensen voor wie je kookt en pas de details naar wens aan."],
+      ["Kookmodus", "Volg een recept stap voor stap in een weergave die gemaakt is voor tijdens het koken."],
+    ],
+    proTitle: "Iets meer, als je het nodig hebt",
+    proLead: "Optioneel, niet verplicht.",
+    proText: "CookFrom Pro is optioneel. Het geeft extra AI-gebruik en toegang tot geselecteerde premium en experimentele AI-functies.",
+    proTags: ["Extra AI-gebruik", "Premium en experimentele AI-functies"],
+    proNote: "Pro wordt aangeboden als abonnement via Google Play; je Pro-status hoort bij je aankoop en wordt via Google Play gecontroleerd.",
+    coreLabel: "Basisworkflow",
+    core: ["Kies ingrediënten", "Maak een recept", "Kook stap voor stap"],
+    coreNote: "Beschikbaar zonder abonnement.",
+    availTitle: "Beschikbaarheid",
+    availText: "CookFrom is gemaakt voor Android. Links naar de appwinkel volgen hier zodra de vermelding openbaar is. Hulp nodig in de tussentijd? Ga naar",
+    supportLink: "CookFrom Support (Engels)",
+  },
+  uk: {
+    title: "CookFrom — Готуйте з того, що вже є",
+    description: "CookFrom — кулінарний помічник, який допомагає готувати з інгредієнтів, що вже є вдома: виберіть або сфотографуйте інгредієнти, отримайте рецепти, складені за допомогою AI, і ведіть комору, список покупок та улюблене.",
+    og: "Кулінарний помічник, щоб готувати з того, що вже є: рецепти за допомогою AI, комора, список покупок і улюблене.",
+    h1: "Готуйте з того, що вже є.",
+    lead: "Виберіть інгредієнти, які є на кухні, або відскануйте їх з фото. CookFrom за допомогою AI складе рецепт, який можна змінити, зберегти й готувати крок за кроком.",
+    howLabel: "Як це працює",
+    howTitle: "Від інгредієнтів до рецепта",
+    steps: [
+      ["Виберіть інгредієнти", "Позначте інгредієнти, які вже маєте, або наведіть на них камеру — CookFrom розпізнає інгредієнти на фото."],
+      ["Отримайте рецепт", "CookFrom за допомогою AI пропонує страву, яку можна приготувати, з урахуванням ваших харчових уподобань та алергій."],
+      ["Готуйте й змінюйте", "Змініть кількість порцій, відредагуйте рецепт і перейдіть у режим приготування, щоб іти за кроками під час роботи."],
+    ],
+    featLabel: "Можливості",
+    featTitle: "Що вміє CookFrom",
+    features: [
+      ["Інгредієнти й розпізнавання фото", "Вибирайте інгредієнти зі списку або розпізнавайте їх на фото, щоб швидше скласти вибір."],
+      ["Рецепти за допомогою AI", "Перетворіть вибрані інгредієнти на пропозицію рецепта, а потім згенеруйте її заново чи уточніть."],
+      ["Комора й запаси", "Відстежуйте, що є на кухні, щоб пропоновані рецепти відповідали тому, що у вас справді є."],
+      ["Список покупок", "Збирайте те, чого бракує, у список покупок, який можна взяти з собою в магазин."],
+      ["Улюблене й історія рецептів", "Зберігайте рецепти, які сподобалися, і повертайтеся до згенерованих раніше."],
+      ["Харчові уподобання й алергії", "Вкажіть уподобання, алергії та те, чого не любите, — рецепти враховуватимуть це."],
+      ["Порції й редагування рецептів", "Збільшуйте чи зменшуйте рецепт під кількість людей і змінюйте деталі на свій смак."],
+      ["Режим приготування", "Готуйте за рецептом крок за кроком у вигляді, зручному під час готування."],
+    ],
+    proTitle: "Трохи більше, коли потрібно",
+    proLead: "За бажанням, не обов'язково.",
+    proText: "CookFrom Pro — необов'язкова підписка. Вона дає додаткове використання AI і доступ до вибраних преміальних та експериментальних AI-можливостей.",
+    proTags: ["Додаткове використання AI", "Преміальні й експериментальні AI-можливості"],
+    proNote: "Pro пропонується як підписка в Google Play; ваш статус Pro прив'язаний до покупки й перевіряється через Google Play.",
+    coreLabel: "Основний сценарій",
+    core: ["Виберіть інгредієнти", "Отримайте рецепт", "Готуйте крок за кроком"],
+    coreNote: "Доступно без підписки.",
+    availTitle: "Доступність",
+    availText: "CookFrom створено для Android. Посилання на магазин з'явиться тут, щойно сторінка стане публічною. Якщо потрібна допомога вже зараз, відкрийте",
+    supportLink: "CookFrom Support (англійською)",
+  },
+}[lang];
+const en = lang !== "en" ? "en" : undefined;
+---
+<ProductLayout project={project} tab="overview" route="cookfrom" lang={lang} title={COPY.title} description={COPY.description} ogDescription={COPY.og}>
+  <ProjectHero project={project} eyebrow="CookFrom" title={COPY.h1} lead={COPY.lead} lang={lang}>
+    <div class="btn-row">
+      <a class="btn btn--primary" href="/support/cookfrom" hreflang={en}>{t.project.getSupport}</a>
+      <a class="btn btn--ghost" href="/privacy/cookfrom" hreflang={en}>{t.product.privacy}</a>
+    </div>
+  </ProjectHero>
+
+  <section class="section" aria-labelledby="how-title">
+    <div class="container">
+      <SectionHead index={1} label={COPY.howLabel} title={COPY.howTitle} id="how-title" />
+      <ol class="steps">
+        {COPY.steps.map(([h, p]) => (
+          <li>
+            <h3>{h}</h3>
+            <p>{p}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="features-title">
+    <div class="container">
+      <SectionHead index={2} label={COPY.featLabel} title={COPY.featTitle} id="features-title" />
+      <dl class="features">
+        {COPY.features.map(([term, text]) => <div><dt>{term}</dt><dd>{text}</dd></div>)}
+      </dl>
+    </div>
+  </section>
+
+  <ProjectGallery project={project} index={3} lang={lang} />
+
+  <section class="section" aria-labelledby="pro-title">
+    <div class="container split">
+      <div>
+        <span class="eyebrow">04 / CookFrom Pro</span>
+        <h2 id="pro-title">{COPY.proTitle}</h2>
+        <p class="lead">{COPY.proLead}</p>
+        <p class="muted">{COPY.proText}</p>
+        <ul class="tag-list">
+          {COPY.proTags.map((tag) => <li>{tag}</li>)}
+        </ul>
+        <p class="muted small">{COPY.proNote}</p>
+      </div>
+      <div class="panel panel--note">
+        <p class="meta">{COPY.coreLabel}</p>
+        <ol class="steps steps--plain">
+          {COPY.core.map((c) => <li><h3>{c}</h3></li>)}
+        </ol>
+        <p class="muted small">{COPY.coreNote}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight" aria-labelledby="availability-title">
+    <div class="container">
+      <div class="panel measure">
+        <h2 id="availability-title">{COPY.availTitle}</h2>
+        <p class="muted">{COPY.availText} <a href="/support/cookfrom" hreflang={en}>{COPY.supportLink}</a>.</p>
+      </div>
+    </div>
+  </section>
+</ProductLayout>
