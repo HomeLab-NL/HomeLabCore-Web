@@ -1178,34 +1178,46 @@ img {
   }
 }
 
-/* Phones and small tablets: the three steps overlap like a fanned stack,
-   each one a little lower and alternately left and right of the last. */
+/* Phones and small tablets: the three steps overlap like the Keyboard
+   Trainer pieces: each smaller screen lies over a corner of the previous
+   one, and the step label sits as a tag on its own card. */
 @media (max-width: 819px) {
   .tutor-steps {
     display: block;
+    padding-bottom: 0.5rem;
   }
 
   .tutor-steps li {
     position: relative;
-    width: 84%;
+    width: 80%;
   }
 
   .tutor-steps li:nth-child(2) {
-    margin: -16% 0 0 auto;
+    width: 68%;
+    margin: -30% 0 0 auto;
     z-index: 1;
   }
 
   .tutor-steps li:nth-child(3) {
-    margin: -16% 0 0 6%;
+    width: 68%;
+    margin: -22% 0 0 6%;
     z-index: 2;
   }
 
-  /* Labels sit over the card below them, so they get their own backing. */
-  .tutor-steps li + li .tutor-steps__no {
-    display: inline-block;
+  .tutor-steps li .frame {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 24px 48px -12px rgba(0, 0, 0, 0.45);
+  }
+
+  .tutor-steps .tutor-steps__no {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 1;
+    margin: 0;
     padding: 0.2rem 0.55rem;
     border-radius: 999px;
     background: var(--r-bg);
+    font-size: 0.68rem;
   }
 }
 
