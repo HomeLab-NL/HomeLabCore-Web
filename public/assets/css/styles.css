@@ -953,6 +953,14 @@ img {
   margin: 0;
 }
 
+/* Desktop: the one-sentence lead stays on a single line. */
+@media (min-width: 1100px) {
+  .xhero__lead {
+    max-width: none;
+    white-space: nowrap;
+  }
+}
+
 /* Exhibit 01: the animated flask (Codex), cropped to the flask and shown large
    straight on the wall. The SVG is 194 x 50; the crop window is x 12-42,
    y 0-46 (steam included). In dark theme a thin light halo keeps the flask's
