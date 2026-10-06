@@ -1165,12 +1165,18 @@ img {
   bottom: 0;
 }
 
-/* AgentLab: blueprint wall; the diagram is revealed as it scrolls in. */
+/* AgentLab: blueprint wall; the diagram opens at full size. */
 .room[data-room="agentlab"] {
   background-image:
     linear-gradient(color-mix(in srgb, var(--r-fg) 7%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in srgb, var(--r-fg) 7%, transparent) 1px, transparent 1px);
   background-size: 32px 32px;
+}
+
+/* A framed piece that opens its full-size image. */
+.frame--zoom {
+  display: block;
+  cursor: zoom-in;
 }
 
 .frame--plain {
@@ -1346,11 +1352,6 @@ img {
       animation-timeline: view();
       animation-range: entry 0% entry 70%;
     }
-    .draw {
-      animation: x-draw linear both;
-      animation-timeline: view();
-      animation-range: entry 15% cover 45%;
-    }
     .mountains__art img {
       animation: x-parallax linear both;
       animation-timeline: view(block);
@@ -1361,11 +1362,6 @@ img {
 @keyframes x-rise {
   from { transform: translateY(56px) scale(0.96); }
   to { transform: none; }
-}
-
-@keyframes x-draw {
-  from { clip-path: inset(0 100% 0 0); }
-  to { clip-path: inset(0 0 0 0); }
 }
 
 @keyframes x-parallax {

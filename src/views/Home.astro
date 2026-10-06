@@ -1,5 +1,5 @@
 ---
-import { Picture } from "astro:assets";
+import { Picture, getImage } from "astro:assets";
 import { getCollection, getEntry } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroExhibit from "../components/exhibition/HeroExhibit.astro";
@@ -159,6 +159,8 @@ const tutorSteps = [
 const kqMap = figureOf(keyquest, "gallery-02-quest-map");
 const kqTyping = figureOf(keyquest, "gallery-03-typing");
 const agentHero = agentlab.data.hero!;
+// The diagram's small labels need zoom on phones: it links to the full-size image.
+const agentFull = await getImage({ src: agentHero.src, format: "webp", width: agentHero.src.width });
 const mountainsArt = figureOf(mountains, "concept-expedition");
 
 const BENCH_COLUMNS = COPY.benchCols;
@@ -229,7 +231,7 @@ const BENCH_COLUMNS = COPY.benchCols;
 
   <Room project={agentlab} id="agentlab" number={5} domain={D.lab} layout="stage" prev="keyboard-trainer" lang={lang}>
     <div class="blueprint">
-      <div class="frame frame--plain draw"><Picture {...pic(agentHero, "(min-width: 1100px) 1040px, 94vw", [800, 1200, 1600])} alt={agentHero.alt} /></div>
+      <a class="frame frame--plain frame--zoom reveal" href={agentFull.src}><Picture {...pic(agentHero, "(min-width: 1100px) 1040px, 94vw", [800, 1200, 1600])} alt={agentHero.alt} /><span class="visually-hidden">{t.figure.openFull}</span></a>
       <p class="blueprint__tag">{COPY.archTag}</p>
     </div>
   </Room>
