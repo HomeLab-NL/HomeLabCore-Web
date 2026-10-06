@@ -78,7 +78,6 @@ const COPY = {
     title: "HomeLabCore — Ми будуємо ідеї.",
     description: "HomeLabCore — незалежна програмна лабораторія: застосунки для Android і вебу, експерименти та ігри, а також публічні бенчмарки робочих процесів розробки з AI.",
     eyebrow: "Незалежна лабораторія програмного забезпечення та AI",
-    eyebrowShort: "Незалежна лабораторія ПЗ та AI",
     h1: "Ми будуємо ідеї.",
     lead: "Застосунки, ігри та експерименти з розробкою за допомогою AI.",
     planLabel: "Зали на цій сторінці",
@@ -176,12 +175,7 @@ const BENCH_COLUMNS = COPY.benchCols;
   <section class="xhero" data-room="hall" aria-labelledby="xhero-title">
     <div class="container xhero__grid">
       <div class="xhero__text">
-        <p class="room__label"><span>HomeLabCore</span>{"eyebrowShort" in COPY ? (
-          <>
-            <span class="xhero__eyebrow-long">{COPY.eyebrow}</span>
-            <span class="xhero__eyebrow-short">{COPY.eyebrowShort}</span>
-          </>
-        ) : <span>{COPY.eyebrow}</span>}</p>
+        <p class="room__label"><span>{COPY.eyebrow}</span></p>
         <h1 class="xhero__title" id="xhero-title">{COPY.h1}</h1>
         <p class="xhero__lead">{COPY.lead}</p>
       </div>
