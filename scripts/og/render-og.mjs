@@ -38,7 +38,7 @@ const font = (file) => dataUri(`public/assets/fonts/${file}`).replace("data:imag
 // of the animated SVG), on the light "hall" wall.
 const GLOBAL_COPY = {
   en: { label: "Independent software & AI lab", title: "We build ideas." },
-  nl: { label: "Onafhankelijk software- & AI-lab", title: "We bouwen ideeën." },
+  nl: { title: "We bouwen ideeën." },
   uk: { label: "Незалежна лабораторія програмного забезпечення та AI", title: "Ми будуємо ідеї." },
 };
 const animatedFlask = dataUri("public/assets/brand/homelabcore-animated.svg").replace("data:image/svg", "data:image/svg+xml");
@@ -54,8 +54,8 @@ const globalHtml = ({ label, title }) => `<!doctype html><html><head><meta chars
   .brand { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; }
   .brand b { color: #2b5cc4; font-weight: 700; }
   .site { font-family: ${MONO}; font-size: 24px; color: #4a5160; letter-spacing: 0.04em; }
-</style></head><body>
-  <div class="label">${label}</div>
+</style></head><body${label ? "" : ' style="grid-template-rows: 1fr auto"'}>
+  ${label ? `<div class="label">${label}</div>` : ""}
   <h1>${title}</h1>
   <div class="crop"><img src="${animatedFlask}" alt=""></div>
   <div class="foot"><span class="brand">HomeLab<b>Core</b></span><span class="site">homelabcore.dev</span></div>

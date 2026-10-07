@@ -22,7 +22,7 @@ export const OG_HEIGHT = 630;
 // The global image exists once per language (same design, translated text).
 const GLOBAL_ALT: Record<Locale, string> = {
   en: "HomeLabCore — We build ideas. Independent software & AI lab.",
-  nl: "HomeLabCore — We bouwen ideeën. Onafhankelijk software- & AI-lab.",
+  nl: "HomeLabCore — We bouwen ideeën.",
   uk: "HomeLabCore — Ми будуємо ідеї. Незалежна лабораторія програмного забезпечення та AI.",
 };
 const globalImage = (lang: Locale): SocialImage => ({

@@ -1,5 +1,7 @@
 // Tiny static server for dist/, mirroring Cloudflare Pages path resolution:
 // /x serves x, x.html or x/index.html; anything else is 404.html with 404.
+// Path rules in dist/_headers (e.g. the security headers on /*) are applied
+// to responses as Cloudflare does, so browser checks run under the same CSP.
 
 import fs from "node:fs";
 import http from "node:http";
@@ -17,6 +19,8 @@ const TYPES = {
   ".avif": "image/avif",
   ".xml": "application/xml",
   ".txt": "text/plain",
+  ".woff2": "font/woff2",
+  ".jpg": "image/jpeg",
 };
 
 export function resolveFile(urlPath) {
@@ -26,9 +30,56 @@ export function resolveFile(urlPath) {
     .find((f) => f.startsWith(DIST) && fs.existsSync(f) && fs.statSync(f).isFile());
 }
 
+/**
+ * Path rules from dist/_headers as [{ pattern: RegExp, headers: {name: value} }].
+ * Rules for absolute URLs (preview hosts) are skipped.
+ */
+export function headerRules() {
+  const file = path.join(DIST, "_headers");
+  if (!fs.existsSync(file)) return [];
+  const rules = [];
+  for (const line of fs.readFileSync(file, "utf8").split("\n")) {
+    if (!line.trim() || line.trim().startsWith("#")) continue;
+    if (!/^\s/.test(line)) {
+      const glob = line.trim();
+      rules.push({
+        skip: !glob.startsWith("/"),
+        pattern: new RegExp("^" + glob.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*") + "$"),
+        headers: {},
+      });
+      continue;
+    }
+    const i = line.indexOf(":");
+    rules.at(-1).headers[line.slice(0, i).trim()] = line.slice(i + 1).trim();
+  }
+  return rules.filter((r) => !r.skip);
+}
+
+export function headersFor(urlPath, rules = headerRules()) {
+  return Object.assign({}, ...rules.filter((r) => r.pattern.test(urlPath)).map((r) => r.headers));
+}
+
+/** Contents of every inline <script> (no src, JavaScript type) in the built pages. */
+export function inlineScripts() {
+  const out = [];
+  for (const p of pagePaths()) {
+    const html = fs.readFileSync(resolveFile(p), "utf8");
+    for (const [, attrs, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
+      if (/\bsrc=/.test(attrs)) continue;
+      const type = attrs.match(/\btype="([^"]*)"/)?.[1];
+      if (type && !/^(text\/javascript|module)$/.test(type)) continue;
+      out.push(body);
+    }
+  }
+  return out;
+}
+
 export function serve() {
+  const rules = headerRules();
   const server = http.createServer((req, res) => {
-    const file = resolveFile(new URL(req.url, "http://x").pathname);
+    const pathname = new URL(req.url, "http://x").pathname;
+    for (const [name, value] of Object.entries(headersFor(pathname, rules))) res.setHeader(name, value);
+    const file = resolveFile(pathname);
     if (!file) {
       res.writeHead(404, { "Content-Type": TYPES[".html"] });
       fs.createReadStream(path.join(DIST, "404.html")).pipe(res);

@@ -53,7 +53,7 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
     },
     "ai-tutor": {
       kind: "Android-app",
-      summary: "Een Android-app in ontwikkeling die leerlingen stap voor stap door wiskundesommen helpt — met Hint en Anders uitleggen — in plaats van meteen het antwoord te geven.",
+      summary: "Een Android-app in ontwikkeling die leerlingen stap voor stap door wiskundesommen helpt — met hints en anders uitleggen — in plaats van meteen het antwoord te geven.",
       visualNote: "Getoond in de ingebouwde voorbeeldmodus van de app met de voorbeeldsom 3x + 7 = 22 — dit zijn geen live AI-antwoorden. De app toont nu nog de ontwikkelnaam Homework Tutor.",
       missing: ["Publieke release of vermelding in een appwinkel"],
       hero: { caption: "AI Tutor — ingebouwde voorbeeldmodus", alt: "AI Tutor: actuele app-schermen. Echte app-interface · ingebouwde voorbeeldmodus." },
