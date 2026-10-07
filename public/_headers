@@ -6,3 +6,18 @@ https://:version.homelabcore-web.pages.dev/*
 
 https://homelabcore-web.pages.dev/*
   X-Robots-Tag: noindex
+
+# Security headers for every response. The site is static and loads nothing
+# from other origins, so the policy only allows its own files. The one inline
+# script (theme setup, before first paint) is allowed by its hash:
+# INLINE_SCRIPT_HASHES is replaced at build time by scripts/build-headers.mjs.
+# Styles keep 'unsafe-inline' for the per-room style attributes; hashes would
+# disable it. Cloudflare Web Analytics is allowed in case it is switched on.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' INLINE_SCRIPT_HASHES https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()
+  Cross-Origin-Opener-Policy: same-origin

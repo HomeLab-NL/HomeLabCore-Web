@@ -1,0 +1,27 @@
+# Weekly dependency updates as pull requests; each one runs the full CI.
+# Minor and patch updates are grouped into one PR per ecosystem to keep the
+# noise down; major versions come one by one so breaking changes stay visible.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci

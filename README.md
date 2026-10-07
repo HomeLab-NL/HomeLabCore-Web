@@ -23,6 +23,7 @@ JavaScript file and optimised images (AVIF with WebP fallback).
 | `npm run test:a11y` | axe (WCAG A/AA) on every page, light and dark, phone and desktop |
 | `npm run test:theme` | Theme default, persistence, no flash, keyboard toggle, no-JS |
 | `npm run test:budget` | Per-page download budget (total, CSS, JS) |
+| `npm run test:headers` | Security headers on every page; no CSP violations in Chromium |
 | `npm run test:meta` | Titles, descriptions, canonical, Open Graph/Twitter tags, social images, sitemap/robots |
 | `npm run og` | Re-render the social preview images in `public/og/` |
 | `npm test` | All of the above (after `npm run build`) |
@@ -130,6 +131,12 @@ Cloudflare Pages deploys `main` to production and every branch to a preview.
 - Build command: `npm run build`
 - Build output directory: `dist`
 - Environment variable: `NODE_VERSION` = `22`
+
+Security headers (CSP, HSTS, framing, referrer, permissions) live in
+`public/_headers`. The build fills the CSP with the hash of each inline
+script (`scripts/build-headers.mjs`), so changing an inline script needs no
+manual header edit; `npm run test:headers` fails on any CSP violation.
+Dependabot (`.github/dependabot.yml`) opens weekly update PRs.
 
 ## Contacts
 
