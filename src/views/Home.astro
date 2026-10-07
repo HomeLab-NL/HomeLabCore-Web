@@ -23,7 +23,6 @@ const COPY = {
     h1: "We build ideas.",
     lead: "Apps, games and AI development experiments.",
     planLabel: "Rooms on this page",
-    plan: "Floor plan",
     domains: { apps: "Apps", games: "Games", lab: "Lab · AI workflows", bench: "Benchmarks" },
     days: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
     steps: ["Step", "Hint", "Explain differently"],
@@ -52,7 +51,6 @@ const COPY = {
     h1: "We bouwen ideeën.",
     lead: "Apps, games en experimenten met AI-ontwikkeling.",
     planLabel: "Zalen op deze pagina",
-    plan: "Plattegrond",
     domains: { apps: "Apps", games: "Games", lab: "Lab · AI-workflows", bench: "Benchmarks" },
     days: ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"],
     steps: ["Stap", "Hint", "Anders uitleggen"],
@@ -81,7 +79,6 @@ const COPY = {
     h1: "Ми будуємо ідеї.",
     lead: "Застосунки, ігри та експерименти з розробкою за допомогою AI.",
     planLabel: "Зали на цій сторінці",
-    plan: "План поверху",
     domains: { apps: "Застосунки", games: "Ігри", lab: "Лабораторія · AI-процеси", bench: "Бенчмарки" },
     days: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
     steps: ["Крок", "Підказка", "Пояснити інакше"],
@@ -182,12 +179,10 @@ const BENCH_COLUMNS = COPY.benchCols;
       <HeroExhibit lang={lang} />
     </div>
     <nav class="container plan" aria-label={COPY.planLabel}>
-      <p class="plan__title">{COPY.plan}</p>
       <ol class="plan__list">
         {rooms.map((r, i) => (
           <li style={`--dot:var(--room-${r.id}-bg)`}>
             <a href={`#${r.id}`}>
-              <span class="plan__no">{String(i + 1).padStart(2, "0")}</span>
               <span class="plan__name">{r.name}</span>
               <span class="plan__domain">{r.domain}</span>
             </a>
@@ -197,11 +192,11 @@ const BENCH_COLUMNS = COPY.benchCols;
     </nav>
   </section>
 
-  <Room project={cookfrom} id="cookfrom" number={1} domain={D.apps} prev="hall" lang={lang}>
+  <Room project={cookfrom} id="cookfrom" domain={D.apps} prev="hall" lang={lang}>
     <div class="frame frame--banner reveal"><Picture {...pic(cookPromo, half, [480, 800, 1200, 1600])} alt={cookPromo.alt} /></div>
   </Room>
 
-  <Room project={ops} id="ops-planner" number={2} domain={D.apps} layout="split-reverse" prev="cookfrom" lang={lang}>
+  <Room project={ops} id="ops-planner" domain={D.apps} layout="split-reverse" prev="cookfrom" lang={lang}>
     <div class="weekgrid" aria-hidden="true">
       {COPY.days.map((d) => <span>{d}</span>)}
     </div>
@@ -210,7 +205,7 @@ const BENCH_COLUMNS = COPY.benchCols;
     </div>
   </Room>
 
-  <Room project={tutor} id="ai-tutor" number={3} domain={D.apps} layout="stage" prev="ops-planner" lang={lang}>
+  <Room project={tutor} id="ai-tutor" domain={D.apps} layout="stage" prev="ops-planner" lang={lang}>
     <ol class="tutor-steps">
       {tutorSteps.map((s, i) => (
         <li class="reveal" style={`--d:${i}`}>
@@ -222,14 +217,14 @@ const BENCH_COLUMNS = COPY.benchCols;
     <p class="room__note" slot="text">{COPY.tutorNote}</p>
   </Room>
 
-  <Room project={keyquest} id="keyboard-trainer" number={4} domain={D.games} layout="split" prev="ai-tutor" lang={lang}>
+  <Room project={keyquest} id="keyboard-trainer" domain={D.games} layout="split" prev="ai-tutor" lang={lang}>
     <div class="stage-glow">
       <div class="frame frame--glow reveal"><Picture {...pic(kqTyping, half)} alt={kqTyping.alt} /></div>
       <div class="frame frame--float reveal"><Picture {...pic(kqMap, third, [480, 800])} alt={kqMap.alt} /></div>
     </div>
   </Room>
 
-  <Room project={agentlab} id="agentlab" number={5} domain={D.lab} layout="stage" prev="keyboard-trainer" lang={lang}>
+  <Room project={agentlab} id="agentlab" domain={D.lab} layout="stage" prev="keyboard-trainer" lang={lang}>
     <div class="blueprint">
       <a class="frame frame--plain frame--zoom reveal" href={agentFull.src}><Picture {...pic(agentHero, "(min-width: 1100px) 1040px, 94vw", [800, 1200, 1600])} alt={agentHero.alt} /><span class="visually-hidden">{t.figure.openFull}</span></a>
       <p class="blueprint__tag">{COPY.archTag}</p>
@@ -242,14 +237,14 @@ const BENCH_COLUMNS = COPY.benchCols;
       <Picture {...pic(mountainsArt, "100vw", [800, 1200, 1600])} alt={mountainsArt.alt} />
     </div>
     <div class="mountains__text container">
-      <p class="room__label"><span>{lang === "nl" ? "Zaal" : lang === "uk" ? "Зала" : "Room"} 06</span><span>{D.games}</span><span class="badge">{t.figure.concept}</span></p>
+      <p class="room__label"><span>{D.games}</span><span class="badge">{t.figure.concept}</span></p>
       <h2 class="room__title" id="room-mountains-title">{mountains.data.name}</h2>
       <p class="room__summary">{mountains.data.summary}</p>
       <p><a class="room__link" href={mountains.data.urls.overview}>{COPY.openProject}<span aria-hidden="true"> →</span></a></p>
     </div>
   </section>
 
-  <Room id="benchmarks" number={7} domain={D.bench} title={COPY.benchTitle} summary={COPY.benchSummary} href={href("/benchmarks/", lang)} linkText={COPY.benchLink} layout="stage" prev="at-the-mountains-of-madness" lang={lang}>
+  <Room id="benchmarks" domain={D.bench} title={COPY.benchTitle} summary={COPY.benchSummary} href={href("/benchmarks/", lang)} linkText={COPY.benchLink} layout="stage" prev="at-the-mountains-of-madness" lang={lang}>
     <div class="bench-wall">
       <div class="bench-wall__head">
         <span class="bench-wall__state"><span class="bench-wall__pulse" aria-hidden="true"></span>{benchmarks.length === 0 ? COPY.benchNone : COPY.benchCount(benchmarks.length)}</span>

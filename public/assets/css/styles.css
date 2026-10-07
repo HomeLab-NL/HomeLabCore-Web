@@ -1035,15 +1035,6 @@ img {
   margin-top: clamp(2.5rem, 6vw, 4.5rem);
 }
 
-.plan__title {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--r-muted);
-  margin: 0 0 0.8rem;
-}
-
 .plan__list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -1072,7 +1063,6 @@ img {
   box-shadow: var(--shadow-lift);
 }
 
-.plan__no,
 .plan__domain {
   font-family: var(--font-mono);
   font-size: 0.7rem;
