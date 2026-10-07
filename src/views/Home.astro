@@ -27,7 +27,6 @@ const COPY = {
     days: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
     steps: ["Step", "Hint", "Explain differently"],
     tutorNote: "Screens from the app's built-in sample mode.",
-    archTag: "Architecture diagram · drawn from the gateway source, not a screenshot",
     openProject: "Open the project",
     benchTitle: "Benchmarks",
     benchSummary: "Public comparisons of AI-assisted development workflows: which models and role combinations build what, how fast, at what cost, and how often they need repair.",
@@ -55,7 +54,6 @@ const COPY = {
     days: ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"],
     steps: ["Stap", "Hint", "Anders uitleggen"],
     tutorNote: "Schermen uit de ingebouwde voorbeeldmodus van de app.",
-    archTag: "Architectuurdiagram · getekend op basis van de gateway-broncode, geen schermafbeelding",
     openProject: "Bekijk het project",
     benchTitle: "Benchmarks",
     benchSummary: "Openbare vergelijkingen van AI-ondersteunde ontwikkelworkflows: welke modellen en rolcombinaties wat bouwen, hoe snel, tegen welke kosten en hoe vaak er gerepareerd moet worden.",
@@ -83,7 +81,6 @@ const COPY = {
     days: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
     steps: ["Крок", "Підказка", "Пояснити інакше"],
     tutorNote: "Екрани з вбудованого демо-режиму застосунку.",
-    archTag: "Архітектурна схема · за вихідним кодом шлюзу, не скриншот",
     openProject: "Відкрити проєкт",
     benchTitle: "Бенчмарки",
     benchSummary: "Публічні порівняння робочих процесів розробки з AI: які моделі й комбінації ролей що створюють, як швидко, за яку ціну і як часто потребують виправлень.",
@@ -227,7 +224,6 @@ const BENCH_COLUMNS = COPY.benchCols;
   <Room project={agentlab} id="agentlab" domain={D.lab} layout="stage" prev="keyboard-trainer" lang={lang}>
     <div class="blueprint">
       <a class="frame frame--plain frame--zoom reveal" href={agentFull.src}><Picture {...pic(agentHero, "(min-width: 1100px) 1040px, 94vw", [800, 1200, 1600])} alt={agentHero.alt} /><span class="visually-hidden">{t.figure.openFull}</span></a>
-      <p class="blueprint__tag">{COPY.archTag}</p>
     </div>
   </Room>
 
