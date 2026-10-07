@@ -45,7 +45,7 @@ const legal = apps.filter((p) => p.data.urls.privacy);
             {legal.map((p) => <li><a href={p.data.urls.privacy} hreflang={lang !== "en" ? "en" : undefined}>{p.data.name}</a></li>)}
           </ul>
         </div>
-        <div class="footer-col">
+        <div class="footer-col footer-col--studio">
           <h2>{t.footer.studio}</h2>
           <ul>
             <li><a href={href("/about", lang)}>{t.nav.about}</a></li>
