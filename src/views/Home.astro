@@ -47,7 +47,7 @@ const COPY = {
   nl: {
     title: "HomeLabCore — We bouwen ideeën.",
     description: "HomeLabCore is een onafhankelijk softwarelab: Android- en webapps, experimenten en games, en openbare benchmarks van AI-ondersteunde ontwikkelworkflows.",
-    eyebrow: "Onafhankelijk software- & AI-lab",
+    eyebrow: "",
     h1: "We bouwen ideeën.",
     lead: "Apps, games en experimenten met AI-ontwikkeling.",
     planLabel: "Zalen op deze pagina",
@@ -172,7 +172,7 @@ const BENCH_COLUMNS = COPY.benchCols;
   <section class="xhero" data-room="hall" aria-labelledby="xhero-title">
     <div class="container xhero__grid">
       <div class="xhero__text">
-        <p class="room__label"><span>{COPY.eyebrow}</span></p>
+        {COPY.eyebrow && <p class="room__label"><span>{COPY.eyebrow}</span></p>}
         <h1 class="xhero__title" id="xhero-title">{COPY.h1}</h1>
         <p class="xhero__lead">{COPY.lead}</p>
       </div>
