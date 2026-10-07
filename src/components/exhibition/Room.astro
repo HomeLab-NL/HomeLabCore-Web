@@ -4,19 +4,17 @@ import Status from "../Status.astro";
 import type { Locale } from "../../i18n/locales";
 
 const LABELS = {
-  en: { room: "Room", open: (name: string) => `Open ${name}` },
-  nl: { room: "Zaal", open: (name: string) => `Open ${name}` },
-  uk: { room: "Зала", open: (name: string) => `Відкрити ${name}` },
+  en: { open: (name: string) => `Open ${name}` },
+  nl: { open: (name: string) => `Open ${name}` },
+  uk: { open: (name: string) => `Відкрити ${name}` },
 };
 
-// One exhibition room on the homepage: a wall label (room number, domain,
-// status), a large title, the project's own summary and a link, next to the
+// One exhibition room on the homepage: a wall label (domain, status), a large title, the project's own summary and a link, next to the
 // room's visuals (slot). Colours come from the room's tokens (data-room), so
 // every room has its own light and dark palette.
 interface Props {
   project?: Project;
   id: string;
-  number: number;
   domain: string;
   title?: string;
   summary?: string;
@@ -28,7 +26,7 @@ interface Props {
   prev: string;
   lang?: Locale;
 }
-const { project, id, number, domain, title = project?.data.name, summary = project?.data.summary, href = project?.data.urls.overview, linkText, layout = "split", prev, lang = "en" } = Astro.props;
+const { project, id, domain, title = project?.data.name, summary = project?.data.summary, href = project?.data.urls.overview, linkText, layout = "split", prev, lang = "en" } = Astro.props;
 const L = LABELS[lang];
 const headingId = `room-${id}-title`;
 ---
@@ -37,7 +35,6 @@ const headingId = `room-${id}-title`;
   <div class="room__inner container">
     <div class="room__text">
       <p class="room__label">
-        <span>{L.room} {String(number).padStart(2, "0")}</span>
         <span>{domain}</span>
         {project && <Status status={project.data.status} platforms={project.data.platforms} lang={lang} />}
       </p>
