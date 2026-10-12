@@ -18,7 +18,6 @@ const en = {
     lab: "Lab",
     privacy: "Privacy",
     studio: "Studio",
-    englishOnly: "Privacy policies and support pages are in English.",
   },
   status: {
     "closed-testing": "Closed testing",
@@ -72,7 +71,6 @@ const nl: UI = {
     lab: "Lab",
     privacy: "Privacy",
     studio: "Studio",
-    englishOnly: "Privacybeleid en supportpagina's zijn in het Engels.",
   },
   status: {
     "closed-testing": "Gesloten test",
@@ -124,7 +122,6 @@ const uk: UI = {
     lab: "Лабораторія",
     privacy: "Конфіденційність",
     studio: "Студія",
-    englishOnly: "Політики конфіденційності та сторінки підтримки — англійською.",
   },
   status: {
     "closed-testing": "Закрите тестування",
