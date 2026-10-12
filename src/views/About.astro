@@ -16,9 +16,7 @@ const COPY = {
     description: "HomeLabCore is a small independent software studio that builds and maintains a short list of focused apps and experiments.",
     og: "A small independent software studio that builds and maintains a short list of focused apps and experiments.",
     h1: "About HomeLabCore",
-    lead: "HomeLabCore is a small, independent software studio. It designs, builds, and maintains a short list of focused apps rather than a large catalogue.",
-    body: "The aim is straightforward: make practical software for everyday problems, keep it maintained, and be clear about how it handles your data. Alongside the apps, the lab is where experiments, games and AI workflow benchmarks live.",
-    name: "HomeLabCore is the name these apps are published under.",
+    lead: "HomeLabCore is a small, independent software studio. We bring our ideas to life by building apps. We also share what we learn from experiments in our own lab of games and AI workflow benchmarks.",
     logoAlt: "HomeLab logo: a laboratory flask with a code symbol, above the wordmark homelab and the tagline we code ideas",
     contact: "Contact",
     support: "Support",
@@ -31,9 +29,7 @@ const COPY = {
     description: "HomeLabCore is een kleine, onafhankelijke softwarestudio die een korte lijst gerichte apps en experimenten bouwt en onderhoudt.",
     og: "Een kleine, onafhankelijke softwarestudio die een korte lijst gerichte apps en experimenten bouwt en onderhoudt.",
     h1: "Over HomeLabCore",
-    lead: "HomeLabCore is een kleine, onafhankelijke softwarestudio. Ze ontwerpt, bouwt en onderhoudt een korte lijst gerichte apps in plaats van een grote catalogus.",
-    body: "Het doel is eenvoudig: praktische software maken voor alledaagse problemen, die onderhouden, en duidelijk zijn over hoe ze met je gegevens omgaat. Naast de apps is het lab de plek voor experimenten, games en benchmarks van AI-workflows.",
-    name: "HomeLabCore is de naam waaronder deze apps worden uitgebracht.",
+    lead: "HomeLabCore is een kleine, onafhankelijke softwarestudio. We brengen onze ideeën tot leven door apps te bouwen. Ook delen we onze ervaringen met experimenten in ons eigen lab met games en benchmarks van AI-workflows.",
     logoAlt: "HomeLab-logo: een laboratoriumkolf met een codesymbool, boven het woordmerk homelab en de slogan we code ideas",
     contact: "Contact",
     support: "Support",
@@ -46,9 +42,7 @@ const COPY = {
     description: "HomeLabCore — невелика незалежна студія програмного забезпечення, яка створює й підтримує короткий перелік зосереджених застосунків та експериментів.",
     og: "Невелика незалежна студія, яка створює й підтримує короткий перелік зосереджених застосунків та експериментів.",
     h1: "Про HomeLabCore",
-    lead: "HomeLabCore — невелика незалежна студія програмного забезпечення. Вона проєктує, створює й підтримує короткий перелік зосереджених застосунків, а не великий каталог.",
-    body: "Мета проста: робити практичне ПЗ для щоденних задач, підтримувати його і чесно пояснювати, як воно поводиться з вашими даними. Поруч із застосунками є лабораторія — для експериментів, ігор і бенчмарків AI-процесів.",
-    name: "HomeLabCore — це назва, під якою публікуються ці застосунки.",
+    lead: "HomeLabCore — невелика незалежна студія програмного забезпечення. Ми втілюємо наші ідеї, створюючи застосунки. Також ми ділимося своїм досвідом експериментів у власній лабораторії ігор і бенчмарків AI-процесів.",
     logoAlt: "Логотип HomeLab: лабораторна колба із символом коду над написом homelab і слоганом we code ideas",
     contact: "Контакти",
     support: "Підтримка",
@@ -66,8 +60,6 @@ const nav = ui(lang).nav;
         <span class="eyebrow">{nav.about}</span>
         <h1>{COPY.h1}</h1>
         <p class="lead">{COPY.lead}</p>
-        <p>{COPY.body}</p>
-        <p>{COPY.name}</p>
         <ul class="link-list">
           <li><a href={href("/apps/", lang)}>{nav.apps}</a></li>
           <li><a href={href("/lab/", lang)}>{nav.lab}</a></li>
