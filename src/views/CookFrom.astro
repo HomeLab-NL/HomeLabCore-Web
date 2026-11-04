@@ -50,7 +50,7 @@ const COPY = {
     core: ["Choose ingredients", "Generate a recipe", "Cook step by step"],
     coreNote: "Available without a subscription.",
     availTitle: "Availability",
-    availText: "CookFrom is built for Android. Store links will be added here once the listing is public. For help in the meantime, visit",
+    availText: "Android closed testing is complete and Google Play production access is approved, while the public Android release is not yet confirmed. On iOS, a TestFlight MVP is prepared in a draft pull request, with build, upload, and testing not yet confirmed. Store links will be added here once public. For help in the meantime, visit",
     supportLink: "CookFrom Support",
   },
   nl: {
@@ -87,7 +87,7 @@ const COPY = {
     core: ["Kies ingrediënten", "Maak een recept", "Kook stap voor stap"],
     coreNote: "Beschikbaar zonder abonnement.",
     availTitle: "Beschikbaarheid",
-    availText: "CookFrom is gemaakt voor Android. Links naar de appwinkel volgen hier zodra de vermelding openbaar is. Hulp nodig in de tussentijd? Ga naar",
+    availText: "De gesloten Android-test is afgerond en productietoegang op Google Play is goedgekeurd; de publieke Android-release is nog niet bevestigd. Voor iOS staat een TestFlight-MVP klaar in een concept-PR, waarvan build, upload en tests nog niet zijn bevestigd. Winkellinks volgen zodra een vermelding openbaar is. Hulp nodig in de tussentijd? Ga naar",
     supportLink: "CookFrom Support (Engels)",
   },
   uk: {
@@ -124,7 +124,7 @@ const COPY = {
     core: ["Виберіть інгредієнти", "Отримайте рецепт", "Готуйте крок за кроком"],
     coreNote: "Доступно без підписки.",
     availTitle: "Доступність",
-    availText: "CookFrom створено для Android. Посилання на магазин з'явиться тут, щойно сторінка стане публічною. Якщо потрібна допомога вже зараз, відкрийте",
+    availText: "Закрите тестування Android завершено, а виробничий доступ у Google Play схвалено; публічний реліз Android ще не підтверджено. Для iOS у чернетці PR підготовлено TestFlight MVP, проте збірку, завантаження й тестування ще не підтверджено. Посилання на магазини з'являться тут після публікації. Якщо потрібна допомога вже зараз, відкрийте",
     supportLink: "CookFrom Support (англійською)",
   },
 }[lang];
@@ -189,6 +189,16 @@ const en = lang !== "en" ? "en" : undefined;
     <div class="container">
       <div class="panel measure">
         <h2 id="availability-title">{COPY.availTitle}</h2>
+        {project.data.platformStatus && (
+          <dl class="meta-list">
+            {project.data.platformStatus.map((ps) => (
+              <>
+                <dt>{t.platform[ps.platform] ?? ps.platform}</dt>
+                <dd>{ps.status}</dd>
+              </>
+            ))}
+          </dl>
+        )}
         <p class="muted">{COPY.availText} <a href="/support/cookfrom" hreflang={en}>{COPY.supportLink}</a>.</p>
       </div>
     </div>

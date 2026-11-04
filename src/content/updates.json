@@ -1,5 +1,16 @@
 [
   {
+    "id": "2026-11-04-portfolio-refresh",
+    "date": "2026-11-04",
+    "title": "Published live KeyQuest web deployment, added Homework Tutor Smart Notebook artwork, and updated CookFrom Android and iOS platform status.",
+    "projects": [
+      "keyboard-trainer",
+      "ai-tutor",
+      "cookfrom"
+    ],
+    "href": "/apps/"
+  },
+  {
     "id": "2026-10-04-mountains-concept-art",
     "date": "2026-10-04",
     "title": "Concept art added for At the Mountains of Madness, setting its intended visual direction.",

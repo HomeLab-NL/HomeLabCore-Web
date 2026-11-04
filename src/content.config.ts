@@ -71,6 +71,20 @@ const projects = defineCollection({
       summary: z.string(),
       /** Name used inside the product while it is in development, if different. */
       workingTitle: z.string().optional(),
+      /** Current verified release or build version, when applicable. */
+      version: z.string().optional(),
+      /** Verified release or deployment date (YYYY-MM-DD), when applicable. */
+      releaseDate: z.string().optional(),
+      /** Structured per-platform status for multi-platform products (e.g. Android, iOS). */
+      platformStatus: z
+        .array(
+          z.object({
+            platform: z.string(),
+            status: z.string(),
+            version: z.string().optional(),
+          }),
+        )
+        .optional(),
       order: z.number().int(),
       featured: z.boolean().default(false),
       accent: accent.optional(),
@@ -78,7 +92,22 @@ const projects = defineCollection({
         overview: sitePath,
         privacy: sitePath.optional(),
         support: sitePath.optional(),
+        live: z.string().url().optional(),
+        repo: z.string().url().optional(),
+        googlePlay: z.string().url().optional(),
+        appStore: z.string().url().optional(),
       }),
+      /** Verified feature list shown on generic project pages. */
+      features: z
+        .array(
+          z.object({
+            title: z.string(),
+            description: z.string(),
+          }),
+        )
+        .optional(),
+      /** Verified context or community note (e.g. hackathon participation). */
+      contextNote: z.string().optional(),
       /** Card copy on /support/. */
       supportSummary: z.string().optional(),
       /** Card image (16:9). */

@@ -11,7 +11,8 @@ interface Props {
 }
 const { project, lang = "en" } = Astro.props;
 const t = ui(lang).meta;
-const { kind, status, workingTitle } = project.data;
+const pLabel = ui(lang).platform;
+const { kind, status, workingTitle, version, releaseDate, platformStatus, urls } = project.data;
 ---
 <dl class="meta-list">
   <dt>{t.status}</dt>
@@ -20,10 +21,34 @@ const { kind, status, workingTitle } = project.data;
   <dd>{kind}</dd>
   <dt>{t.platform}</dt>
   <dd>{platformLabel(project, lang)}</dd>
+  {version && (
+    <>
+      <dt>{t.version}</dt>
+      <dd>{version}</dd>
+    </>
+  )}
+  {releaseDate && (
+    <>
+      <dt>{t.releaseDate}</dt>
+      <dd><time datetime={releaseDate}>{releaseDate}</time></dd>
+    </>
+  )}
+  {platformStatus && platformStatus.map((ps) => (
+    <>
+      <dt>{pLabel[ps.platform] ?? ps.platform}</dt>
+      <dd>{ps.status}</dd>
+    </>
+  ))}
   {workingTitle && (
     <>
       <dt>{t.workingTitle}</dt>
       <dd>{workingTitle}</dd>
+    </>
+  )}
+  {urls.live && (
+    <>
+      <dt>{t.liveUrl}</dt>
+      <dd><a href={urls.live} rel="noopener noreferrer">{urls.live.replace(/^https?:\/\//, "").replace(/\/$/, "")}</a></dd>
     </>
   )}
 </dl>

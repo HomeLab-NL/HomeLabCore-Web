@@ -7,6 +7,9 @@ export interface ProjectText {
   kind: string;
   summary: string;
   visualNote?: string;
+  contextNote?: string;
+  features?: { title: string; description: string }[];
+  platformStatus?: { platform: string; status: string; version?: string }[];
   missing: string[];
   hero?: Text;
   cover?: Text;
@@ -21,7 +24,21 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
       kind: "Android-app",
       summary: "Kook met wat je al in huis hebt. Kies of fotografeer je ingrediënten en krijg een recept met hulp van AI dat je kunt aanpassen, bewaren en stap voor stap kunt volgen.",
       visualNote: "Schermen uit de Android-bèta. Het getoonde recept komt uit de ingebouwde catalogus en is niet net gegenereerd.",
-      missing: ["Link naar Google Play (de vermelding is nog niet openbaar)"],
+      platformStatus: [
+        {
+          platform: "Android",
+          status: "Gesloten test afgerond · Google Play-productietoegang goedgekeurd; publieke release nog niet bevestigd",
+          version: "0.12.0+141 RC",
+        },
+        {
+          platform: "iOS",
+          status: "TestFlight-MVP voorbereid in concept-PR; build, upload en testen nog niet bevestigd",
+        },
+      ],
+      missing: [
+        "Bevestiging van de publieke Google Play-release en winkellink",
+        "Bevestigde iOS-build, upload en TestFlight-test",
+      ],
       hero: { caption: "CookFrom — Android-bèta", alt: "CookFrom: actuele app-schermen. Echte Android-bèta · 0.11.78." },
       cover: {
         caption: "CookFrom — promotiebeeld",
@@ -53,12 +70,43 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
     },
     "ai-tutor": {
       kind: "Android-app",
-      summary: "Een Android-app in ontwikkeling die leerlingen stap voor stap door wiskundesommen helpt — met hints en anders uitleggen — in plaats van meteen het antwoord te geven.",
-      visualNote: "Getoond in de ingebouwde voorbeeldmodus van de app met de voorbeeldsom 3x + 7 = 22 — dit zijn geen live AI-antwoorden. De app toont nu nog de ontwikkelnaam Homework Tutor.",
-      missing: ["Publieke release of vermelding in een appwinkel"],
-      hero: { caption: "AI Tutor — ingebouwde voorbeeldmodus", alt: "AI Tutor: actuele app-schermen. Echte app-interface · ingebouwde voorbeeldmodus." },
-      cover: same("AI Tutor: voer een wiskundesom in de echte app in; ingebouwd voorbeeld getoond."),
+      summary: "Een studie-assistent voor Android in ontwikkeling voor leerlingen van 9 tot 16 jaar: werk huiswerkopgaven stap voor stap uit met hints en alternatieve uitleg, in plaats van direct het eindantwoord te tonen.",
+      visualNote: "Promotiecover en goedgekeurd Smart Notebook-ontwerp naast echte schermen uit de ingebouwde voorbeeldmodus (3x + 7 = 22). Live AI-antwoorden en foto-opgaven voor meerdere vakken zijn nog in ontwikkeling.",
+      features: [
+        {
+          title: "Stap-voor-stap begeleiding",
+          description: "Begeleidt leerlingen stap voor stap door een opgave in plaats van direct het eindantwoord te tonen.",
+        },
+        {
+          title: "Hints & anders uitleggen",
+          description: "Biedt opbouwende hints en een uitleg in andere woorden wanneer een leerling vastloopt bij een stap.",
+        },
+        {
+          title: "Smart Notebook-stijl",
+          description: "Goedgekeurd app-icoon met schrift en potlood en een schrift-interface voor leerlingen van 9 tot 16 jaar, met geplande invoer via foto en tekst.",
+        },
+        {
+          title: "Ontwikkelstatus",
+          description: "Momenteel in actieve ontwikkeling met een interactieve ingebouwde voorbeeldmodus; live AI-begeleiding, foto-invoer en meerdere vakken zijn nog niet productierijp.",
+        },
+      ],
+      missing: [
+        "Publieke release of vermelding in een appwinkel",
+        "Productierijpe live AI-backend en foto-invoer voor opgaven (in ontwikkeling)",
+      ],
+      hero: {
+        caption: "Homework Tutor — goedgekeurde Smart Notebook-stijl en schrift-met-potlood-icoon",
+        alt: "Promotiebanner van Homework Tutor met het schrift-met-potlood-icoon, studiefuncties en de goedgekeurde Smart Notebook-schermen.",
+      },
+      cover: {
+        caption: "Homework Tutor — promotiecover op basis van het goedgekeurde Smart Notebook-ontwerp en schrift-met-potlood-icoon.",
+        alt: "Promotiebanner van Homework Tutor met het schrift-met-potlood-icoon, studiefuncties en de goedgekeurde Smart Notebook-schermen.",
+      },
       figures: [
+        {
+          caption: "Goedgekeurd Concept 3 (“Smart Notebook”) UI-ontwerp en app-icoon met schrift en potlood.",
+          alt: "Goedgekeurd Concept 3 Smart Notebook-ontwerpbord met het 48px Android-icoon met schrift en potlood, het startscherm en het spiraalschrift-menu.",
+        },
         same("De eerste uitlegstap voor de ingebouwde voorbeeldvergelijking."),
         same("Hint van niveau 1 in het ingebouwde voorbeeld."),
         same("Anders uitleggen in de ingebouwde voorbeeldmodus; geen live AI-antwoord."),
@@ -67,16 +115,45 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
     },
     "keyboard-trainer": {
       kind: "Webapp",
-      summary: "Een typspel voor kinderen van 6 tot 12 jaar, gemaakt voor de computer: tien toetsenbordopdrachten die steeds moeilijker worden, met sterren, XP en munten om te verdienen. De voortgang wordt alleen in de browser opgeslagen.",
-      visualNote: "Schermen uit de huidige ontwikkelversie, die de werktitel KeyQuest draagt.",
-      missing: ["Publiek webadres (nog niet online)", "Definitieve productnaam (de app toont nu de werktitel KeyQuest)"],
-      hero: { caption: "Keyboard Trainer — ontwikkelversie (werktitel KeyQuest)", alt: "KeyQuest: actuele app-schermen. Echte browserapp · ontwikkelversie." },
-      cover: same("KeyQuest: de eerste typopdracht met de gemarkeerde doeltoets."),
+      summary: "Een typavontuur in de browser voor kinderen: leer blind typen in tien Typing Academy-lessen, overleef tijdsgolven in Word Rush en neem het op tegen King Typo op het vijfdelige Starwood Trail.",
+      visualNote: "Authentieke schermafbeeldingen rechtstreeks uit de gepubliceerde KeyQuest-webapplicatie op keyquest-b9l7.onrender.com.",
+      contextNote: "KeyQuest is ontwikkeld met deelname aan de Stripe Eindhoven Community-hackathon, verbonden aan One Horizon.",
+      features: [
+        {
+          title: "Typing Academy (10 lessen)",
+          description: "Stapsgewijze typcursus van de basisrij links en rechts tot de bovenste en onderste rij, hoofdletters met Shift, cijfers, leestekens en het eindexamen, met een kleurgecodeerd schermtoetsenbord.",
+        },
+        {
+          title: "Word Rush-arcademodus",
+          description: "Een golfmodus van 60 seconden met oplopende woordgolven, combo-multipliers en drie hartjes.",
+        },
+        {
+          title: "Starwood Trail-avontuur",
+          description: "Een avontuur van vijf etappes door Sunny Forest, Crystal Cave, Misty Bridge, Fire Mountain en Typo Castle tegen King Typo, waarbij getypte woorden aanvallen activeren.",
+        },
+        {
+          title: "XP-levels, sterren & Trophy Shelf",
+          description: "Verdien 1 tot 3 sterren per les op basis van WPM en nauwkeurigheid, verzamel XP in elke modus en ontgrendel 12 Trophy Shelf-prestaties.",
+        },
+        {
+          title: "Lokale browseropslag & Web Audio",
+          description: "Alle voortgang wordt lokaal in de browser bewaard zonder account of externe tracking, aangevuld met Web Audio-geluidseffecten en een geluidsknop.",
+        },
+      ],
+      missing: [],
+      hero: {
+        caption: "KeyQuest — live webversie op keyquest-b9l7.onrender.com",
+        alt: "Live webapplicatie van KeyQuest met Keyboard Kingdom-voortgang, Typing Academy, Word Rush, Typing Adventure en het overzicht van 10 lessen.",
+      },
+      cover: {
+        caption: "KeyQuest Typing Academy — Les 1 (Home Row Left) in de live webapp.",
+        alt: "KeyQuest Typing Academy: Les 1 Home Row Left met live WPM, nauwkeurigheid, sterrenbalk en kleurgecodeerd schermtoetsenbord.",
+      },
       figures: [
-        same("Het huidige startscherm van KeyQuest."),
-        same("De echte questkaart met tien levels, in de beginstand."),
-        same("De eerste typopdracht met de gemarkeerde doeltoets."),
-        same("Een resultaat behaald met de echte eerste opdracht; alleen een voorbeeldsessie."),
+        same("Het live startscherm van KeyQuest met Typing Academy, Word Rush en Typing Adventure."),
+        same("De avonturenkaart van Starwood Trail met vijf etappes richting King Typo."),
+        same("Actieve Typing Academy-les met gemarkeerde doeltoets en vingerzone-toetsenbord."),
+        same("Starwood Trail-gevecht in Sunny Forest tegen Leaf Blob."),
       ],
     },
     agentlab: {
@@ -117,7 +194,21 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
       kind: "Застосунок для Android",
       summary: "Готуйте з того, що вже є вдома. Виберіть або сфотографуйте інгредієнти й отримайте рецепт, складений за допомогою AI: його можна змінити, зберегти й готувати крок за кроком.",
       visualNote: "Екрани з бета-версії для Android. Показаний рецепт — із вбудованого каталогу, а не щойно згенерований.",
-      missing: ["Посилання на Google Play (сторінка ще не публічна)"],
+      platformStatus: [
+        {
+          platform: "Android",
+          status: "Закрите тестування завершено · виробничий доступ у Google Play схвалено; публічний реліз ще не підтверджено",
+          version: "0.12.0+141 RC",
+        },
+        {
+          platform: "iOS",
+          status: "TestFlight MVP підготовлено в чернетці PR; збірку, завантаження й тестування ще не підтверджено",
+        },
+      ],
+      missing: [
+        "Підтвердження публічного релізу в Google Play і посилання на магазин",
+        "Підтверджені збірка, завантаження й тестування iOS у TestFlight",
+      ],
       hero: { caption: "CookFrom — бета-версія для Android", alt: "CookFrom: актуальні екрани застосунку. Справжня бета-версія для Android · 0.11.78." },
       cover: {
         caption: "CookFrom — рекламне зображення",
@@ -149,12 +240,43 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
     },
     "ai-tutor": {
       kind: "Застосунок для Android",
-      summary: "Застосунок для Android у розробці, який допомагає учням розв'язувати задачі з математики крок за кроком — з підказкою і поясненням іншими словами — замість того, щоб одразу показувати відповідь.",
-      visualNote: "Показано у вбудованому демо-режимі застосунку на прикладі 3x + 7 = 22 — це не живі відповіді AI. Застосунок поки має робочу назву Homework Tutor.",
-      missing: ["Публічний реліз або сторінка в магазині застосунків"],
-      hero: { caption: "AI Tutor — вбудований демо-режим", alt: "AI Tutor: актуальні екрани застосунку. Справжній інтерфейс · вбудований демо-режим." },
-      cover: same("AI Tutor: введення задачі з математики у справжньому застосунку; показано вбудований приклад."),
+      summary: "Навчальний помічник для Android у розробці для учнів 9–16 років: допомагає розв'язувати домашні завдання крок за кроком із підказками та поясненнями іншими словами, а не одразу показує відповідь.",
+      visualNote: "Рекламна обкладинка й затверджений дизайн «Розумний Зошит» поряд зі справжніми екранами вбудованого демо-режиму (3x + 7 = 22). Живі відповіді AI та розпізнавання задач із фото ще в розробці.",
+      features: [
+        {
+          title: "Покрокове розв'язання з підказками",
+          description: "Веде учня через задачу по одному кроку замість того, щоб одразу відкривати кінцеву відповідь.",
+        },
+        {
+          title: "Підказки та «Пояснити інакше»",
+          description: "Пропонує багаторівневі підказки й альтернативні формулювання для поточного кроку.",
+        },
+        {
+          title: "Візуальний стиль «Розумний Зошит»",
+          description: "Затверджена іконка із зошитом і олівцем та інтерфейс у стилі зошита на спіралі для учнів 9–16 років із запланованим введенням задач із фото й тексту.",
+        },
+        {
+          title: "Стан розробки",
+          description: "Перебуває в активній розробці з інтерактивним вбудованим демо-режимом; живий AI-бекенд, фото-введення та підтримка кількох предметів ще не готові до продакшену.",
+        },
+      ],
+      missing: [
+        "Публічний реліз або сторінка в магазині застосунків",
+        "Продакшен-версія живого AI-бекенду та розпізнавання задач із камери (у розробці)",
+      ],
+      hero: {
+        caption: "Homework Tutor — затверджений візуальний стиль «Розумний Зошит» та іконка із зошитом і олівцем",
+        alt: "Рекламний банер Homework Tutor із іконкою зошита й олівця, переліком можливостей та затвердженими екранами «Розумного Зошита».",
+      },
+      cover: {
+        caption: "Homework Tutor — рекламна обкладинка на основі затвердженого дизайну «Розумний Зошит» та іконки із зошитом і олівцем.",
+        alt: "Рекламний банер Homework Tutor із іконкою зошита й олівця, переліком можливостей та затвердженими екранами «Розумного Зошита».",
+      },
       figures: [
+        {
+          caption: "Затверджений Концепт 3 («Розумний Зошит») — дизайн інтерфейсу та іконка застосунку із зошитом і олівцем.",
+          alt: "Затверджений дизайн-борд Концепту 3 «Розумний Зошит» з Android-іконкою 48px (зошит і олівець), головним екраном і меню на спіралі.",
+        },
         same("Перший крок пояснення для вбудованого прикладу рівняння."),
         same("Підказка першого рівня у вбудованому прикладі."),
         same("Пояснення іншими словами у вбудованому демо-режимі; без живої відповіді AI."),
@@ -163,16 +285,45 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
     },
     "keyboard-trainer": {
       kind: "Веб-застосунок",
-      summary: "Гра для дітей 6–12 років, щоб навчитися друкувати, розрахована на комп'ютер: десять завдань на клавіатурі зі зростаючою складністю, зірки, XP і монети за проходження. Прогрес зберігається лише в браузері.",
-      visualNote: "Екрани з поточної робочої збірки під робочою назвою KeyQuest.",
-      missing: ["Публічна веб-адреса (ще не розгорнуто)", "Остаточна назва продукту (зараз застосунок показує робочу назву KeyQuest)"],
-      hero: { caption: "Keyboard Trainer — робоча збірка (робоча назва KeyQuest)", alt: "KeyQuest: актуальні екрани застосунку. Справжній браузерний застосунок · робоча збірка." },
-      cover: same("KeyQuest: перше завдання з підсвіченою клавішею."),
+      summary: "Браузерна гра-пригода з навчання сліпого друку для дітей: десять уроків Typing Academy, швидкісні хвилі слів у Word Rush і битва з King Typo на п'яти етапах Starwood Trail.",
+      visualNote: "Справжні скриншоти з опублікованої веб-версії KeyQuest на keyquest-b9l7.onrender.com.",
+      contextNote: "KeyQuest розроблено за участі в хакатоні Stripe Eindhoven Community, пов'язаному з One Horizon.",
+      features: [
+        {
+          title: "Typing Academy (10 уроків)",
+          description: "Покроковий курс сліпого друку від домашнього ряду (ліва й права рука) до верхнього та нижнього рядів, великих літер із Shift, цифр, пунктуації та фінального іспиту з кольоровою екранною клавіатурою.",
+        },
+        {
+          title: "Аркадний режим Word Rush",
+          description: "60-секундний режим виживання зі зростаючими хвилями слів, множниками серій і трьома сердечками життя.",
+        },
+        {
+          title: "Пригода Starwood Trail",
+          description: "Кампанія з п'яти етапів (Sunny Forest, Crystal Cave, Misty Bridge, Fire Mountain і Typo Castle) проти King Typo, де набрані слова активують атаки героя.",
+        },
+        {
+          title: "Рівні XP, зірки й Trophy Shelf",
+          description: "Від 1 до 3 зірок за урок залежно від швидкості (WPM) і точності, накопичення XP у всіх режимах та 12 досягнень Trophy Shelf.",
+        },
+        {
+          title: "Локальне збереження та Web Audio",
+          description: "Увесь прогрес зберігається локально у браузері без реєстрації чи трекінгу, зі звуковими ефектами Web Audio та кнопкою вимкнення звуку.",
+        },
+      ],
+      missing: [],
+      hero: {
+        caption: "KeyQuest — жива веб-версія на keyquest-b9l7.onrender.com",
+        alt: "Жива веб-версія KeyQuest із прогресом Keyboard Kingdom, режимами Typing Academy, Word Rush, Typing Adventure та списком із 10 уроків.",
+      },
+      cover: {
+        caption: "KeyQuest Typing Academy — Урок 1 (Home Row Left) у живій веб-версії.",
+        alt: "KeyQuest Typing Academy: Урок 1 Home Row Left із показниками WPM, точності, шкалою зірок та кольоровою екранною клавіатурою.",
+      },
       figures: [
-        same("Поточний головний екран KeyQuest."),
-        same("Справжня карта з десяти рівнів у початковому стані."),
-        same("Перше завдання з підсвіченою клавішею."),
-        same("Результат за проходження справжнього першого завдання; лише тестова сесія."),
+        same("Головний екран живої веб-версії KeyQuest із режимами Typing Academy, Word Rush і Typing Adventure."),
+        same("Карта пригоди Starwood Trail із п'ятьма етапами на шляху до King Typo."),
+        same("Активний урок Typing Academy з підсвіченою цільовою клавішею та схемою зон пальців."),
+        same("Битва на етапі Sunny Forest у режимі Starwood Trail проти Leaf Blob."),
       ],
     },
     agentlab: {
@@ -213,6 +364,7 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
 /** Dutch and Ukrainian titles for the entries in src/content/updates.json. */
 export const UPDATE_TEXT: Record<"nl" | "uk", Record<string, string>> = {
   nl: {
+    "2026-11-04-portfolio-refresh": "KeyQuest live-webversie gepubliceerd, Homework Tutor Smart Notebook-ontwerp toegevoegd en CookFrom platformstatus voor Android en iOS bijgewerkt.",
     "2026-10-04-mountains-concept-art": "Concept art toegevoegd voor At the Mountains of Madness, die de beoogde beeldstijl vastlegt.",
     "2026-10-03-project-visuals": "Echte app-schermen toegevoegd voor CookFrom, Ops Planner, AI Tutor en Keyboard Trainer, en architectuurdiagrammen voor AgentLab.",
     "2026-10-03-new-projects": "AI Tutor, Keyboard Trainer, AgentLab en At the Mountains of Madness staan nu op HomeLabCore.",
@@ -220,6 +372,7 @@ export const UPDATE_TEXT: Record<"nl" | "uk", Record<string, string>> = {
     "2026-09-01-cookfrom": "Productpagina, privacybeleid en supportpagina van CookFrom gepubliceerd.",
   },
   uk: {
+    "2026-11-04-portfolio-refresh": "Опубліковано живу веб-версію KeyQuest, додано дизайн «Розумний Зошит» для Homework Tutor та оновлено статус платформ Android та iOS для CookFrom.",
     "2026-10-04-mountains-concept-art": "Додано концепт-арт для At the Mountains of Madness, який задає візуальний стиль гри.",
     "2026-10-03-project-visuals": "Додано справжні екрани CookFrom, Ops Planner, AI Tutor і Keyboard Trainer, а також архітектурні схеми AgentLab.",
     "2026-10-03-new-projects": "AI Tutor, Keyboard Trainer, AgentLab і At the Mountains of Madness тепер на HomeLabCore.",
