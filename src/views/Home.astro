@@ -142,12 +142,11 @@ const pic = (fig: { src: ImageMetadata }, sizes: string, widths = [480, 800, 120
 const half = "(min-width: 1100px) 600px, (min-width: 820px) 55vw, 92vw";
 const third = "(min-width: 1100px) 360px, (min-width: 820px) 30vw, 80vw";
 
-// CookFrom, Ops Planner, and Homework Tutor: the approved promotional banners (their card covers).
+// CookFrom, Ops Planner, Homework Tutor, and KeyQuest: the approved promotional banners (their card covers).
 const cookPromo = cookfrom.data.cover!;
 const opsPromo = ops.data.cover!;
 const tutorPromo = tutor.data.cover!;
-const kqMap = figureOf(keyquest, "gallery-02-quest-map");
-const kqTyping = figureOf(keyquest, "gallery-03-typing");
+const kqPromo = keyquest.data.cover!;
 const agentHero = agentlab.data.hero!;
 // The diagram's small labels need zoom on phones: it links to the full-size image.
 const agentFull = await getImage({ src: agentHero.src, format: "webp", width: agentHero.src.width });
@@ -205,8 +204,7 @@ const BENCH_COLUMNS = COPY.benchCols;
 
   <Room project={keyquest} id="keyboard-trainer" domain={D.games} layout="split" prev="ai-tutor" lang={lang}>
     <div class="stage-glow">
-      <div class="frame frame--glow reveal"><Picture {...pic(kqTyping, half)} alt={kqTyping.alt} /></div>
-      <div class="frame frame--float reveal"><Picture {...pic(kqMap, third, [480, 800])} alt={kqMap.alt} /></div>
+      <div class="frame frame--banner frame--glow reveal"><Picture {...pic(kqPromo, half, [480, 800, 1200, 1600])} alt={kqPromo.alt} /></div>
     </div>
   </Room>
 
