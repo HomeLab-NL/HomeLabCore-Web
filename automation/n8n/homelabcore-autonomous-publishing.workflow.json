@@ -1,0 +1,291 @@
+{
+  "name": "HomeLabCore Autonomous Publishing Pipeline",
+  "active": false,
+  "versionId": "1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "description": "GitHub Event -> Filter -> AI Draft -> Telegram Approval -> GitHub PR -> Build Validation -> Authorized Merge -> Cloudflare Pages"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "homelabcore-github-events",
+        "responseMode": "onReceived",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "id": "1001-github-webhook",
+      "name": "GitHub Event Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        180,
+        300
+      ],
+      "webhookId": "homelabcore-github-events"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verify GitHub X-Hub-Signature-256 and filter eligible Releases & Milestones.\nconst crypto = require('crypto');\nconst item = $input.first();\nconst headers = item.json.headers || {};\nconst payload = item.json.body || {};\nconst rawBody = item.binary?.data ? Buffer.from(item.binary.data.data, 'base64').toString('utf8') : JSON.stringify(payload);\nconst secret = $env.GITHUB_WEBHOOK_SECRET;\nconst sigHeader = headers['x-hub-signature-256'] || '';\n\nif (!secret || !sigHeader.startsWith('sha256=')) {\n  throw new Error('Unauthorized: missing GitHub webhook signature or secret');\n}\nconst expected = 'sha256=' + crypto.createHmac('sha256', secret).update(rawBody, 'utf8').digest('hex');\nif (expected.length !== sigHeader.length || !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(sigHeader))) {\n  throw new Error('Unauthorized: invalid GitHub X-Hub-Signature-256');\n}\n\nconst eventType = headers['x-github-event'] || '';\nconst repo = payload.repository?.full_name || 'unknown/repo';\nlet eligible = false;\nlet category = 'release';\nlet title = '';\nlet summarySource = '';\nlet version = '';\nlet publishedAt = new Date().toISOString().slice(0, 10);\nlet sourceUrl = payload.repository?.html_url || '';\nlet sourceEventId = '';\n\nif (eventType === 'release' && payload.action === 'published' && payload.release && !payload.release.draft && !payload.release.prerelease) {\n  const r = payload.release;\n  title = r.name || r.tag_name || '';\n  summarySource = r.body || '';\n  if (!/\\[skip-publish\\]/i.test(title + ' ' + summarySource) && !/^(fix|chore|ci|build)\\b/i.test(title)) {\n    eligible = true;\n    category = 'release';\n    version = String(r.tag_name || '').replace(/^v/, '');\n    publishedAt = (r.published_at || publishedAt).slice(0, 10);\n    sourceUrl = r.html_url || sourceUrl;\n    sourceEventId = `${repo}#release:${r.tag_name || r.id}`;\n  }\n} else if (eventType === 'milestone' && payload.action === 'closed' && payload.milestone) {\n  const m = payload.milestone;\n  if (/\\[publish\\]/i.test((m.title || '') + ' ' + (m.description || ''))) {\n    eligible = true;\n    category = 'milestone';\n    title = String(m.title || '').replace(/\\[publish\\]/gi, '').trim();\n    summarySource = String(m.description || '').replace(/\\[publish\\]/gi, '').trim();\n    publishedAt = (m.closed_at || publishedAt).slice(0, 10);\n    sourceUrl = m.html_url || sourceUrl;\n    sourceEventId = `${repo}#milestone:${m.number || m.id}`;\n  }\n}\n\nif (!eligible) {\n  return [];\n}\n\nreturn [{ json: { eligible, category, repoFullName: repo, title, summarySource, version, publishedAt, sourceUrl, sourceEventId } }];"
+      },
+      "id": "1002-filter-event",
+      "name": "Verify Signature & Filter Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/contents/src/content/blog",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "1003-dedup-check",
+      "name": "Check Existing Blog Entries",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-pat-placeholder",
+          "name": "GitHub API Token (Placeholder)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prevent duplicate publication, generate concise English draft, and enforce secret/private-IP guard.\nconst crypto = require('crypto');\nconst event = $('Verify Signature & Filter Event').first().json;\nconst existingFiles = $input.all().map((i) => i.json.name || '');\n\nconst slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 56);\nconst slug = `${event.publishedAt}-${slugify(event.title)}`;\nif (existingFiles.includes(`${slug}.md`)) {\n  return [];\n}\n\nconst forbidden = [\n  /\\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}\\b/,\n  /\\bgithub_pat_[A-Za-z0-9_]{20,}\\b/,\n  /\\bsk-[A-Za-z0-9_-]{20,}\\b/,\n  /\\b10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b192\\.168\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b172\\.(?:1[6-9]|2\\d|3[0-1])\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b100\\.(?:6[4-9]|[7-9]\\d|1[0-1]\\d|12[0-7])\\.\\d{1,3}\\.\\d{1,3}\\b/\n];\nfor (const re of forbidden) {\n  if (re.test(event.title + '\\n' + event.summarySource)) {\n    throw new Error('Security guard blocked sensitive token or private IP in event payload');\n  }\n}\n\nlet desc = `${event.title}: ${event.summarySource.replace(/\\s+/g, ' ').trim()}`;\nif (desc.length < 50) desc = `${event.title} — verified ${event.category} update published on HomeLabCore.`;\nif (desc.length > 230) desc = desc.slice(0, 226) + '...';\n\nconst markdown = [\n  '---',\n  `title: ${JSON.stringify(event.title)}`,\n  `description: ${JSON.stringify(desc)}`,\n  `published: \"${event.publishedAt}\"`,\n  `category: \"${event.category}\"`,\n  ...(event.version ? [`version: ${JSON.stringify(event.version)}`] : []),\n  `sourceEventId: ${JSON.stringify(event.sourceEventId)}`,\n  `sourceUrl: ${JSON.stringify(event.sourceUrl)}`,\n  '---',\n  '',\n  event.summarySource || `Verified ${event.category} update.`,\n  '',\n  `Source reference: [${event.repoFullName}](${event.sourceUrl}).`\n].join('\\n');\n\nconst shortSlug = slug.slice(0, 34);\nconst sign = (action) => `${action}|${shortSlug}|` + crypto.createHmac('sha256', $env.TELEGRAM_CALLBACK_SECRET).update(`${action}|${shortSlug}`).digest('hex').slice(0, 16);\n\nreturn [{\n  json: {\n    slug,\n    filePath: `src/content/blog/${slug}.md`,\n    branchName: `auton-pub/${slug}`,\n    title: event.title,\n    description: desc,\n    sourceEventId: event.sourceEventId,\n    markdownBase64: Buffer.from(markdown, 'utf8').toString('base64'),\n    approveCallback: sign('approve'),\n    rejectCallback: sign('reject')\n  }\n}];"
+      },
+      "id": "1004-ai-draft-and-guard",
+      "name": "AI Draft & Security Guard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": \"{{$env.TELEGRAM_OWNER_CHAT_ID}}\",\n  \"parse_mode\": \"Markdown\",\n  \"text\": \"📝 *HomeLabCore Publishing Draft Ready*\\n\\n*Title:* {{$json.title}}\\n*Branch:* `{{$json.branchName}}`\\n*Summary:* {{$json.description}}\",\n  \"reply_markup\": {\n    \"inline_keyboard\": [\n      [\n        { \"text\": \"✅ Approve & Open PR\", \"callback_data\": \"{{$json.approveCallback}}\" },\n        { \"text\": \"🛑 Reject\", \"callback_data\": \"{{$json.rejectCallback}}\" }\n      ]\n    ]\n  }\n}"
+      },
+      "id": "1005-telegram-approval-request",
+      "name": "Telegram Approval Prompt",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1140,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "homelabcore-telegram-callback",
+        "responseMode": "onReceived"
+      },
+      "id": "1006-telegram-callback-webhook",
+      "name": "Telegram Approval Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        180,
+        580
+      ],
+      "webhookId": "homelabcore-telegram-callback"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate Telegram webhook secret token, owner user/chat ID, and HMAC callback signature.\nconst crypto = require('crypto');\nconst item = $input.first();\nconst headers = item.json.headers || {};\nconst body = item.json.body || {};\nconst headerToken = headers['x-telegram-bot-api-secret-token'] || '';\nif (headerToken !== $env.TELEGRAM_WEBHOOK_SECRET) {\n  throw new Error('Unauthorized Telegram webhook secret token');\n}\nconst cb = body.callback_query;\nif (!cb || String(cb.from?.id) !== String($env.TELEGRAM_OWNER_USER_ID) || String(cb.message?.chat?.id) !== String($env.TELEGRAM_OWNER_CHAT_ID)) {\n  throw new Error('Unauthorized Telegram user or chat ID');\n}\nconst [action, shortSlug, sig] = String(cb.data || '').split('|');\nconst expectedSig = crypto.createHmac('sha256', $env.TELEGRAM_CALLBACK_SECRET).update(`${action}|${shortSlug}`).digest('hex').slice(0, 16);\nif (sig !== expectedSig || action !== 'approve') {\n  return [];\n}\nreturn [{ json: { approved: true, shortSlug, reviewerId: cb.from.id } }];"
+      },
+      "id": "1007-verify-telegram-approval",
+      "name": "Verify Telegram Authorization",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/pulls",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"title\": \"docs(blog): Automated milestone publication ({{$json.shortSlug}})\",\n  \"head\": \"auton-pub/{{$json.shortSlug}}\",\n  \"base\": \"main\",\n  \"body\": \"Automated draft approved via Telegram. Requires passing GitHub Actions `verify` check and explicit owner merge authorization before Cloudflare Pages deployment.\"\n}"
+      },
+      "id": "1008-create-isolated-pr",
+      "name": "Create Isolated GitHub PR",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        580
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-pat-placeholder",
+          "name": "GitHub API Token (Placeholder)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/commits/{{$json.head.sha}}/check-runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "1009-verify-ci-build",
+      "name": "Verify Astro Build & CI Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        580
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-pat-placeholder",
+          "name": "GitHub API Token (Placeholder)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/pulls/{{$('Create Isolated GitHub PR').first().json.number}}/merge",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"merge_method\": \"squash\"\n}"
+      },
+      "id": "1010-authorized-merge-cloudflare",
+      "name": "Authorized Merge -> Cloudflare Pages",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        580
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-pat-placeholder",
+          "name": "GitHub API Token (Placeholder)"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "GitHub Event Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify Signature & Filter Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Signature & Filter Event": {
+      "main": [
+        [
+          {
+            "node": "Check Existing Blog Entries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Blog Entries": {
+      "main": [
+        [
+          {
+            "node": "AI Draft & Security Guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Draft & Security Guard": {
+      "main": [
+        [
+          {
+            "node": "Telegram Approval Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Approval Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify Telegram Authorization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Telegram Authorization": {
+      "main": [
+        [
+          {
+            "node": "Create Isolated GitHub PR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Isolated GitHub PR": {
+      "main": [
+        [
+          {
+            "node": "Verify Astro Build & CI Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Astro Build & CI Check": {
+      "main": [
+        [
+          {
+            "node": "Authorized Merge -> Cloudflare Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
+

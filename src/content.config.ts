@@ -161,4 +161,26 @@ const benchmarks = defineCollection({
   }),
 });
 
-export const collections = { projects, updates, benchmarks };
+// Technical blog & development log (release notes, devlogs, architecture notes,
+// and automated milestone publications).
+const blog = defineCollection({
+  loader: glob({ pattern: "*.{md,mdx}", base: "./src/content/blog" }),
+  schema: z.object({
+    /** Max 56 chars so `${title} — HomeLabCore` stays <= 70 chars for html-validate long-title. */
+    title: z.string().min(1).max(56),
+    /** Meta description and summary (must be 50–230 chars for SEO validation). */
+    description: z.string().min(50).max(230),
+    published: z.coerce.date(),
+    updated: z.coerce.date().optional(),
+    category: z.enum(["release", "devlog", "architecture", "milestone"]),
+    project: reference("projects").optional(),
+    version: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    /** Deduplication identifier for automated publishing events. */
+    sourceEventId: z.string().optional(),
+    sourceUrl: z.string().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { projects, updates, benchmarks, blog };

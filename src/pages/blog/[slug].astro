@@ -1,0 +1,84 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection, getEntry, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatDate, isoDate } from "../../lib/projects";
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection("blog", (b) => !b.data.draft);
+  return posts.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const project = entry.data.project ? await getEntry(entry.data.project) : undefined;
+const articlePath = `/blog/${entry.id}/`;
+
+const CATEGORY_LABEL = {
+  release: "Release",
+  devlog: "Devlog",
+  architecture: "Architecture",
+  milestone: "Milestone",
+} as const;
+---
+<BaseLayout
+  route="blog"
+  pathOverride={articlePath}
+  title={`${entry.data.title} — HomeLabCore`}
+  description={entry.data.description}
+  ogType="article"
+  project={project?.id}
+  navSection="blog"
+  lang="en"
+>
+  <article class="section">
+    <div class="container measure">
+      <p class="meta">
+        <a href="/blog/">← Blog &amp; devlog</a>
+        {" · "}
+        <time datetime={isoDate(entry.data.published)}>{formatDate(entry.data.published)}</time>
+        {" · "}
+        <span class="badge">{CATEGORY_LABEL[entry.data.category]}</span>
+        {project && (
+          <>
+            {" · "}
+            <a href={project.data.urls.overview}>{project.data.name}</a>
+          </>
+        )}
+        {entry.data.version && (
+          <>
+            {" · "}
+            <span>{entry.data.version}</span>
+          </>
+        )}
+      </p>
+      <h1>{entry.data.title}</h1>
+      <p class="lead">{entry.data.description}</p>
+      {entry.data.tags.length > 0 && (
+        <ul class="tag-list" aria-label="Article tags">
+          {entry.data.tags.map((tag) => <li>{tag}</li>)}
+        </ul>
+      )}
+      <div class="prose">
+        <Content />
+      </div>
+      {project && (
+        <div class="panel panel--note">
+          <p class="small">
+            Related project: <a href={project.data.urls.overview}>{project.data.name}</a>
+            {project.data.urls.live && (
+              <>
+                {" · "}
+                <a href={project.data.urls.live} rel="noopener noreferrer">Open live app</a>
+              </>
+            )}
+          </p>
+        </div>
+      )}
+    </div>
+  </article>
+</BaseLayout>
+

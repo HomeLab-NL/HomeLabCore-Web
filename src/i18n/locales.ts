@@ -24,6 +24,7 @@ export const TRANSLATED_PATHS = new Set([
   "/lab/agentlab/",
   "/lab/at-the-mountains-of-madness/",
   "/benchmarks/",
+  "/blog/",
   "/about",
 ]);
 

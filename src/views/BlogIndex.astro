@@ -1,0 +1,122 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHead from "../components/SectionHead.astro";
+import { type Locale } from "../i18n/locales";
+import { formatDate, isoDate, localizeProject } from "../lib/projects";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+
+const COPY = {
+  en: {
+    title: "Blog & Devlog — HomeLabCore",
+    description: "Technical blog and development log by HomeLabCore: verified release notes, architecture notes, and milestone updates across our apps and experiments.",
+    og: "Technical blog, release notes, and development log by HomeLabCore.",
+    label: "Blog & devlog",
+    h1: "Technical blog & devlog",
+    intro: "Verified release notes, engineering milestones, and development updates across HomeLabCore projects. Articles are published in English.",
+    rssLabel: "RSS feed",
+    readArticle: "Read article",
+    cat: {
+      release: "Release",
+      devlog: "Devlog",
+      architecture: "Architecture",
+      milestone: "Milestone",
+    },
+  },
+  nl: {
+    title: "Blog & Devlog — HomeLabCore",
+    description: "Technisch blog en ontwikkeljournaal van HomeLabCore: geverifieerde releasenotes, architectuurnotities en mijlpaalupdates van onze apps en experimenten.",
+    og: "Technisch blog, releasenotes en ontwikkeljournaal van HomeLabCore.",
+    label: "Blog & devlog",
+    h1: "Technisch blog & devlog",
+    intro: "Geverifieerde releasenotes, technische mijlpalen en ontwikkelupdates van HomeLabCore-projecten. Artikelen worden in het Engels gepubliceerd.",
+    rssLabel: "RSS-feed",
+    readArticle: "Artikel lezen (Engels)",
+    cat: {
+      release: "Release",
+      devlog: "Devlog",
+      architecture: "Architectuur",
+      milestone: "Mijlpaal",
+    },
+  },
+  uk: {
+    title: "Блог і девлог — HomeLabCore",
+    description: "Технічний блог і журнал розробки HomeLabCore: підтверджені нотатки про релізи, архітектурні рішення та оновлення етапів розробки наших застосунків і експериментів.",
+    og: "Технічний блог, нотатки про релізи та журнал розробки HomeLabCore.",
+    label: "Блог і девлог",
+    h1: "Технічний блог і девлог",
+    intro: "Підтверджені нотатки про релізи, інженерні етапи та оновлення розробки проєктів HomeLabCore. Статті публікуються англійською мовою.",
+    rssLabel: "RSS-стрічка",
+    readArticle: "Читати статтю (англійською)",
+    cat: {
+      release: "Реліз",
+      devlog: "Девлог",
+      architecture: "Архітектура",
+      milestone: "Етап",
+    },
+  },
+}[lang];
+
+const posts = (await getCollection("blog", (b) => !b.data.draft)).sort(
+  (a, b) => b.data.published.getTime() - a.data.published.getTime(),
+);
+const items = await Promise.all(
+  posts.map(async (post) => {
+    const proj = post.data.project ? localizeProject((await getEntry(post.data.project))!, lang) : undefined;
+    return { post, proj };
+  }),
+);
+const enAttr = lang !== "en" ? "en" : undefined;
+---
+<BaseLayout
+  route="blog"
+  lang={lang}
+  title={COPY.title}
+  description={COPY.description}
+  ogDescription={COPY.og}
+  navCurrent="blog"
+>
+  <section class="section">
+    <div class="container">
+      <SectionHead label={COPY.label} title={COPY.h1} level="h1">
+        {COPY.intro} <a href="/rss.xml">{COPY.rssLabel}</a>.
+      </SectionHead>
+
+      <div class="card-grid card-grid--2">
+        {items.map(({ post, proj }) => (
+          <article class="panel" data-project={proj?.id}>
+            <p class="meta">
+              <time datetime={isoDate(post.data.published)}>{formatDate(post.data.published)}</time>
+              {" · "}
+              <span class="badge">{COPY.cat[post.data.category]}</span>
+              {proj && (
+                <>
+                  {" · "}
+                  <a href={proj.data.urls.overview}>{proj.data.name}</a>
+                </>
+              )}
+              {post.data.version && (
+                <>
+                  {" · "}
+                  <span>{post.data.version}</span>
+                </>
+              )}
+            </p>
+            <h2>
+              <a href={`/blog/${post.id}/`} hreflang={enAttr}>{post.data.title}</a>
+            </h2>
+            <p class="muted">{post.data.description}</p>
+            <p class="small">
+              <a href={`/blog/${post.id}/`} hreflang={enAttr}>{COPY.readArticle} <span aria-hidden="true">→</span></a>
+            </p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
