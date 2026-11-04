@@ -10,6 +10,8 @@ import { ui } from "../i18n/ui";
 
 interface Props {
   route: RouteKey;
+  /** Override canonical/language path for dynamic routes (e.g. /blog/[slug]/). */
+  pathOverride?: string;
   title: string;
   description: string;
   /** Open Graph overrides; default to title/description. */
@@ -25,6 +27,7 @@ interface Props {
 
 const {
   route,
+  pathOverride,
   title,
   description,
   ogTitle = title,
@@ -36,7 +39,8 @@ const {
   lang = "en",
 } = Astro.props;
 
-const { path, indexed } = ROUTES[route];
+const { path: routePath, indexed } = ROUTES[route];
+const path = pathOverride ?? routePath;
 const url = SITE_URL + localizedPath(path, lang);
 // Translated pages list every language version (and English as the default).
 const alternates = indexed && TRANSLATED_PATHS.has(path)
@@ -84,6 +88,7 @@ const themeInit = `(function(){var d=document.documentElement;d.classList.add("j
       <meta name="twitter:image:alt" content={og.alt}>
     </>
   )}
+  <link rel="alternate" type="application/rss+xml" title="HomeLabCore Blog & Devlog" href={`${SITE_URL}/rss.xml`}>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/favicon-32x32.png" sizes="32x32" type="image/png">
   <link rel="icon" href="/assets/favicon-16x16.png" sizes="16x16" type="image/png">

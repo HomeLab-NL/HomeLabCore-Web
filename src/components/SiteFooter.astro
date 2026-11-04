@@ -47,6 +47,7 @@ const legal = apps.filter((p) => p.data.urls.privacy);
         <div class="footer-col footer-col--studio">
           <h2>{t.footer.studio}</h2>
           <ul>
+            <li><a href={href("/blog/", lang)}>{t.nav.blog}</a></li>
             <li><a href={href("/about", lang)}>{t.nav.about}</a></li>
             <li><a href="/support/" hreflang={lang !== "en" ? "en" : undefined}>{t.nav.support}</a></li>
             <li><a href={`mailto:${CONTACT.support}`}>{CONTACT.support}</a></li>

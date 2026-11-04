@@ -20,6 +20,7 @@ export const ROUTES = {
   agentlab: { path: "/lab/agentlab/", lastmod: "2026-10-03", indexed: true },
   mountains: { path: "/lab/at-the-mountains-of-madness/", lastmod: "2026-10-03", indexed: true },
   benchmarks: { path: "/benchmarks/", lastmod: "2026-10-03", indexed: true },
+  blog: { path: "/blog/", lastmod: "2026-11-04", indexed: true },
   about: { path: "/about", lastmod: "2026-10-03", indexed: true },
   support: { path: "/support/", lastmod: "2026-10-03", indexed: true },
   supportCookfrom: { path: "/support/cookfrom", lastmod: "2026-09-02", indexed: true },

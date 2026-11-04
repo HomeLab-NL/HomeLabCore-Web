@@ -12,13 +12,14 @@ export const THEME_STORAGE_KEY = "hlc-theme";
 
 // Global navigation. `current` on a page highlights its item with
 // aria-current="page"; `section` marks the parent section of a deeper page.
-export type NavKey = "home" | "apps" | "lab" | "benchmarks" | "about" | "support";
+export type NavKey = "home" | "apps" | "lab" | "benchmarks" | "blog" | "about" | "support";
 
 export const PRIMARY_NAV: { key: NavKey; label: string; href: string }[] = [
   { key: "home", label: "Home", href: "/" },
   { key: "apps", label: "Apps", href: "/apps/" },
   { key: "lab", label: "Lab", href: "/lab/" },
   { key: "benchmarks", label: "Benchmarks", href: "/benchmarks/" },
+  { key: "blog", label: "Blog", href: "/blog/" },
   { key: "about", label: "About", href: "/about" },
 ];
 
