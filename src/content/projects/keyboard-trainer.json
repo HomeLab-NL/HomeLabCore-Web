@@ -51,10 +51,10 @@
   "contextNote": "KeyQuest was developed with participation in the Stripe Eindhoven Community hackathon, associated with One Horizon.",
   "visualNote": "Authentic screenshots captured directly from the live KeyQuest web deployment at keyquest-b9l7.onrender.com.",
   "cover": {
-    "src": "../../assets/projects/keyboard-trainer/cover.webp",
-    "alt": "KeyQuest Typing Academy: Lesson 1 Home Row Left with live WPM, accuracy, star threshold bar, and color-coded on-screen keyboard.",
-    "caption": "KeyQuest Typing Academy — Lesson 1 (Home Row Left) in the live web app.",
-    "kind": "screenshot"
+    "src": "../../assets/projects/keyboard-trainer/promo.webp",
+    "alt": "KeyQuest promotional banner: the KeyQuest keyboard-and-crown icon, three features — 10 Typing Academy lessons, Word Rush and Starwood Trail, and XP levels with 12 trophies — tactile A S D F home-row keycaps, and live application screens showing Home Row Left and the Sunny Forest encounter.",
+    "caption": "KeyQuest — promotional artwork",
+    "kind": "promo"
   },
   "hero": {
     "src": "../../assets/projects/keyboard-trainer/hero.webp",

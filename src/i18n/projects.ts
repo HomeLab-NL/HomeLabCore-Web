@@ -146,8 +146,8 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
         alt: "Live webapplicatie van KeyQuest met Keyboard Kingdom-voortgang, Typing Academy, Word Rush, Typing Adventure en het overzicht van 10 lessen.",
       },
       cover: {
-        caption: "KeyQuest Typing Academy — Les 1 (Home Row Left) in de live webapp.",
-        alt: "KeyQuest Typing Academy: Les 1 Home Row Left met live WPM, nauwkeurigheid, sterrenbalk en kleurgecodeerd schermtoetsenbord.",
+        caption: "KeyQuest — promotiebeeld",
+        alt: "Promotiebanner van KeyQuest: het KeyQuest-icoon met toetsenbord en kroon, drie functies — 10 Typing Academy-lessen, Word Rush en Starwood Trail, en XP-levels met 12 trofeeën — de A S D F-toetsen en live schermen van Home Row Left en Sunny Forest.",
       },
       figures: [
         same("Het live startscherm van KeyQuest met Typing Academy, Word Rush en Typing Adventure."),
@@ -316,8 +316,8 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
         alt: "Жива веб-версія KeyQuest із прогресом Keyboard Kingdom, режимами Typing Academy, Word Rush, Typing Adventure та списком із 10 уроків.",
       },
       cover: {
-        caption: "KeyQuest Typing Academy — Урок 1 (Home Row Left) у живій веб-версії.",
-        alt: "KeyQuest Typing Academy: Урок 1 Home Row Left із показниками WPM, точності, шкалою зірок та кольоровою екранною клавіатурою.",
+        caption: "KeyQuest — рекламне зображення",
+        alt: "Рекламний банер KeyQuest: іконка KeyQuest із клавіатурою та короною, три ключові можливості — 10 уроків Typing Academy, режими Word Rush і Starwood Trail, рівні XP і 12 трофеїв — клавіші A S D F та живі екрани Home Row Left і Sunny Forest.",
       },
       figures: [
         same("Головний екран живої веб-версії KeyQuest із режимами Typing Academy, Word Rush і Typing Adventure."),
