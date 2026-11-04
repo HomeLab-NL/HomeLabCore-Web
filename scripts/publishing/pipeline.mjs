@@ -2,8 +2,8 @@
 // Implements:
 //   GitHub Event -> Signature Verification -> Release/Milestone Filter ->
 //   Deduplication -> Concise English Draft + Secret/IP Guard ->
-//   Telegram Approval Verification -> Isolated GitHub PR ->
-//   Build Validation -> Owner-Authorized Merge -> Cloudflare Pages.
+//   HomeLab Info (@Home_Lab_info_bot) Approval Verification ->
+//   Isolated GitHub PR -> Build Validation -> Owner-Authorized Merge -> Cloudflare Pages.
 
 import crypto from "node:crypto";
 import fs from "node:fs";
@@ -15,6 +15,34 @@ const PROJECT_MAP = {
   "homelabnl-alt/KeyQuest": { id: "keyboard-trainer", name: "KeyQuest", tag: "KeyQuest" },
   "HomeLab-NL/HomeLab-Core": { id: "agentlab", name: "AgentLab", tag: "AgentLab" },
 };
+
+/**
+ * Metadata for the two Telegram bots in the HomeLab ecosystem.
+ * - HomeLab Info (@Home_Lab_info_bot, id 8967925790) sends Uptime Kuma monitoring
+ *   alerts (/healthz + HomeLab Backup push heartbeats) and handles HomeLabCore-Web
+ *   publication approvals via webhook callback queries.
+ * - HomeLab Assistant (@homelab_core_bot, id 8633834424) is reserved for AgentLab
+ *   worker intake (telegram-p0-gateway) and systemd OnFailure alerts and must NOT
+ *   have its webhook overwritten by website publishing.
+ */
+export const HOMELAB_TELEGRAM_BOTS = Object.freeze({
+  infoBot: Object.freeze({
+    id: 8967925790,
+    username: "Home_Lab_info_bot",
+    firstName: "HomeLab Info",
+    webhookPath: "homelab-info-web-approval",
+    webhookUrl: "https://n8n.homelabcore.dev/webhook/homelab-info-web-approval",
+    callbackPrefix: "hlc-pub",
+    allowedUpdates: Object.freeze(["callback_query"]),
+  }),
+  assistantBot: Object.freeze({
+    id: 8633834424,
+    username: "homelab_core_bot",
+    firstName: "HomeLab Assistant",
+    webhookPath: "telegram-p0-gateway",
+    webhookUrl: "https://n8n.homelabcore.dev/webhook/telegram-p0-gateway",
+  }),
+});
 
 // Patterns that must NEVER appear in published content (credentials, private IPs, internal hosts).
 const FORBIDDEN_PATTERNS = [
@@ -80,7 +108,6 @@ export function classifyGitHubEvent({ eventType, payload }) {
     if (/\[skip-publish\]/i.test(body) || /\[skip-publish\]/i.test(title)) {
       return { eligible: false, reason: "Explicitly marked [skip-publish]" };
     }
-    // Ignore minor bug-fix-only releases with no user-facing notes
     if (/^(?:fix|chore|ci|build)\b/i.test(title) && !/\[publish\]/i.test(body)) {
       return { eligible: false, reason: "Routine bugfix/chore release ignored" };
     }
@@ -208,7 +235,7 @@ export function generateArticleDraft(event) {
   if (!event?.eligible) {
     throw new Error("Cannot generate draft for ineligible event");
   }
-  assertNoSensitiveData( `${event.title}\n${event.summarySource}\n${event.sourceUrl ?? ""}` );
+  assertNoSensitiveData(`${event.title}\n${event.summarySource}\n${event.sourceUrl ?? ""}`);
 
   const projectName = event.project?.name ?? event.repoFullName.split("/").pop();
   const versionSuffix = event.version ? ` ${event.version}` : "";
@@ -291,17 +318,107 @@ export function generateArticleDraft(event) {
 }
 
 /**
- * Signs a Telegram callback action (action|slug) using HMAC-SHA256 truncated to 16 hex chars
- * so it fits within Telegram's 64-byte callback_data limit.
+ * Verifies that reusing the Telegram bot will not conflict with any existing
+ * webhook or polling consumer, and ensures @homelab_core_bot is never overwritten.
  */
-export function signTelegramCallback({ action, slug, secret }) {
-  const shortSlug = slug.slice(0, 34);
-  const sig = crypto.createHmac("sha256", secret).update(`${action}|${shortSlug}`, "utf8").digest("hex").slice(0, 16);
-  return `${action}|${shortSlug}|${sig}`;
+export function verifyTelegramBotConsumerSafety({
+  getMeResult,
+  webhookInfo,
+  expectedWebhookUrl = HOMELAB_TELEGRAM_BOTS.infoBot.webhookUrl,
+  activePollers = 0,
+}) {
+  if (!getMeResult || typeof getMeResult !== "object") {
+    return { safe: false, reason: "Missing Telegram getMe metadata" };
+  }
+  if (
+    Number(getMeResult.id) === HOMELAB_TELEGRAM_BOTS.assistantBot.id ||
+    getMeResult.username === HOMELAB_TELEGRAM_BOTS.assistantBot.username
+  ) {
+    return {
+      safe: false,
+      reason: "Refusing to reuse @homelab_core_bot (reserved for AgentLab telegram-p0-gateway webhook)",
+    };
+  }
+  if (
+    Number(getMeResult.id) !== HOMELAB_TELEGRAM_BOTS.infoBot.id ||
+    getMeResult.username !== HOMELAB_TELEGRAM_BOTS.infoBot.username
+  ) {
+    return {
+      safe: false,
+      reason: `Unexpected Telegram bot identity: ${getMeResult.username ?? "unknown"} (${getMeResult.id ?? "?"})`,
+    };
+  }
+  if (Number(activePollers) > 0) {
+    return {
+      safe: false,
+      reason: "Active getUpdates polling consumer detected; Telegram prohibits concurrent polling and webhook consumers",
+    };
+  }
+
+  const currentUrl = String(webhookInfo?.url ?? "").trim();
+  if (!currentUrl) {
+    return {
+      safe: true,
+      state: "outbound-only-no-webhook",
+      canRegisterWebhook: true,
+      preservesUptimeKumaAndBackupPush: true,
+    };
+  }
+  if (currentUrl === expectedWebhookUrl) {
+    return {
+      safe: true,
+      state: "already-bound-to-publishing-webhook",
+      canRegisterWebhook: false,
+      preservesUptimeKumaAndBackupPush: true,
+    };
+  }
+  return {
+    safe: false,
+    state: "conflicting-webhook",
+    reason: `HomeLab Info webhook is already bound to a different consumer: ${currentUrl}`,
+  };
 }
 
 /**
- * Builds the Telegram approval message and inline keyboard payload.
+ * Builds the non-conflicting Telegram setWebhook payload for HomeLab Info (@Home_Lab_info_bot).
+ * Restricts inbound deliveries to ["callback_query"] so Uptime Kuma / backup messages
+ * and plain chat messages never trigger unnecessary webhook executions.
+ */
+export function buildHomeLabInfoWebhookSpec({
+  webhookUrl = HOMELAB_TELEGRAM_BOTS.infoBot.webhookUrl,
+  secretToken,
+}) {
+  if (!secretToken || typeof secretToken !== "string" || !/^[A-Za-z0-9_-]{32,256}$/.test(secretToken)) {
+    throw new Error("Telegram webhook secret_token must be 32-256 characters matching [A-Za-z0-9_-]");
+  }
+  return {
+    url: webhookUrl,
+    secret_token: secretToken,
+    allowed_updates: [...HOMELAB_TELEGRAM_BOTS.infoBot.allowedUpdates],
+    drop_pending_updates: false,
+    max_connections: 20,
+  };
+}
+
+/**
+ * Signs a namespaced HomeLab Info callback action (hlc-pub|action|shortSlug|sig)
+ * using HMAC-SHA256 truncated to 16 hex chars so total length <= 61 bytes
+ * (strictly within Telegram's 64-byte callback_data limit).
+ */
+export function signTelegramCallback({ action, slug, secret }) {
+  if (!secret || typeof secret !== "string") {
+    throw new Error("Missing callback secret for HMAC signing");
+  }
+  const prefix = HOMELAB_TELEGRAM_BOTS.infoBot.callbackPrefix;
+  const shortSlug = String(slug ?? "").slice(0, 28);
+  const payload = `${prefix}|${action}|${shortSlug}`;
+  const sig = crypto.createHmac("sha256", secret).update(payload, "utf8").digest("hex").slice(0, 16);
+  return `${payload}|${sig}`;
+}
+
+/**
+ * Builds the HomeLab Info (@Home_Lab_info_bot) approval message and inline keyboard payload.
+ * Formatted to coexist cleanly alongside Uptime Kuma (/healthz + HomeLab Backup) alerts.
  */
 export function buildTelegramApprovalRequest({ draft, chatId, callbackSecret }) {
   const approveData = signTelegramCallback({ action: "approve", slug: draft.slug, secret: callbackSecret });
@@ -309,11 +426,14 @@ export function buildTelegramApprovalRequest({ draft, chatId, callbackSecret }) 
   return {
     chat_id: String(chatId),
     parse_mode: "Markdown",
+    disable_web_page_preview: true,
     text: [
-      `📝 *HomeLabCore Publishing Draft Ready*`,
+      `🌐 *HomeLabCore Web — Publication Approval*`,
+      `_via HomeLab Info (@Home_Lab_info_bot)_`,
       ``,
       `*Title:* ${draft.title}`,
       `*Category:* \`${draft.category}\``,
+      `*Branch:* \`auton-pub/${draft.slug}\``,
       `*File:* \`${draft.filePath}\``,
       `*Event ID:* \`${draft.sourceEventId}\``,
       ``,
@@ -325,7 +445,7 @@ export function buildTelegramApprovalRequest({ draft, chatId, callbackSecret }) 
       inline_keyboard: [
         [
           { text: "✅ Approve & Open PR", callback_data: approveData },
-          { text: "🛑 Reject", callback_data: rejectData },
+          { text: "🛑 Reject Draft", callback_data: rejectData },
         ],
       ],
     },
@@ -333,10 +453,13 @@ export function buildTelegramApprovalRequest({ draft, chatId, callbackSecret }) 
 }
 
 /**
- * Verifies a Telegram webhook callback query:
- *   1. Validates X-Telegram-Bot-Api-Secret-Token header
- *   2. Validates chat.id and from.id against authorized owner IDs
- *   3. Validates HMAC signature inside callback_data
+ * Verifies a Telegram webhook callback query received from HomeLab Info (@Home_Lab_info_bot):
+ *   1. Validates X-Telegram-Bot-Api-Secret-Token header in constant time
+ *   2. Rejects duplicate Telegram update_id replays when seenUpdateIds Set is provided
+ *   3. Validates callback_query exists and carries the hlc-pub| namespace prefix
+ *   4. Validates message origin is HomeLab Info (@Home_Lab_info_bot, id 8967925790) when present
+ *   5. Restricts Approve/Reject strictly to the authorized owner's private chat & user ID
+ *   6. Validates HMAC-SHA256 signature inside callback_data in constant time
  */
 export function verifyTelegramApproval({
   update,
@@ -345,6 +468,7 @@ export function verifyTelegramApproval({
   allowedChatId,
   allowedUserId,
   callbackSecret,
+  seenUpdateIds = null,
 }) {
   if (!secretTokenHeader || !expectedWebhookSecret) {
     return { authorized: false, reason: "Missing Telegram webhook secret token" };
@@ -355,30 +479,61 @@ export function verifyTelegramApproval({
     return { authorized: false, reason: "Invalid Telegram webhook secret token" };
   }
 
+  if (seenUpdateIds instanceof Set && update?.update_id !== undefined) {
+    if (seenUpdateIds.has(update.update_id)) {
+      return { authorized: false, duplicateUpdate: true, reason: "Duplicate Telegram update_id replay ignored" };
+    }
+  }
+
   const cb = update?.callback_query;
   if (!cb) {
-    return { authorized: false, reason: "No callback_query in Telegram update" };
+    return { authorized: false, ignored: true, reason: "No callback_query in Telegram update" };
   }
+
+  const rawData = String(cb.data ?? "");
+  const prefix = `${HOMELAB_TELEGRAM_BOTS.infoBot.callbackPrefix}|`;
+  if (!rawData.startsWith(prefix)) {
+    return { authorized: false, ignored: true, reason: "Callback data outside hlc-pub namespace" };
+  }
+
+  const senderBot = cb.message?.from;
+  if (senderBot?.id !== undefined && Number(senderBot.id) !== HOMELAB_TELEGRAM_BOTS.infoBot.id) {
+    return { authorized: false, reason: "Callback message did not originate from HomeLab Info bot" };
+  }
+  if (senderBot?.username && senderBot.username !== HOMELAB_TELEGRAM_BOTS.infoBot.username) {
+    return { authorized: false, reason: "Callback message bot username mismatch" };
+  }
+
+  const chatType = cb.message?.chat?.type;
+  if (chatType && chatType !== "private") {
+    return { authorized: false, reason: "Publication approvals are restricted to the owner private chat" };
+  }
+
   const chatId = String(cb.message?.chat?.id ?? "");
   const userId = String(cb.from?.id ?? "");
-  if (chatId !== String(allowedChatId) || userId !== String(allowedUserId)) {
+  if (!allowedChatId || !allowedUserId || chatId !== String(allowedChatId) || userId !== String(allowedUserId)) {
     return { authorized: false, reason: "Unauthorized Telegram chat or user ID" };
   }
 
-  const parts = String(cb.data ?? "").split("|");
-  if (parts.length !== 3) {
-    return { authorized: false, reason: "Malformed callback_data" };
+  const parts = rawData.split("|");
+  if (parts.length !== 4) {
+    return { authorized: false, reason: "Malformed hlc-pub callback_data" };
   }
-  const [action, shortSlug, sig] = parts;
-  if (!["approve", "reject", "merge"].includes(action)) {
+  const [ns, action, shortSlug, sig] = parts;
+  if (ns !== HOMELAB_TELEGRAM_BOTS.infoBot.callbackPrefix || !["approve", "reject"].includes(action)) {
     return { authorized: false, reason: `Unsupported callback action: ${action}` };
   }
+
   const expectedCallback = signTelegramCallback({ action, slug: shortSlug, secret: callbackSecret });
-  const expectedSig = expectedCallback.split("|")[2];
+  const expectedSig = expectedCallback.split("|")[3];
   const sigBuf = Buffer.from(sig, "utf8");
   const expSigBuf = Buffer.from(expectedSig, "utf8");
   if (sigBuf.length !== expSigBuf.length || !crypto.timingSafeEqual(sigBuf, expSigBuf)) {
     return { authorized: false, reason: "Invalid callback_data HMAC signature" };
+  }
+
+  if (seenUpdateIds instanceof Set && update?.update_id !== undefined) {
+    seenUpdateIds.add(update.update_id);
   }
 
   return {
@@ -386,6 +541,41 @@ export function verifyTelegramApproval({
     decision: action,
     shortSlug,
     reviewerId: userId,
+    callbackQueryId: cb.id ?? null,
+    messageId: cb.message?.message_id ?? null,
+  };
+}
+
+/**
+ * Builds the Telegram answerCallbackQuery and editMessageReplyMarkup payloads
+ * so HomeLab Info immediately acknowledges owner Approve/Reject clicks and
+ * removes the inline buttons to prevent duplicate clicks.
+ */
+export function buildTelegramCallbackResponse({ verification, chatId, prUrl = null }) {
+  if (!verification?.authorized) {
+    throw new Error("Cannot build callback response for unauthorized verification");
+  }
+  const isApproved = verification.decision === "approve";
+  const toastText = isApproved
+    ? "✅ Approved — opening isolated GitHub PR for HomeLabCore-Web"
+    : "🛑 Rejected — publication draft discarded";
+  const statusLine = isApproved
+    ? `✅ *Approved by owner*${prUrl ? ` — [PR opened](${prUrl})` : ` (\`auton-pub/${verification.shortSlug}\`)`}`
+    : `🛑 *Rejected by owner* (\`${verification.shortSlug}\` discarded)`;
+
+  return {
+    shouldCreatePullRequest: isApproved,
+    answerCallbackQuery: {
+      callback_query_id: verification.callbackQueryId,
+      text: toastText,
+      show_alert: false,
+    },
+    editMessageReplyMarkup: {
+      chat_id: String(chatId),
+      message_id: verification.messageId,
+      reply_markup: { inline_keyboard: [] },
+    },
+    statusSummary: statusLine,
   };
 }
 
@@ -407,11 +597,12 @@ export function prepareIsolatedPullRequestSpec({ draft }) {
       `- **Source Event ID:** \`${draft.sourceEventId}\``,
       `- **Category:** \`${draft.category}\``,
       `- **Target File:** \`${draft.filePath}\``,
+      `- **Approval Channel:** HomeLab Info (\`@Home_Lab_info_bot\`)`,
       ``,
       `### Validation & Merge Policy`,
       `- [x] Webhook HMAC-SHA256 verified`,
       `- [x] Secret & private-IP guard passed`,
-      `- [x] Telegram owner approval verified`,
+      `- [x] HomeLab Info (\`@Home_Lab_info_bot\`) owner approval verified`,
       `- [ ] GitHub Actions \`verify\` suite (\`astro check\`, \`npm run build\`, \`npm test\`) must pass`,
       `- [ ] Explicit owner merge authorization required before Cloudflare Pages production deployment`,
     ].join("\n"),
@@ -419,4 +610,3 @@ export function prepareIsolatedPullRequestSpec({ draft }) {
     autoMerge: false,
   };
 }
-

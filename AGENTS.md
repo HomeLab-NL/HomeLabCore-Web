@@ -11,8 +11,8 @@ This document is the authoritative contract for all AI agents and automation sys
 ## 1. Core Principles & Single Source of Truth
 
 1. **GitHub (`HomeLab-NL/HomeLabCore-Web`) is the single source of truth.** Never rely on local uncommitted state or manual file copying between machines.
-2. **Never commit or push directly to `main`.** Pushing to `main` triggers a production deployment on Cloudflare Pages (`homelabcore.dev`).
-3. **Never merge a Pull Request to `main` without explicit owner authorization.**
+2. **Never commit or push directly to `main`.** All changes must go through an isolated Pull Request targeting `main`.
+3. **Merge & Live Verification Gate:** Only merge a Pull Request to `main` after all required CI checks (`CI/build-and-test`, `verify`, and `Cloudflare Pages` preview) pass and no merge conflicts remain, then verify the live deployment on `https://homelabcore.dev`. Do not activate or modify production n8n, Telegram webhooks, monitoring services, or host infrastructure without explicit owner authorization.
 4. **Always use isolated branches or Git worktrees per task:**
    - Gemini branches: `feat/<topic>` or `fix/<topic>`
    - Claude Code ad-hoc branches: `claude/<topic>` or `content/<topic>`

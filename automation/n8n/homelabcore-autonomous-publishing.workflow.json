@@ -1,10 +1,10 @@
 {
-  "name": "HomeLabCore Autonomous Publishing Pipeline",
+  "name": "HomeLabCore Autonomous Publishing Pipeline (HomeLab Info Bot)",
   "active": false,
-  "versionId": "1.0.0",
+  "versionId": "1.1.0",
   "meta": {
     "templateCredsSetupCompleted": false,
-    "description": "GitHub Event -> Filter -> AI Draft -> Telegram Approval -> GitHub PR -> Build Validation -> Authorized Merge -> Cloudflare Pages"
+    "description": "GitHub Event -> Filter -> AI Draft -> HomeLab Info (@Home_Lab_info_bot) Owner Approval -> GitHub PR -> Build Validation -> Authorized Merge -> Cloudflare Pages"
   },
   "nodes": [
     {
@@ -22,7 +22,7 @@
       "typeVersion": 2,
       "position": [
         180,
-        300
+        280
       ],
       "webhookId": "homelabcore-github-events"
     },
@@ -36,7 +36,7 @@
       "typeVersion": 2,
       "position": [
         420,
-        300
+        280
       ]
     },
     {
@@ -53,7 +53,7 @@
       "typeVersion": 4.2,
       "position": [
         660,
-        300
+        280
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -64,7 +64,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prevent duplicate publication, generate concise English draft, and enforce secret/private-IP guard.\nconst crypto = require('crypto');\nconst event = $('Verify Signature & Filter Event').first().json;\nconst existingFiles = $input.all().map((i) => i.json.name || '');\n\nconst slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 56);\nconst slug = `${event.publishedAt}-${slugify(event.title)}`;\nif (existingFiles.includes(`${slug}.md`)) {\n  return [];\n}\n\nconst forbidden = [\n  /\\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}\\b/,\n  /\\bgithub_pat_[A-Za-z0-9_]{20,}\\b/,\n  /\\bsk-[A-Za-z0-9_-]{20,}\\b/,\n  /\\b10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b192\\.168\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b172\\.(?:1[6-9]|2\\d|3[0-1])\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b100\\.(?:6[4-9]|[7-9]\\d|1[0-1]\\d|12[0-7])\\.\\d{1,3}\\.\\d{1,3}\\b/\n];\nfor (const re of forbidden) {\n  if (re.test(event.title + '\\n' + event.summarySource)) {\n    throw new Error('Security guard blocked sensitive token or private IP in event payload');\n  }\n}\n\nlet desc = `${event.title}: ${event.summarySource.replace(/\\s+/g, ' ').trim()}`;\nif (desc.length < 50) desc = `${event.title} — verified ${event.category} update published on HomeLabCore.`;\nif (desc.length > 230) desc = desc.slice(0, 226) + '...';\n\nconst markdown = [\n  '---',\n  `title: ${JSON.stringify(event.title)}`,\n  `description: ${JSON.stringify(desc)}`,\n  `published: \"${event.publishedAt}\"`,\n  `category: \"${event.category}\"`,\n  ...(event.version ? [`version: ${JSON.stringify(event.version)}`] : []),\n  `sourceEventId: ${JSON.stringify(event.sourceEventId)}`,\n  `sourceUrl: ${JSON.stringify(event.sourceUrl)}`,\n  '---',\n  '',\n  event.summarySource || `Verified ${event.category} update.`,\n  '',\n  `Source reference: [${event.repoFullName}](${event.sourceUrl}).`\n].join('\\n');\n\nconst shortSlug = slug.slice(0, 34);\nconst sign = (action) => `${action}|${shortSlug}|` + crypto.createHmac('sha256', $env.TELEGRAM_CALLBACK_SECRET).update(`${action}|${shortSlug}`).digest('hex').slice(0, 16);\n\nreturn [{\n  json: {\n    slug,\n    filePath: `src/content/blog/${slug}.md`,\n    branchName: `auton-pub/${slug}`,\n    title: event.title,\n    description: desc,\n    sourceEventId: event.sourceEventId,\n    markdownBase64: Buffer.from(markdown, 'utf8').toString('base64'),\n    approveCallback: sign('approve'),\n    rejectCallback: sign('reject')\n  }\n}];"
+        "jsCode": "// Prevent duplicate publication, generate concise English draft, enforce secret/private-IP guard,\n// and sign namespaced HomeLab Info (@Home_Lab_info_bot) callback payloads.\nconst crypto = require('crypto');\nconst event = $('Verify Signature & Filter Event').first().json;\nconst existingFiles = $input.all().map((i) => i.json.name || '');\n\nconst slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 56);\nconst slug = `${event.publishedAt}-${slugify(event.title)}`;\nif (existingFiles.includes(`${slug}.md`)) {\n  return [];\n}\n\nconst forbidden = [\n  /\\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}\\b/,\n  /\\bgithub_pat_[A-Za-z0-9_]{20,}\\b/,\n  /\\bsk-[A-Za-z0-9_-]{20,}\\b/,\n  /\\b\\d{8,10}:[A-Za-z0-9_-]{35}\\b/,\n  /\\b10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b192\\.168\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b172\\.(?:1[6-9]|2\\d|3[0-1])\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b100\\.(?:6[4-9]|[7-9]\\d|1[0-1]\\d|12[0-7])\\.\\d{1,3}\\.\\d{1,3}\\b/\n];\nfor (const re of forbidden) {\n  if (re.test(event.title + '\\n' + event.summarySource)) {\n    throw new Error('Security guard blocked sensitive token or private IP in event payload');\n  }\n}\n\nlet desc = `${event.title}: ${event.summarySource.replace(/\\s+/g, ' ').trim()}`;\nif (desc.length < 50) desc = `${event.title} — verified ${event.category} update published on HomeLabCore.`;\nif (desc.length > 230) desc = desc.slice(0, 226) + '...';\n\nconst markdown = [\n  '---',\n  `title: ${JSON.stringify(event.title)}`,\n  `description: ${JSON.stringify(desc)}`,\n  `published: \"${event.publishedAt}\"`,\n  `category: \"${event.category}\"`,\n  ...(event.version ? [`version: ${JSON.stringify(event.version)}`] : []),\n  `sourceEventId: ${JSON.stringify(event.sourceEventId)}`,\n  `sourceUrl: ${JSON.stringify(event.sourceUrl)}`,\n  '---',\n  '',\n  event.summarySource || `Verified ${event.category} update.`,\n  '',\n  `Source reference: [${event.repoFullName}](${event.sourceUrl}).`\n].join('\\n');\n\nconst shortSlug = slug.slice(0, 28);\nconst sign = (action) => {\n  const payload = `hlc-pub|${action}|${shortSlug}`;\n  const sig = crypto.createHmac('sha256', $env.HOMELAB_INFO_CALLBACK_SECRET).update(payload, 'utf8').digest('hex').slice(0, 16);\n  return `${payload}|${sig}`;\n};\n\nreturn [{\n  json: {\n    slug,\n    shortSlug,\n    filePath: `src/content/blog/${slug}.md`,\n    branchName: `auton-pub/${slug}`,\n    title: event.title,\n    description: desc,\n    sourceEventId: event.sourceEventId,\n    markdownBase64: Buffer.from(markdown, 'utf8').toString('base64'),\n    approveCallback: sign('approve'),\n    rejectCallback: sign('reject')\n  }\n}];"
       },
       "id": "1004-ai-draft-and-guard",
       "name": "AI Draft & Security Guard",
@@ -72,52 +72,82 @@
       "typeVersion": 2,
       "position": [
         900,
-        300
+        280
       ]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$env.HOMELAB_INFO_BOT_TOKEN}}/sendMessage",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"chat_id\": \"{{$env.TELEGRAM_OWNER_CHAT_ID}}\",\n  \"parse_mode\": \"Markdown\",\n  \"text\": \"📝 *HomeLabCore Publishing Draft Ready*\\n\\n*Title:* {{$json.title}}\\n*Branch:* `{{$json.branchName}}`\\n*Summary:* {{$json.description}}\",\n  \"reply_markup\": {\n    \"inline_keyboard\": [\n      [\n        { \"text\": \"✅ Approve & Open PR\", \"callback_data\": \"{{$json.approveCallback}}\" },\n        { \"text\": \"🛑 Reject\", \"callback_data\": \"{{$json.rejectCallback}}\" }\n      ]\n    ]\n  }\n}"
+        "jsonBody": "={\n  \"chat_id\": \"{{$env.HOMELAB_OWNER_TELEGRAM_ID}}\",\n  \"parse_mode\": \"Markdown\",\n  \"disable_web_page_preview\": true,\n  \"text\": \"🌐 *HomeLabCore Web — Publication Approval*\\n_via HomeLab Info (@Home_Lab_info_bot)_\\n\\n*Title:* {{$json.title}}\\n*Branch:* `{{$json.branchName}}`\\n*File:* `{{$json.filePath}}`\\n*Summary:* {{$json.description}}\",\n  \"reply_markup\": {\n    \"inline_keyboard\": [\n      [\n        { \"text\": \"✅ Approve & Open PR\", \"callback_data\": \"{{$json.approveCallback}}\" },\n        { \"text\": \"🛑 Reject Draft\", \"callback_data\": \"{{$json.rejectCallback}}\" }\n      ]\n    ]\n  }\n}"
       },
       "id": "1005-telegram-approval-request",
-      "name": "Telegram Approval Prompt",
+      "name": "HomeLab Info Approval Prompt",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
         1140,
-        300
+        280
       ]
     },
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "homelabcore-telegram-callback",
+        "path": "homelab-info-web-approval",
         "responseMode": "onReceived"
       },
       "id": "1006-telegram-callback-webhook",
-      "name": "Telegram Approval Webhook",
+      "name": "HomeLab Info Callback Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
         180,
         580
       ],
-      "webhookId": "homelabcore-telegram-callback"
+      "webhookId": "homelab-info-web-approval"
     },
     {
       "parameters": {
-        "jsCode": "// Validate Telegram webhook secret token, owner user/chat ID, and HMAC callback signature.\nconst crypto = require('crypto');\nconst item = $input.first();\nconst headers = item.json.headers || {};\nconst body = item.json.body || {};\nconst headerToken = headers['x-telegram-bot-api-secret-token'] || '';\nif (headerToken !== $env.TELEGRAM_WEBHOOK_SECRET) {\n  throw new Error('Unauthorized Telegram webhook secret token');\n}\nconst cb = body.callback_query;\nif (!cb || String(cb.from?.id) !== String($env.TELEGRAM_OWNER_USER_ID) || String(cb.message?.chat?.id) !== String($env.TELEGRAM_OWNER_CHAT_ID)) {\n  throw new Error('Unauthorized Telegram user or chat ID');\n}\nconst [action, shortSlug, sig] = String(cb.data || '').split('|');\nconst expectedSig = crypto.createHmac('sha256', $env.TELEGRAM_CALLBACK_SECRET).update(`${action}|${shortSlug}`).digest('hex').slice(0, 16);\nif (sig !== expectedSig || action !== 'approve') {\n  return [];\n}\nreturn [{ json: { approved: true, shortSlug, reviewerId: cb.from.id } }];"
+        "jsCode": "// Validate HomeLab Info (@Home_Lab_info_bot, id 8967925790) webhook secret token,\n// restrict Approve/Reject to the owner's private chat, and verify HMAC callback signature.\nconst crypto = require('crypto');\nconst item = $input.first();\nconst headers = item.json.headers || {};\nconst body = item.json.body || {};\nconst headerToken = String(headers['x-telegram-bot-api-secret-token'] || '');\nconst expectedToken = String($env.HOMELAB_INFO_WEBHOOK_SECRET || '');\n\nif (!headerToken || !expectedToken || headerToken.length !== expectedToken.length || !crypto.timingSafeEqual(Buffer.from(headerToken), Buffer.from(expectedToken))) {\n  throw new Error('Unauthorized HomeLab Info webhook secret token');\n}\n\nconst cb = body.callback_query;\nif (!cb || !String(cb.data || '').startsWith('hlc-pub|')) {\n  return [];\n}\n\nconst senderBot = cb.message?.from;\nif (senderBot?.id && Number(senderBot.id) !== 8967925790) {\n  throw new Error('Callback did not originate from HomeLab Info bot (8967925790)');\n}\nif (cb.message?.chat?.type && cb.message.chat.type !== 'private') {\n  throw new Error('Approvals restricted to owner private chat');\n}\n\nconst ownerId = String($env.HOMELAB_OWNER_TELEGRAM_ID || '');\nif (!ownerId || String(cb.from?.id) !== ownerId || String(cb.message?.chat?.id) !== ownerId) {\n  throw new Error('Unauthorized Telegram user or chat ID');\n}\n\nconst parts = String(cb.data || '').split('|');\nif (parts.length !== 4) {\n  throw new Error('Malformed hlc-pub callback_data');\n}\nconst [ns, action, shortSlug, sig] = parts;\nif (ns !== 'hlc-pub' || !['approve', 'reject'].includes(action)) {\n  return [];\n}\nconst expectedSig = crypto.createHmac('sha256', $env.HOMELAB_INFO_CALLBACK_SECRET).update(`hlc-pub|${action}|${shortSlug}`, 'utf8').digest('hex').slice(0, 16);\nif (sig.length !== expectedSig.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) {\n  throw new Error('Invalid callback_data HMAC signature');\n}\n\nreturn [{\n  json: {\n    decision: action,\n    approved: action === 'approve',\n    shortSlug,\n    reviewerId: cb.from.id,\n    callbackQueryId: cb.id,\n    messageId: cb.message?.message_id\n  }\n}];"
       },
       "id": "1007-verify-telegram-approval",
-      "name": "Verify Telegram Authorization",
+      "name": "Verify HomeLab Info Owner Authorization",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         420,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$env.HOMELAB_INFO_BOT_TOKEN}}/answerCallbackQuery",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"callback_query_id\": \"{{$json.callbackQueryId}}\",\n  \"text\": \"{{$json.approved ? '✅ Approved — opening isolated GitHub PR' : '🛑 Rejected — publication draft discarded'}}\",\n  \"show_alert\": false\n}"
+      },
+      "id": "1007b-ack-telegram-callback",
+      "name": "Acknowledge HomeLab Info Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Continue to PR creation only when owner clicked Approve.\nconst item = $('Verify HomeLab Info Owner Authorization').first().json;\nif (!item.approved) {\n  return [];\n}\nreturn [{ json: item }];"
+      },
+      "id": "1007c-gate-approved-only",
+      "name": "Gate Approved Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
         580
       ]
     },
@@ -129,14 +159,14 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"title\": \"docs(blog): Automated milestone publication ({{$json.shortSlug}})\",\n  \"head\": \"auton-pub/{{$json.shortSlug}}\",\n  \"base\": \"main\",\n  \"body\": \"Automated draft approved via Telegram. Requires passing GitHub Actions `verify` check and explicit owner merge authorization before Cloudflare Pages deployment.\"\n}"
+        "jsonBody": "={\n  \"title\": \"docs(blog): Automated milestone publication ({{$json.shortSlug}})\",\n  \"head\": \"auton-pub/{{$json.shortSlug}}\",\n  \"base\": \"main\",\n  \"body\": \"Automated draft approved by owner via HomeLab Info (@Home_Lab_info_bot). Requires passing GitHub Actions `verify` check before merge to `main`.\"\n}"
       },
       "id": "1008-create-isolated-pr",
       "name": "Create Isolated GitHub PR",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        680,
+        1100,
         580
       ],
       "credentials": {
@@ -158,7 +188,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        940,
+        1340,
         580
       ],
       "credentials": {
@@ -183,7 +213,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1200,
+        1580,
         580
       ],
       "credentials": {
@@ -232,25 +262,47 @@
       "main": [
         [
           {
-            "node": "Telegram Approval Prompt",
+            "node": "HomeLab Info Approval Prompt",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Telegram Approval Webhook": {
+    "HomeLab Info Callback Webhook": {
       "main": [
         [
           {
-            "node": "Verify Telegram Authorization",
+            "node": "Verify HomeLab Info Owner Authorization",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Verify Telegram Authorization": {
+    "Verify HomeLab Info Owner Authorization": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge HomeLab Info Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge HomeLab Info Callback": {
+      "main": [
+        [
+          {
+            "node": "Gate Approved Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gate Approved Decision": {
       "main": [
         [
           {
@@ -288,4 +340,3 @@
     "executionOrder": "v1"
   }
 }
-

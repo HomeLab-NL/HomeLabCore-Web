@@ -1,5 +1,5 @@
-// Automated validation suite for the HomeLabCore autonomous publishing pipeline
-// and the importable n8n workflow JSON.
+// Automated validation suite for the HomeLabCore autonomous publishing pipeline,
+// HomeLab Info (@Home_Lab_info_bot) integration, and importable n8n workflow JSON.
 // Run: npm run test:publishing
 
 import assert from "node:assert/strict";
@@ -7,20 +7,24 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {
+  HOMELAB_TELEGRAM_BOTS,
   SecurityPolicyError,
   assertNoSensitiveData,
+  buildHomeLabInfoWebhookSpec,
   buildTelegramApprovalRequest,
+  buildTelegramCallbackResponse,
   classifyGitHubEvent,
   generateArticleDraft,
   isDuplicateEvent,
   prepareIsolatedPullRequestSpec,
   verifyGitHubSignature,
   verifyTelegramApproval,
+  verifyTelegramBotConsumerSafety,
 } from "./pipeline.mjs";
 
 const WEBHOOK_SECRET = "test-webhook-secret-do-not-use-in-prod";
-const TG_WEBHOOK_SECRET = "test-telegram-webhook-secret";
-const TG_CALLBACK_SECRET = "test-telegram-callback-secret";
+const TG_WEBHOOK_SECRET = "test_homelab_info_webhook_secret_token_32chars";
+const TG_CALLBACK_SECRET = "test-homelab-info-callback-secret";
 const OWNER_CHAT_ID = "900100200";
 const OWNER_USER_ID = "900100200";
 
@@ -30,17 +34,20 @@ function signPayload(payloadObj, secret = WEBHOOK_SECRET) {
   return { rawBody, signatureHeader: `sha256=${hex}` };
 }
 
-console.log("=== Scenario A: Automated Publishing Pipeline Validation ===");
+console.log("=== Scenario A: Automated Publishing & HomeLab Info Bot Integration Validation ===");
 
-// 1. Validate n8n workflow JSON structure and security
+// 1. Validate n8n workflow JSON structure, HomeLab Info bindings, and security
 const workflowPath = path.resolve("automation/n8n/homelabcore-autonomous-publishing.workflow.json");
 assert.ok(fs.existsSync(workflowPath), "n8n workflow JSON must exist");
 const wfRaw = fs.readFileSync(workflowPath, "utf8");
 assertNoSensitiveData(wfRaw);
 const wf = JSON.parse(wfRaw);
 assert.equal(wf.active, false, "n8n workflow must default to inactive until owner enables it");
-assert.ok(Array.isArray(wf.nodes) && wf.nodes.length >= 8, "n8n workflow must define all pipeline nodes");
-console.log("✓ 1. n8n workflow JSON valid, inactive by default, and free of secrets/private IPs");
+assert.ok(Array.isArray(wf.nodes) && wf.nodes.length >= 10, "n8n workflow must define all pipeline nodes");
+assert.ok(wfRaw.includes("homelab-info-web-approval"), "n8n workflow must use dedicated HomeLab Info webhook path");
+assert.ok(wfRaw.includes("HOMELAB_INFO_BOT_TOKEN"), "n8n workflow must reference HOMELAB_INFO_BOT_TOKEN");
+assert.ok(!wfRaw.includes("telegram-p0-gateway"), "n8n workflow must never collide with telegram-p0-gateway");
+console.log("✓ 1. n8n workflow JSON valid, bound to HomeLab Info, inactive by default, and free of secrets/private IPs");
 
 // 2. Webhook signature verification
 const releaseEventPayload = {
@@ -143,7 +150,47 @@ assert.throws(
 );
 console.log("✓ 5. Concise English draft generated (50-230 char SEO description) and secret/private-IP guard verified");
 
-// 6. Telegram approval & rejection verification
+// 6. HomeLab Info consumer non-conflict & Uptime Kuma / backup coexistence checks
+const safeOutboundState = verifyTelegramBotConsumerSafety({
+  getMeResult: { id: 8967925790, username: "Home_Lab_info_bot", first_name: "HomeLab Info" },
+  webhookInfo: { url: "", pending_update_count: 0 },
+  activePollers: 0,
+});
+assert.equal(safeOutboundState.safe, true);
+assert.equal(safeOutboundState.state, "outbound-only-no-webhook");
+assert.equal(safeOutboundState.canRegisterWebhook, true);
+assert.equal(safeOutboundState.preservesUptimeKumaAndBackupPush, true);
+
+const wrongAssistantBot = verifyTelegramBotConsumerSafety({
+  getMeResult: { id: 8633834424, username: "homelab_core_bot", first_name: "HomeLab Assistant" },
+  webhookInfo: { url: "https://n8n.homelabcore.dev/webhook/telegram-p0-gateway" },
+  activePollers: 0,
+});
+assert.equal(wrongAssistantBot.safe, false);
+assert.ok(wrongAssistantBot.reason.includes("@homelab_core_bot"));
+
+const conflictingWebhook = verifyTelegramBotConsumerSafety({
+  getMeResult: { id: 8967925790, username: "Home_Lab_info_bot" },
+  webhookInfo: { url: "https://other.example.com/webhook" },
+  activePollers: 0,
+});
+assert.equal(conflictingWebhook.safe, false);
+assert.equal(conflictingWebhook.state, "conflicting-webhook");
+
+const conflictingPoller = verifyTelegramBotConsumerSafety({
+  getMeResult: { id: 8967925790, username: "Home_Lab_info_bot" },
+  webhookInfo: { url: "" },
+  activePollers: 1,
+});
+assert.equal(conflictingPoller.safe, false);
+
+const webhookSpec = buildHomeLabInfoWebhookSpec({ secretToken: TG_WEBHOOK_SECRET });
+assert.equal(webhookSpec.url, HOMELAB_TELEGRAM_BOTS.infoBot.webhookUrl);
+assert.deepEqual(webhookSpec.allowed_updates, ["callback_query"]);
+assert.equal(webhookSpec.drop_pending_updates, false);
+console.log("✓ 6. HomeLab Info (@Home_Lab_info_bot) consumer non-conflict & Uptime Kuma/backup coexistence verified");
+
+// 7. HomeLab Info owner-only Approve/Reject, callback namespace, and replay protection
 const tgMessage = buildTelegramApprovalRequest({
   draft,
   chatId: OWNER_CHAT_ID,
@@ -152,12 +199,24 @@ const tgMessage = buildTelegramApprovalRequest({
 const buttons = tgMessage.reply_markup.inline_keyboard[0];
 const approveCallbackData = buttons[0].callback_data;
 const rejectCallbackData = buttons[1].callback_data;
+assert.ok(Buffer.byteLength(approveCallbackData, "utf8") <= 64, "approve callback_data must fit Telegram 64-byte limit");
+assert.ok(Buffer.byteLength(rejectCallbackData, "utf8") <= 64, "reject callback_data must fit Telegram 64-byte limit");
+assert.ok(approveCallbackData.startsWith("hlc-pub|approve|"));
+assert.ok(rejectCallbackData.startsWith("hlc-pub|reject|"));
+
+const seenUpdateIds = new Set();
 
 const validApprove = verifyTelegramApproval({
   update: {
+    update_id: 700101,
     callback_query: {
+      id: "cbq-approve-1",
       from: { id: OWNER_USER_ID },
-      message: { chat: { id: OWNER_CHAT_ID } },
+      message: {
+        message_id: 42,
+        from: { id: 8967925790, username: "Home_Lab_info_bot" },
+        chat: { id: OWNER_CHAT_ID, type: "private" },
+      },
       data: approveCallbackData,
     },
   },
@@ -166,15 +225,55 @@ const validApprove = verifyTelegramApproval({
   allowedChatId: OWNER_CHAT_ID,
   allowedUserId: OWNER_USER_ID,
   callbackSecret: TG_CALLBACK_SECRET,
+  seenUpdateIds,
 });
 assert.equal(validApprove.authorized, true);
 assert.equal(validApprove.decision, "approve");
 
+const approveResp = buildTelegramCallbackResponse({
+  verification: validApprove,
+  chatId: OWNER_CHAT_ID,
+  prUrl: "https://github.com/HomeLab-NL/HomeLabCore-Web/pull/99",
+});
+assert.equal(approveResp.shouldCreatePullRequest, true);
+assert.deepEqual(approveResp.editMessageReplyMarkup.reply_markup.inline_keyboard, []);
+
+// Replay of the exact same update_id must be rejected
+const replayedApprove = verifyTelegramApproval({
+  update: {
+    update_id: 700101,
+    callback_query: {
+      id: "cbq-approve-1",
+      from: { id: OWNER_USER_ID },
+      message: {
+        message_id: 42,
+        from: { id: 8967925790, username: "Home_Lab_info_bot" },
+        chat: { id: OWNER_CHAT_ID, type: "private" },
+      },
+      data: approveCallbackData,
+    },
+  },
+  secretTokenHeader: TG_WEBHOOK_SECRET,
+  expectedWebhookSecret: TG_WEBHOOK_SECRET,
+  allowedChatId: OWNER_CHAT_ID,
+  allowedUserId: OWNER_USER_ID,
+  callbackSecret: TG_CALLBACK_SECRET,
+  seenUpdateIds,
+});
+assert.equal(replayedApprove.authorized, false);
+assert.equal(replayedApprove.duplicateUpdate, true);
+
 const validReject = verifyTelegramApproval({
   update: {
+    update_id: 700102,
     callback_query: {
+      id: "cbq-reject-1",
       from: { id: OWNER_USER_ID },
-      message: { chat: { id: OWNER_CHAT_ID } },
+      message: {
+        message_id: 43,
+        from: { id: 8967925790, username: "Home_Lab_info_bot" },
+        chat: { id: OWNER_CHAT_ID, type: "private" },
+      },
       data: rejectCallbackData,
     },
   },
@@ -183,15 +282,29 @@ const validReject = verifyTelegramApproval({
   allowedChatId: OWNER_CHAT_ID,
   allowedUserId: OWNER_USER_ID,
   callbackSecret: TG_CALLBACK_SECRET,
+  seenUpdateIds,
 });
 assert.equal(validReject.authorized, true);
 assert.equal(validReject.decision, "reject");
 
+const rejectResp = buildTelegramCallbackResponse({
+  verification: validReject,
+  chatId: OWNER_CHAT_ID,
+});
+assert.equal(rejectResp.shouldCreatePullRequest, false);
+
+// Unauthorized user ID must be rejected
 const spoofedUser = verifyTelegramApproval({
   update: {
+    update_id: 700103,
     callback_query: {
+      id: "cbq-spoof-1",
       from: { id: "999999999" },
-      message: { chat: { id: OWNER_CHAT_ID } },
+      message: {
+        message_id: 44,
+        from: { id: 8967925790, username: "Home_Lab_info_bot" },
+        chat: { id: OWNER_CHAT_ID, type: "private" },
+      },
       data: approveCallbackData,
     },
   },
@@ -200,15 +313,40 @@ const spoofedUser = verifyTelegramApproval({
   allowedChatId: OWNER_CHAT_ID,
   allowedUserId: OWNER_USER_ID,
   callbackSecret: TG_CALLBACK_SECRET,
+  seenUpdateIds,
 });
 assert.equal(spoofedUser.authorized, false);
-console.log("✓ 6. Telegram Approve/Reject and owner authorization verification passed");
 
-// 7. Isolated GitHub PR specification
+// Group chat callback must be rejected even if clicked by owner
+const groupChatAttempt = verifyTelegramApproval({
+  update: {
+    update_id: 700104,
+    callback_query: {
+      id: "cbq-group-1",
+      from: { id: OWNER_USER_ID },
+      message: {
+        message_id: 45,
+        from: { id: 8967925790, username: "Home_Lab_info_bot" },
+        chat: { id: OWNER_CHAT_ID, type: "supergroup" },
+      },
+      data: approveCallbackData,
+    },
+  },
+  secretTokenHeader: TG_WEBHOOK_SECRET,
+  expectedWebhookSecret: TG_WEBHOOK_SECRET,
+  allowedChatId: OWNER_CHAT_ID,
+  allowedUserId: OWNER_USER_ID,
+  callbackSecret: TG_CALLBACK_SECRET,
+  seenUpdateIds,
+});
+assert.equal(groupChatAttempt.authorized, false);
+console.log("✓ 7. HomeLab Info Approve/Reject, owner-only private chat restriction, and replay guard passed");
+
+// 8. Isolated GitHub PR specification
 const prSpec = prepareIsolatedPullRequestSpec({ draft });
 assert.equal(prSpec.baseBranch, "main");
 assert.ok(prSpec.headBranch.startsWith("auton-pub/"));
 assert.equal(prSpec.autoMerge, false);
 assert.equal(prSpec.requiresOwnerMergeApproval, true);
-console.log("✓ 7. Isolated GitHub PR specification verified (branch prefix auton-pub/*, autoMerge: false)");
-
+assert.ok(prSpec.prBody.includes("@Home_Lab_info_bot"));
+console.log("✓ 8. Isolated GitHub PR specification verified (branch prefix auton-pub/*, autoMerge: false)");

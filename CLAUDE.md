@@ -24,7 +24,7 @@ npm ci
 npm run og
 npm run check && npm run build && npm test && npm run test:publishing
 
-# 5. Commit, push branch, and open a Pull Request (do NOT merge without owner approval)
+# 5. Commit, push branch, and open a Pull Request (merge only after CI checks pass and zero conflicts remain)
 git add -A
 git commit -m "content(<scope>): <concise description>"
 git push -u origin claude/<short-task-name>
