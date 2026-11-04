@@ -1161,6 +1161,58 @@ img {
   padding-top: 2rem;
 }
 
+/* Homework Tutor: subtle school-notebook square grid, margin line, and notebook accents. */
+.room[data-room="ai-tutor"] {
+  position: relative;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--r-fg) 5.5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--r-fg) 5.5%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.room[data-room="ai-tutor"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(max(0px, (100% - var(--maxw)) / 2) + var(--gutter) * 0.45);
+  width: 1.5px;
+  background: color-mix(in srgb, #e05268 24%, var(--r-accent) 10%);
+  pointer-events: none;
+}
+
+.room[data-room="ai-tutor"] .room__visual::before {
+  content: "2x + 3 = 11  ·  △ 90°";
+  position: absolute;
+  top: -1.55rem;
+  right: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--r-muted) 72%, transparent);
+  pointer-events: none;
+}
+
+.room[data-room="ai-tutor"] .room__visual::after {
+  content: "";
+  position: absolute;
+  top: 16%;
+  right: -6px;
+  width: 6px;
+  height: 108px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(
+    180deg,
+    #60a5fa 0 30px,
+    transparent 30px 39px,
+    #fbbf24 39px 69px,
+    transparent 69px 78px,
+    #34d399 78px 108px
+  );
+  opacity: 0.85;
+  pointer-events: none;
+}
+
 /* AI Tutor: the real flow, one step after another. */
 .tutor-steps {
   display: grid;
@@ -1238,7 +1290,6 @@ img {
 /* Keyboard Trainer: a dark stage lit by the game's own colour. */
 .stage-glow {
   position: relative;
-  padding-bottom: 12%;
 }
 
 .stage-glow::before {

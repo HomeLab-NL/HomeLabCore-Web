@@ -1,31 +1,56 @@
 {
-  "name": "AI Tutor",
+  "name": "Homework Tutor",
   "section": "apps",
   "kind": "Android app",
   "platforms": [
     "Android"
   ],
   "status": "active-development",
-  "summary": "An Android app in development that helps students work through maths problems one step at a time — with Hint and Explain Differently — instead of revealing the final answer straight away.",
+  "summary": "An Android study assistant in development for students aged 9–16: work through homework problems step by step with progressive hints and alternative explanations instead of revealing the final answer immediately.",
+  "workingTitle": "AI Tutor",
   "order": 3,
   "featured": true,
   "urls": {
     "overview": "/apps/ai-tutor/"
   },
-  "visualNote": "Shown in the app's built-in sample mode with the example problem 3x + 7 = 22 — these are not live AI responses. The app currently shows its development name, Homework Tutor.",
+  "features": [
+    {
+      "title": "Step-by-step guided solving",
+      "description": "Guides students through a problem one step at a time instead of revealing the final answer immediately."
+    },
+    {
+      "title": "Progressive hints & Explain Differently",
+      "description": "Provides graded hints and alternative explanations for the current step when a student needs another angle."
+    },
+    {
+      "title": "Smart Notebook visual identity",
+      "description": "Approved notebook-and-pencil app icon and spiral-notebook UI direction designed for students aged 9–16, with planned photo and text task entry."
+    },
+    {
+      "title": "Development status",
+      "description": "Currently in active development with an interactive built-in sample tutoring flow; live AI tutoring, camera task capture, and multi-subject support are not yet production-ready."
+    }
+  ],
+  "visualNote": "Promotional cover and Smart Notebook UI concept shown alongside authentic screens from the app's built-in sample mode (3x + 7 = 22). Live AI responses and multi-subject photo solving are still in development.",
   "cover": {
-    "src": "../../assets/projects/ai-tutor/cover.webp",
-    "alt": "AI Tutor: Enter a math problem in the real app; built-in sample shown.",
-    "caption": "AI Tutor: Enter a math problem in the real app; built-in sample shown.",
-    "kind": "composition"
+    "src": "../../assets/projects/ai-tutor/promo.webp",
+    "alt": "Homework Tutor promotional banner showing the notebook-and-pencil app icon, key study features, and the approved Smart Notebook home and menu screens.",
+    "caption": "Homework Tutor — promotional cover based on the approved Smart Notebook UI design and notebook-and-pencil icon.",
+    "kind": "promo"
   },
   "hero": {
-    "src": "../../assets/projects/ai-tutor/hero.webp",
-    "alt": "AI Tutor: current application screens. Real application UI · built-in sample mode.",
-    "caption": "AI Tutor — built-in sample mode",
-    "kind": "composition"
+    "src": "../../assets/projects/ai-tutor/promo.webp",
+    "alt": "Homework Tutor promotional banner showing the notebook-and-pencil app icon, key study features, and the approved Smart Notebook home and menu screens.",
+    "caption": "Homework Tutor — approved Smart Notebook visual identity and notebook-and-pencil app icon",
+    "kind": "promo"
   },
   "figures": [
+    {
+      "src": "../../assets/projects/ai-tutor/gallery-01-smart-notebook.webp",
+      "alt": "Approved Concept 3 Smart Notebook UI design board with the 48px Android notebook-and-pencil icon, home screen, and spiral-bound navigation drawer.",
+      "caption": "Approved Concept 3 (“Smart Notebook”) UI design and notebook-and-pencil app icon.",
+      "kind": "concept"
+    },
     {
       "src": "../../assets/projects/ai-tutor/gallery-02-step.webp",
       "alt": "The first tutoring step for the built-in sample equation.",
@@ -52,6 +77,7 @@
     }
   ],
   "missing": [
-    "Public release or store listing"
+    "Public release or store listing",
+    "Production live AI backend and camera problem capture (currently in development)"
   ]
 }

@@ -1,13 +1,14 @@
 {
-  "name": "Keyboard Trainer",
+  "name": "KeyQuest",
   "section": "apps",
   "kind": "Web app",
   "platforms": [
     "Web"
   ],
-  "status": "active-development",
-  "summary": "A desktop-first typing game for children aged 6–12: ten keyboard challenges of increasing difficulty, with stars, XP and coins to earn on the way. Progress is stored only in the browser.",
-  "workingTitle": "KeyQuest",
+  "status": "live",
+  "summary": "A browser-based typing adventure for children: learn touch typing across ten Typing Academy lessons, race timed waves in Word Rush, and battle King Typo on the five-stage Starwood Trail.",
+  "workingTitle": "Keyboard Trainer",
+  "releaseDate": "2026-10-28",
   "order": 4,
   "featured": true,
   "accent": {
@@ -21,49 +22,71 @@
     }
   },
   "urls": {
-    "overview": "/apps/keyboard-trainer/"
+    "overview": "/apps/keyboard-trainer/",
+    "live": "https://keyquest-b9l7.onrender.com/",
+    "repo": "https://github.com/homelabnl-alt/KeyQuest"
   },
-  "visualNote": "Screens from the current development build, which runs under the working title KeyQuest.",
+  "features": [
+    {
+      "title": "Typing Academy (10 lessons)",
+      "description": "Guided touch-typing curriculum from Home Row Left and Right through Top Row, Bottom Row, Shift capitals, numbers, punctuation, and the Final Exam, with an interactive color-coded keyboard."
+    },
+    {
+      "title": "Word Rush arcade mode",
+      "description": "A 60-second wave survival mode with escalating word waves, streak combo multipliers, and a three-heart life counter."
+    },
+    {
+      "title": "Starwood Trail adventure",
+      "description": "A five-stage quest across Sunny Forest, Crystal Cave, Misty Bridge, Fire Mountain, and Typo Castle against King Typo, where completed words power hero attacks."
+    },
+    {
+      "title": "XP levels, stars & Trophy Shelf",
+      "description": "Earn 1 to 3 stars per lesson from WPM and accuracy targets, gain XP across every mode, and unlock 12 Trophy Shelf achievements."
+    },
+    {
+      "title": "Local browser storage & Web Audio",
+      "description": "All progress is saved locally in the browser with no sign-up or external tracking, paired with synthesized Web Audio sound effects and a header mute toggle."
+    }
+  ],
+  "contextNote": "KeyQuest was developed with participation in the Stripe Eindhoven Community hackathon, associated with One Horizon.",
+  "visualNote": "Authentic screenshots captured directly from the live KeyQuest web deployment at keyquest-b9l7.onrender.com.",
   "cover": {
-    "src": "../../assets/projects/keyboard-trainer/cover.webp",
-    "alt": "KeyQuest: The first typing challenge with its highlighted target key.",
-    "caption": "KeyQuest: The first typing challenge with its highlighted target key.",
-    "kind": "composition"
+    "src": "../../assets/projects/keyboard-trainer/promo.webp",
+    "alt": "KeyQuest promotional banner: the KeyQuest keyboard-and-crown icon, three features — 10 Typing Academy lessons, Word Rush and Starwood Trail, and XP levels with 12 trophies — tactile A S D F home-row keycaps, and live application screens showing Home Row Left and the Sunny Forest encounter.",
+    "caption": "KeyQuest — promotional artwork",
+    "kind": "promo"
   },
   "hero": {
     "src": "../../assets/projects/keyboard-trainer/hero.webp",
-    "alt": "KeyQuest: current application screens. Real browser application · development build.",
-    "caption": "Keyboard Trainer — development build (working title KeyQuest)",
-    "kind": "composition"
+    "alt": "KeyQuest live web application hub showing Keyboard Kingdom progress, Typing Academy, Word Rush, Typing Adventure, and the 10-lesson curriculum.",
+    "caption": "KeyQuest — live web deployment at keyquest-b9l7.onrender.com",
+    "kind": "screenshot"
   },
   "figures": [
     {
       "src": "../../assets/projects/keyboard-trainer/gallery-01-home.webp",
-      "alt": "The current KeyQuest home screen.",
-      "caption": "The current KeyQuest home screen.",
-      "kind": "composition"
+      "alt": "The live KeyQuest home screen with player level, XP bar, Typing Academy, Word Rush, and Typing Adventure.",
+      "caption": "The live KeyQuest home screen with Typing Academy, Word Rush, and Typing Adventure.",
+      "kind": "screenshot"
     },
     {
       "src": "../../assets/projects/keyboard-trainer/gallery-02-quest-map.webp",
-      "alt": "The real ten-level quest map with its initial unlock state.",
-      "caption": "The real ten-level quest map with its initial unlock state.",
-      "kind": "composition"
+      "alt": "The Starwood Trail five-stage adventure map leading from Sunny Forest to Typo Castle.",
+      "caption": "The five-stage Starwood Trail adventure map leading to King Typo.",
+      "kind": "screenshot"
     },
     {
       "src": "../../assets/projects/keyboard-trainer/gallery-03-typing.webp",
-      "alt": "The first typing challenge with its highlighted target key.",
-      "caption": "The first typing challenge with its highlighted target key.",
-      "kind": "composition"
+      "alt": "Active Typing Academy lesson showing live WPM, accuracy, target character highlight, and finger-zone keyboard guide.",
+      "caption": "Active Typing Academy lesson with highlighted target key and finger-zone guide.",
+      "kind": "screenshot"
     },
     {
       "src": "../../assets/projects/keyboard-trainer/gallery-04-completed.webp",
-      "alt": "A result earned by typing the actual first challenge; sample session only.",
-      "caption": "A result earned by typing the actual first challenge; sample session only.",
-      "kind": "composition"
+      "alt": "Starwood Trail battle in Sunny Forest against Leaf Blob with hero and monster health bars and attack timer.",
+      "caption": "Starwood Trail stage battle in Sunny Forest against Leaf Blob.",
+      "kind": "screenshot"
     }
   ],
-  "missing": [
-    "Public web URL (not deployed yet)",
-    "Confirmed product name (the app currently shows the working title KeyQuest)"
-  ]
+  "missing": []
 }

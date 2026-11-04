@@ -2,6 +2,7 @@
 import ProductLayout from "../layouts/ProductLayout.astro";
 import ProjectGallery from "./ProjectGallery.astro";
 import ProjectHero from "./ProjectHero.astro";
+import SectionHead from "./SectionHead.astro";
 import { routeForPath } from "../data/routes";
 import { CONTACT } from "../data/site";
 import { localizeProject, type Project } from "../lib/projects";
@@ -19,8 +20,9 @@ interface Props {
 const { lang = "en" } = Astro.props;
 const enUrl = Astro.props.project.data.urls.overview;
 const project = localizeProject(Astro.props.project, lang);
-const { name, summary, kind, missing } = project.data;
+const { name, summary, kind, missing, urls, features, contextNote } = project.data;
 const t = ui(lang).project;
+const galleryIndex = features && features.length > 0 ? 2 : 1;
 ---
 <ProductLayout
   project={project}
@@ -30,9 +32,43 @@ const t = ui(lang).project;
   title={`${name} — HomeLabCore`}
   description={summary}
 >
-  <ProjectHero project={project} eyebrow={kind} title={name} lead={summary} lang={lang} />
+  <ProjectHero project={project} eyebrow={kind} title={name} lead={summary} lang={lang}>
+    {(urls.live || urls.repo) && (
+      <div class="btn-row">
+        {urls.live && <a class="btn btn--primary" href={urls.live} rel="noopener noreferrer">{t.openLive}</a>}
+        {urls.repo && <a class="btn btn--ghost" href={urls.repo} rel="noopener noreferrer">{t.viewSource}</a>}
+      </div>
+    )}
+  </ProjectHero>
 
-  <ProjectGallery project={project} index={1} lang={lang} />
+  {features && features.length > 0 && (
+    <section class="section" aria-labelledby="features-title">
+      <div class="container">
+        <SectionHead index={1} label={t.featuresLabel} title={t.featuresTitle(name)} id="features-title" />
+        <dl class="features">
+          {features.map((f) => (
+            <div>
+              <dt>{f.title}</dt>
+              <dd>{f.description}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  )}
+
+  <ProjectGallery project={project} index={galleryIndex} lang={lang} />
+
+  {contextNote && (
+    <section class="section section--tight" aria-labelledby="context-title">
+      <div class="container">
+        <div class="panel panel--note measure">
+          <h2 id="context-title">{t.contextTitle}</h2>
+          <p class="muted">{contextNote}</p>
+        </div>
+      </div>
+    </section>
+  )}
 
   {missing.length > 0 && (
     <section class="section section--tight">

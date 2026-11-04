@@ -6,6 +6,18 @@
     "Android"
   ],
   "status": "closed-testing",
+  "version": "0.12.0+141 RC",
+  "platformStatus": [
+    {
+      "platform": "Android",
+      "status": "Closed testing completed · Google Play production access approved; public release not yet confirmed",
+      "version": "0.12.0+141 RC"
+    },
+    {
+      "platform": "iOS",
+      "status": "TestFlight MVP prepared in draft PR; build, upload, and testing not yet confirmed"
+    }
+  ],
   "summary": "Cook with what you already have. Choose or photograph your ingredients and get an AI-assisted recipe you can adjust, save, and cook from step by step.",
   "order": 1,
   "featured": true,
@@ -65,6 +77,7 @@
     }
   ],
   "missing": [
-    "Google Play store URL (listing not public yet)"
+    "Public Google Play release confirmation and store URL",
+    "Confirmed iOS build, upload, and TestFlight testing"
   ]
 }

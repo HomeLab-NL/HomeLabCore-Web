@@ -26,7 +26,7 @@ const COPY = {
     domains: { apps: "Apps", games: "Games", lab: "Lab · AI workflows", bench: "Benchmarks" },
     days: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
     steps: ["Step", "Hint", "Explain differently"],
-    tutorNote: "Screens from the app's built-in sample mode.",
+    tutorNote: "Promotional cover and Smart Notebook UI concept; built-in sample mode on the project page.",
     openProject: "Open the project",
     benchTitle: "Benchmarks",
     benchSummary: "Public comparisons of AI-assisted development workflows: which models and role combinations build what, how fast, at what cost, and how often they need repair.",
@@ -53,7 +53,7 @@ const COPY = {
     domains: { apps: "Apps", games: "Games", lab: "Lab · AI-workflows", bench: "Benchmarks" },
     days: ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"],
     steps: ["Stap", "Hint", "Anders uitleggen"],
-    tutorNote: "Schermen uit de ingebouwde voorbeeldmodus van de app.",
+    tutorNote: "Promotiecover en Smart Notebook-ontwerp; ingebouwde voorbeeldmodus op de projectpagina.",
     openProject: "Bekijk het project",
     benchTitle: "Benchmarks",
     benchSummary: "Openbare vergelijkingen van AI-ondersteunde ontwikkelworkflows: welke modellen en rolcombinaties wat bouwen, hoe snel, tegen welke kosten en hoe vaak er gerepareerd moet worden.",
@@ -80,7 +80,7 @@ const COPY = {
     domains: { apps: "Застосунки", games: "Ігри", lab: "Лабораторія · AI-процеси", bench: "Бенчмарки" },
     days: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
     steps: ["Крок", "Підказка", "Пояснити інакше"],
-    tutorNote: "Екрани з вбудованого демо-режиму застосунку.",
+    tutorNote: "Рекламна обкладинка й дизайн «Розумний Зошит»; вбудований демо-режим на сторінці проєкту.",
     openProject: "Відкрити проєкт",
     benchTitle: "Бенчмарки",
     benchSummary: "Публічні порівняння робочих процесів розробки з AI: які моделі й комбінації ролей що створюють, як швидко, за яку ціну і як часто потребують виправлень.",
@@ -123,8 +123,8 @@ const D = COPY.domains;
 const rooms = [
   { id: "cookfrom", name: "CookFrom", domain: D.apps },
   { id: "ops-planner", name: "Ops Planner", domain: D.apps },
-  { id: "ai-tutor", name: "AI Tutor", domain: D.apps },
-  { id: "keyboard-trainer", name: "Keyboard Trainer", domain: D.games },
+  { id: "ai-tutor", name: "Homework Tutor", domain: D.apps },
+  { id: "keyboard-trainer", name: "KeyQuest", domain: D.games },
   { id: "agentlab", name: "AgentLab", domain: D.lab },
   { id: "at-the-mountains-of-madness", name: "At the Mountains of Madness", domain: D.games },
   { id: "benchmarks", name: COPY.benchTitle, domain: D.bench },
@@ -142,16 +142,11 @@ const pic = (fig: { src: ImageMetadata }, sizes: string, widths = [480, 800, 120
 const half = "(min-width: 1100px) 600px, (min-width: 820px) 55vw, 92vw";
 const third = "(min-width: 1100px) 360px, (min-width: 820px) 30vw, 80vw";
 
-// CookFrom and Ops Planner: the approved promotional banners (their card covers).
+// CookFrom, Ops Planner, Homework Tutor, and KeyQuest: the approved promotional banners (their card covers).
 const cookPromo = cookfrom.data.cover!;
 const opsPromo = ops.data.cover!;
-const tutorSteps = [
-  { fig: figureOf(tutor, "gallery-02-step"), label: COPY.steps[0] },
-  { fig: figureOf(tutor, "gallery-03-hint"), label: COPY.steps[1] },
-  { fig: figureOf(tutor, "gallery-04-explain-differently"), label: COPY.steps[2] },
-];
-const kqMap = figureOf(keyquest, "gallery-02-quest-map");
-const kqTyping = figureOf(keyquest, "gallery-03-typing");
+const tutorPromo = tutor.data.cover!;
+const kqPromo = keyquest.data.cover!;
 const agentHero = agentlab.data.hero!;
 // The diagram's small labels need zoom on phones: it links to the full-size image.
 const agentFull = await getImage({ src: agentHero.src, format: "webp", width: agentHero.src.width });
@@ -202,22 +197,14 @@ const BENCH_COLUMNS = COPY.benchCols;
     </div>
   </Room>
 
-  <Room project={tutor} id="ai-tutor" domain={D.apps} layout="stage" prev="ops-planner" lang={lang}>
-    <ol class="tutor-steps">
-      {tutorSteps.map((s, i) => (
-        <li class="reveal" style={`--d:${i}`}>
-          <span class="tutor-steps__no">{i + 1} · {s.label}</span>
-          <div class="frame"><Picture {...pic(s.fig, third, [480, 800])} alt={s.fig.alt} /></div>
-        </li>
-      ))}
-    </ol>
+  <Room project={tutor} id="ai-tutor" domain={D.apps} prev="ops-planner" lang={lang}>
+    <div class="frame frame--banner reveal"><Picture {...pic(tutorPromo, half, [480, 800, 1200, 1600])} alt={tutorPromo.alt} /></div>
     <p class="room__note" slot="text">{COPY.tutorNote}</p>
   </Room>
 
   <Room project={keyquest} id="keyboard-trainer" domain={D.games} layout="split" prev="ai-tutor" lang={lang}>
     <div class="stage-glow">
-      <div class="frame frame--glow reveal"><Picture {...pic(kqTyping, half)} alt={kqTyping.alt} /></div>
-      <div class="frame frame--float reveal"><Picture {...pic(kqMap, third, [480, 800])} alt={kqMap.alt} /></div>
+      <div class="frame frame--banner frame--glow reveal"><Picture {...pic(kqPromo, half, [480, 800, 1200, 1600])} alt={kqPromo.alt} /></div>
     </div>
   </Room>
 
