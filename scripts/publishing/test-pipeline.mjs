@@ -45,7 +45,9 @@ const wf = JSON.parse(wfRaw);
 assert.equal(wf.active, false, "n8n workflow must default to inactive until owner enables it");
 assert.ok(Array.isArray(wf.nodes) && wf.nodes.length >= 10, "n8n workflow must define all pipeline nodes");
 assert.ok(wfRaw.includes("homelab-info-web-approval"), "n8n workflow must use dedicated HomeLab Info webhook path");
-assert.ok(wfRaw.includes("HOMELAB_INFO_BOT_TOKEN"), "n8n workflow must reference HOMELAB_INFO_BOT_TOKEN");
+assert.ok(wfRaw.includes("HomeLab Info Bot (Web Publishing)"), "n8n workflow must use encrypted HomeLab Info telegramApi credential");
+assert.ok(wfRaw.includes("HomeLab Info Web Approval Secret"), "n8n workflow must use encrypted HomeLab Info headerAuth credential");
+assert.ok(!wfRaw.includes("$env."), "n8n workflow must not rely on $env when N8N_BLOCK_ENV_ACCESS_IN_NODE=true");
 assert.ok(!wfRaw.includes("telegram-p0-gateway"), "n8n workflow must never collide with telegram-p0-gateway");
 console.log("✓ 1. n8n workflow JSON valid, bound to HomeLab Info, inactive by default, and free of secrets/private IPs");
 

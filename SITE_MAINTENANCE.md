@@ -93,60 +93,73 @@ GitHub Event (Release / [publish] Milestone)
 
 ---
 
-## 4. Credential Management & Production Activation Steps (Zero-Secret Policy)
+## 4. Production n8n Configuration & Credential Management (Zero-Secret Policy)
 
-Never commit credentials, webhook secrets, chat IDs, or private URLs to Git. The n8n workflow (`automation/n8n/homelabcore-autonomous-publishing.workflow.json`) is committed with `"active": false`.
+Never commit credentials, webhook secrets, chat IDs, or private URLs to Git. The repository template (`automation/n8n/homelabcore-autonomous-publishing.workflow.json`) is committed with `"active": false` and placeholder credential IDs.
 
-When the owner authorizes enabling live n8n automated publishing in production:
+### 4.1 What Is Running in Production (`homelab-prod-n8n-1`)
 
-1. **Configure n8n Environment Variables:**
+- **Workflow Name:** `HomeLabCore Autonomous Publishing Pipeline (HomeLab Info Bot)` (`v1.2.0`)
+- **Production Workflow ID:** `qsOj6VaoKwwXJCVr` (`active: true`)
+- **Sandboxed Runtime Compatibility (`n8n:2.28.3`):**
+  - Production n8n runs with `N8N_BLOCK_ENV_ACCESS_IN_NODE=true` and sandboxed `Code` nodes.
+  - All `Code` nodes use pure-JS UTF-8, Base64, SHA-256, and constant-time HMAC-SHA256 implementations and store runtime configuration (`ownerTelegramId`, `githubWebhookSecret`, `callbackSecret`), `pendingDrafts`, `processedEvents`, and `seenUpdateIds` in n8n's persistent `$getWorkflowStaticData('global')`.
+  - Once `staticData.global.config.initialized === true`, runtime configuration is locked against external overwrite.
+- **Encrypted n8n Credentials Bound in Production:**
 
-| Variable / Credential | Purpose | Source / Storage |
+| Credential Name in n8n | n8n Credential Type | Purpose |
 |---|---|---|
-| `GITHUB_WEBHOOK_SECRET` | HMAC-SHA256 secret configured on GitHub repository webhooks (`X-Hub-Signature-256`) | Random 32-byte hex in n8n env + GitHub Webhook settings |
-| `HOMELAB_INFO_BOT_TOKEN` | Existing **HomeLab Info** (`@Home_Lab_info_bot`, `8967925790`) Bot API token | Existing token from Uptime Kuma notification #1 (stored in n8n env) |
-| `HOMELAB_INFO_WEBHOOK_SECRET` | Secret token sent by Telegram in `X-Telegram-Bot-Api-Secret-Token` (32–256 chars `[A-Za-z0-9_-]`) | Generated once and stored in n8n env + passed to `setWebhook` |
-| `HOMELAB_INFO_CALLBACK_SECRET` | HMAC key used to sign `hlc-pub\|...` inline button `callback_data` payloads | Random 32-byte hex in n8n env |
-| `HOMELAB_OWNER_TELEGRAM_ID` | Numeric Telegram user/chat ID of the authorized repository owner | Same owner chat ID configured in Uptime Kuma notification #1 |
-| `GitHub API Token` | Fine-grained PAT scoped to `HomeLab-NL/HomeLabCore-Web` (`contents:write`, `pull_requests:write`, `checks:read`) | Stored in n8n Credentials (`httpHeaderAuth`) |
+| `HomeLab Info Bot (Web Publishing)` | `telegramApi` | Native Telegram nodes (`HomeLab Info Approval Prompt`, `Acknowledge HomeLab Info Callback`, `Update Approval Prompt Status`, `Send PR Created Confirmation`) using `@Home_Lab_info_bot` (`8967925790`) |
+| `HomeLab Info Web Approval Secret` | `httpHeaderAuth` | Enforces `X-Telegram-Bot-Api-Secret-Token` on `HomeLab Info Callback Webhook` (`/webhook/homelab-info-web-approval`) before workflow execution |
+| `HomeLabCore Web GitHub API` | `httpHeaderAuth` | Authenticates GitHub REST API nodes (`Check Existing Blog Entries`, `Get GitHub Main Ref SHA`, `Create Isolated Branch on GitHub`, `Commit Draft Markdown to Branch`, `Create Isolated GitHub PR`) |
 
-2. **Import & Activate Workflow in n8n:**
-   - Import `automation/n8n/homelabcore-autonomous-publishing.workflow.json` into n8n, bind the `GitHub API Token` credential, and activate the workflow.
-3. **Register the Non-Conflicting Webhook on `@Home_Lab_info_bot`:**
-   - Verify `getWebhookInfo` is empty (`url: ""`), then register the callback-only webhook:
-     ```bash
-     curl -fsS -X POST "https://api.telegram.org/bot${HOMELAB_INFO_BOT_TOKEN}/setWebhook" \
-       -H "Content-Type: application/json" \
-       -d "{
-         \"url\": \"https://n8n.homelabcore.dev/webhook/homelab-info-web-approval\",
-         \"secret_token\": \"${HOMELAB_INFO_WEBHOOK_SECRET}\",
-         \"allowed_updates\": [\"callback_query\"],
-         \"drop_pending_updates\": false,
-         \"max_connections\": 20
-       }"
-     ```
+- **Registered Production Webhooks:**
+  1. **Telegram (`@Home_Lab_info_bot`, `8967925790`):**
+     - `url`: `https://n8n.homelabcore.dev/webhook/homelab-info-web-approval`
+     - `allowed_updates`: `["callback_query"]` (`drop_pending_updates: false`, `max_connections: 20`)
+     - Verified orthogonal to Uptime Kuma (`HomeLab production /healthz` and `HomeLab Backup` push notifications) and completely separate from `@homelab_core_bot` (`8633834424`, `/webhook/telegram-p0-gateway`).
+  2. **GitHub (`HomeLab-NL/HomeLabCore-Web`):**
+     - `url`: `https://n8n.homelabcore.dev/webhook/homelabcore-github-events`
+     - `events`: `["release", "milestone"]` (`content_type: "json"`, HMAC-SHA256 signed via `X-Hub-Signature-256`)
 
 ---
 
 ## 5. Deployment, Autonomous Merge Policy & Rollback
 
-### Autonomous Website Deployment Policy
+### 5.1 Autonomous Website Deployment Policy
 1. Website changes are developed on isolated branches (`feat/*`, `fix/*`, `claude/*`, `content/*`, `auton-pub/*`) and opened as Pull Requests targeting `main`.
 2. **Pre-Merge Gate:** Confirm zero merge conflicts and verify that all required CI checks (`CI/build-and-test`, `verify`, and `Cloudflare Pages` preview) pass.
 3. **Merge & Live Verification:** Merge the PR into `main`, wait for the Cloudflare Pages production build on `main` to succeed, and verify the live site (`https://homelabcore.dev`), including affected routes and favicons.
 4. **Automatic Recovery:** If a deployment check or live verification fails, immediately fix or revert the change via a follow-up PR or Cloudflare Pages rollback.
 
-### Rollback Procedures
-- **Option A — Git Revert PR (Recommended, preserves Git history):**
-  ```bash
-  git fetch origin
-  git checkout -b fix/revert-last-publication origin/main
-  git revert -m 1 HEAD --no-edit
-  git push -u origin fix/revert-last-publication
-  gh pr create --base main --head fix/revert-last-publication --title "revert: roll back last publication" --body "Rolling back the previous merge to main."
-  ```
-- **Option B — Instant Cloudflare Pages Rollback:**
-  In the Cloudflare dashboard (`Workers & Pages` → `HomeLabCore-Web` → `Deployments`), select the previous known-good production deployment and click **Rollback to this deployment**.
+### 5.2 Rollback Procedures
+
+#### Option A — Disable / Roll Back Autonomous Publishing in n8n (Independent of Website & AgentLab)
+Disabling the website publishing workflow has **zero impact** on `https://homelabcore.dev`, ad-hoc Claude Code GitHub updates, Uptime Kuma monitoring alerts, backup notifications, or the 7 existing AgentLab workflows:
+
+1. **Deactivate the n8n workflow via REST API (or n8n UI toggle):**
+   ```bash
+   curl -fsS -X POST "https://n8n.homelabcore.dev/api/v1/workflows/qsOj6VaoKwwXJCVr/deactivate" \
+     -H "X-N8N-API-KEY: ${N8N_API_KEY}"
+   ```
+2. **(Optional) Remove the callback-only webhook from `@Home_Lab_info_bot`:**
+   ```bash
+   curl -fsS -X POST "https://api.telegram.org/bot${HOMELAB_INFO_BOT_TOKEN}/deleteWebhook" \
+     -H "Content-Type: application/json" \
+     -d '{"drop_pending_updates": false}'
+   ```
+
+#### Option B — Git Revert PR (Recommended for Website Content/Code Rollback)
+```bash
+git fetch origin
+git checkout -b fix/revert-last-publication origin/main
+git revert -m 1 HEAD --no-edit
+git push -u origin fix/revert-last-publication
+gh pr create --base main --head fix/revert-last-publication --title "revert: roll back last publication" --body "Rolling back the previous merge to main."
+```
+
+#### Option C — Instant Cloudflare Pages Rollback
+In the Cloudflare dashboard (`Workers & Pages` → `homelabcore-web` → `Deployments`), select the previous known-good production deployment and click **Rollback to this deployment**.
 
 ---
 
