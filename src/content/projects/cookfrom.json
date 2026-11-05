@@ -5,17 +5,18 @@
   "platforms": [
     "Android"
   ],
-  "status": "closed-testing",
-  "version": "0.12.0+141 RC",
+  "status": "live",
+  "version": "0.12.0",
+  "releaseDate": "2026-11-03",
   "platformStatus": [
     {
       "platform": "Android",
-      "status": "Closed testing completed · Google Play production access approved; public release not yet confirmed",
-      "version": "0.12.0+141 RC"
+      "status": "Live · Available on Google Play",
+      "version": "0.12.0"
     },
     {
       "platform": "iOS",
-      "status": "TestFlight MVP prepared in draft PR; build, upload, and testing not yet confirmed"
+      "status": "In testing"
     }
   ],
   "summary": "Cook with what you already have. Choose or photograph your ingredients and get an AI-assisted recipe you can adjust, save, and cook from step by step.",
@@ -34,7 +35,8 @@
   "urls": {
     "overview": "/apps/cookfrom",
     "privacy": "/privacy/cookfrom",
-    "support": "/support/cookfrom"
+    "support": "/support/cookfrom",
+    "googlePlay": "https://play.google.com/store/apps/details?id=com.homelabnl.recipeai"
   },
   "supportSummary": "Troubleshooting for AI recipe generation, ingredient photo recognition, Pro entitlement and purchase restoration, and application data.",
   "visualNote": "Screens from the Android beta. The recipe shown is a built-in catalogue recipe, not a freshly generated one.",
@@ -77,7 +79,6 @@
     }
   ],
   "missing": [
-    "Public Google Play release confirmation and store URL",
-    "Confirmed iOS build, upload, and TestFlight testing"
+    "Public iOS App Store release"
   ]
 }

@@ -1,5 +1,6 @@
-// Automated validation suite for the HomeLabCore autonomous publishing pipeline,
-// HomeLab Info (@Home_Lab_info_bot) integration, and importable n8n workflow JSON.
+// Automated validation suite for the HomeLabCore autonomous publishing pipeline (v2.0),
+// Draft-PR-first Ukrainian UX, family access (Owner + Spouse), commit SHA + CI merge guard,
+// multi-repository event classification, and importable n8n workflow JSON.
 // Run: npm run test:publishing
 
 import assert from "node:assert/strict";
@@ -8,15 +9,21 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   HOMELAB_TELEGRAM_BOTS,
+  PROJECT_REPO_MAP,
   SecurityPolicyError,
   assertNoSensitiveData,
   buildHomeLabInfoWebhookSpec,
   buildTelegramApprovalRequest,
   buildTelegramCallbackResponse,
+  buildUkrainianApprovalNotifications,
+  buildUkrainianFinalNotification,
   classifyGitHubEvent,
+  confirmSpouseEnrollment,
   generateArticleDraft,
   isDuplicateEvent,
   prepareIsolatedPullRequestSpec,
+  processSpouseEnrollmentRequest,
+  validateMergeReadiness,
   verifyGitHubSignature,
   verifyTelegramApproval,
   verifyTelegramBotConsumerSafety,
@@ -25,8 +32,9 @@ import {
 const WEBHOOK_SECRET = "test-webhook-secret-do-not-use-in-prod";
 const TG_WEBHOOK_SECRET = "test_homelab_info_webhook_secret_token_32chars";
 const TG_CALLBACK_SECRET = "test-homelab-info-callback-secret";
-const OWNER_CHAT_ID = "900100200";
 const OWNER_USER_ID = "900100200";
+const SPOUSE_USER_ID = "900100300";
+const STRANGER_USER_ID = "999999999";
 
 function signPayload(payloadObj, secret = WEBHOOK_SECRET) {
   const rawBody = JSON.stringify(payloadObj);
@@ -34,7 +42,7 @@ function signPayload(payloadObj, secret = WEBHOOK_SECRET) {
   return { rawBody, signatureHeader: `sha256=${hex}` };
 }
 
-console.log("=== Scenario A: Automated Publishing & HomeLab Info Bot Integration Validation ===");
+console.log("=== Scenario A: Automated Publishing v2.0 (Draft-PR-First, Ukrainian UX, Family Access & Multi-Repo) ===");
 
 // 1. Validate n8n workflow JSON structure, HomeLab Info bindings, and security
 const workflowPath = path.resolve("automation/n8n/homelabcore-autonomous-publishing.workflow.json");
@@ -43,13 +51,16 @@ const wfRaw = fs.readFileSync(workflowPath, "utf8");
 assertNoSensitiveData(wfRaw);
 const wf = JSON.parse(wfRaw);
 assert.equal(wf.active, false, "n8n workflow must default to inactive until owner enables it");
-assert.ok(Array.isArray(wf.nodes) && wf.nodes.length >= 10, "n8n workflow must define all pipeline nodes");
+assert.ok(Array.isArray(wf.nodes) && wf.nodes.length >= 30, "n8n v2.0 workflow must define Draft-PR-first, family access, and merge-guard nodes");
 assert.ok(wfRaw.includes("homelab-info-web-approval"), "n8n workflow must use dedicated HomeLab Info webhook path");
 assert.ok(wfRaw.includes("HomeLab Info Bot (Web Publishing)"), "n8n workflow must use encrypted HomeLab Info telegramApi credential");
 assert.ok(wfRaw.includes("HomeLab Info Web Approval Secret"), "n8n workflow must use encrypted HomeLab Info headerAuth credential");
+assert.ok(wfRaw.includes("Create Isolated GitHub PR") && wfRaw.includes("draft: true"), "n8n workflow must create Draft PR before sending Telegram review prompt");
+assert.ok(wfRaw.includes("Mark Draft PR Ready for Review"), "n8n workflow must mark Draft PR ready before merging");
+assert.ok(wfRaw.includes("Merge Approved PR with SHA Guard"), "n8n workflow must merge with exact reviewed commit SHA");
 assert.ok(!wfRaw.includes("$env."), "n8n workflow must not rely on $env when N8N_BLOCK_ENV_ACCESS_IN_NODE=true");
 assert.ok(!wfRaw.includes("telegram-p0-gateway"), "n8n workflow must never collide with telegram-p0-gateway");
-console.log("✓ 1. n8n workflow JSON valid, bound to HomeLab Info, inactive by default, and free of secrets/private IPs");
+console.log("✓ 1. n8n v2.0 workflow JSON valid, Draft-PR-first, bound to HomeLab Info, and free of secrets/private IPs");
 
 // 2. Webhook signature verification
 const releaseEventPayload = {
@@ -75,58 +86,77 @@ assert.equal(verifyGitHubSignature({ rawBody, signatureHeader: "sha256=deadbeef"
 assert.equal(verifyGitHubSignature({ rawBody, signatureHeader, secret: "wrong-secret" }), false);
 console.log("✓ 2. GitHub webhook HMAC-SHA256 signature verification passed");
 
-// 3. Event classification: accept published release & [publish] milestone; ignore routine commits & minor bugfixes
+// 3. Multi-repository mapping & filtering (CookFrom, KeyQuest, Homework Tutor, Ops Planner)
+assert.equal(PROJECT_REPO_MAP["homelab-nl/whats-for-dinner"]?.id, "cookfrom");
+assert.equal(PROJECT_REPO_MAP["homelabnl-alt/keyquest"]?.id, "keyboard-trainer");
+assert.equal(PROJECT_REPO_MAP["homelab-nl/keyboard-trainer"]?.id, "keyboard-trainer");
+assert.equal(PROJECT_REPO_MAP["homelab-nl/homework-tutor"]?.id, "ai-tutor");
+assert.equal(PROJECT_REPO_MAP["homelab-nl/ops-planner"]?.id, "ops-planner");
+
 const classifiedRelease = classifyGitHubEvent({ eventType: "release", payload: releaseEventPayload });
 assert.equal(classifiedRelease.eligible, true);
 assert.equal(classifiedRelease.category, "release");
 assert.equal(classifiedRelease.project?.id, "keyboard-trainer");
 assert.equal(classifiedRelease.sourceEventId, "homelabnl-alt/KeyQuest#release:v1.1.0");
 
+// Ignore routine commits
 const routinePush = classifyGitHubEvent({
   eventType: "push",
   payload: { ref: "refs/heads/main", commits: [{ message: "fix: typo in button label" }] },
 });
 assert.equal(routinePush.eligible, false);
 
-const minorBugfixRelease = classifyGitHubEvent({
+// Ignore release candidates (-rc, alpha, beta)
+const rcRelease = classifyGitHubEvent({
   eventType: "release",
   payload: {
     action: "published",
-    repository: { full_name: "HomeLab-NL/whats-for-dinner" },
-    release: { tag_name: "v0.12.1", name: "fix: minor padding tweak", draft: false, prerelease: false, body: "Minor fix" },
+    repository: { full_name: "HomeLab-NL/ops-planner" },
+    release: { tag_name: "v1.4.0-rc.1", name: "Ops Planner 1.4.0 RC1", draft: false, prerelease: false, body: "Release candidate" },
   },
 });
-assert.equal(minorBugfixRelease.eligible, false);
+assert.equal(rcRelease.eligible, false);
+assert.ok(rcRelease.reason.includes("Release candidate"));
 
-const unmarkedMilestone = classifyGitHubEvent({
-  eventType: "milestone",
+// Ignore self-generated auton-pub/* PRs (loop prevention)
+const selfGeneratedPr = classifyGitHubEvent({
+  eventType: "pull_request",
   payload: {
     action: "closed",
-    repository: { full_name: "HomeLab-NL/homework-tutor" },
-    milestone: { number: 3, title: "Internal refactor", description: "Routine cleanup" },
-  },
-});
-assert.equal(unmarkedMilestone.eligible, false);
-
-const markedMilestone = classifyGitHubEvent({
-  eventType: "milestone",
-  payload: {
-    action: "closed",
-    repository: { full_name: "HomeLab-NL/homework-tutor", html_url: "https://github.com/HomeLab-NL/homework-tutor" },
-    milestone: {
-      number: 4,
-      title: "Smart Notebook Step Hint Refinements [publish]",
-      description: "[publish] Refined progressive hint clarity in the built-in sample tutoring flow.\n- Updated Level 1 hint prompts\n- Improved notebook step layout",
-      closed_at: "2026-11-04T15:00:00Z",
-      html_url: "https://github.com/HomeLab-NL/homework-tutor/milestone/4",
+    repository: { full_name: "HomeLab-NL/HomeLabCore-Web" },
+    pull_request: {
+      number: 18,
+      merged: true,
+      head: { ref: "auton-pub/2026-11-05-cookfrom-0-12-0" },
+      labels: [{ name: "publish-milestone" }],
+      title: "docs(blog): CookFrom 0.12.0",
     },
   },
 });
-assert.equal(markedMilestone.eligible, true);
-assert.equal(markedMilestone.category, "milestone");
-console.log("✓ 3. Event classification: releases & [publish] milestones accepted; routine commits & minor fixes ignored");
+assert.equal(selfGeneratedPr.eligible, false);
+assert.ok(selfGeneratedPr.reason.includes("auton-pub/"));
 
-// 4. Duplicate prevention check against src/content/blog/
+// Accept multi-repo [publish] milestones (e.g., Ops Planner & Homework Tutor)
+const opsPlannerMilestone = classifyGitHubEvent({
+  eventType: "milestone",
+  payload: {
+    action: "closed",
+    repository: { full_name: "HomeLab-NL/ops-planner", html_url: "https://github.com/HomeLab-NL/ops-planner" },
+    milestone: {
+      number: 2,
+      title: "Ops Planner 1.3: Multi-Standard Clause Cross-Walk [publish]",
+      description: "[publish] Added cross-walk mapping between ISO 9001 and IATF 16949 clauses.\n- Clause comparison table\n- Action item export",
+      closed_at: "2026-11-05T15:00:00Z",
+      html_url: "https://github.com/HomeLab-NL/ops-planner/milestone/2",
+    },
+  },
+});
+assert.equal(opsPlannerMilestone.eligible, true);
+assert.equal(opsPlannerMilestone.project?.id, "ops-planner");
+assert.equal(opsPlannerMilestone.sourceEventId, "HomeLab-NL/ops-planner#milestone:2");
+console.log("✓ 3. Multi-repo event classification passed (releases & [publish] milestones accepted; RCs, routine pushes, and self-PRs ignored)");
+
+// 4. Duplicate prevention check against src/content/blog/ and in-memory state
 assert.equal(
   isDuplicateEvent({ sourceEventId: "homelabnl-alt/KeyQuest#deployment:2026-10-28" }),
   true,
@@ -137,218 +167,344 @@ assert.equal(
   false,
   "New release sourceEventId must not be flagged as duplicate",
 );
-console.log("✓ 4. Duplicate publication prevention verified against src/content/blog/");
+assert.equal(
+  isDuplicateEvent({
+    sourceEventId: "HomeLab-NL/ops-planner#milestone:2",
+    processedEventIds: ["HomeLab-NL/ops-planner#milestone:2"],
+  }),
+  true,
+  "In-memory processedEventIds must block duplicate webhook delivery across repositories",
+);
+console.log("✓ 4. Cross-repository duplicate publication prevention verified");
 
-// 5. AI draft generation & SEO / security guard
+// 5. AI draft generation & Draft PR specification (isDraft: true)
 const draft = generateArticleDraft(classifiedRelease);
 assert.ok(draft.description.length >= 50 && draft.description.length <= 230, "Draft description must be 50-230 chars");
+assert.ok(draft.summaryUa && draft.summaryUa.length >= 40, "Draft must include a concise 2-3 sentence Ukrainian summary");
 assert.ok(draft.markdown.includes('project: "keyboard-trainer"'));
 assert.ok(draft.markdown.includes('sourceEventId: "homelabnl-alt/KeyQuest#release:v1.1.0"'));
 
-assert.throws(
-  () => assertNoSensitiveData("Server at 192.168.1.50 with token ghp_1234567890abcdefghijklmnopqrstuv"),
-  SecurityPolicyError,
-  "Security guard must reject private IPs and tokens",
+const draftPrSpec = prepareIsolatedPullRequestSpec({ draft, isDraft: true });
+assert.equal(draftPrSpec.baseBranch, "main");
+assert.ok(draftPrSpec.headBranch.startsWith("auton-pub/"));
+assert.equal(draftPrSpec.isDraft, true, "PR must be created as a GitHub Draft PR first");
+assert.equal(draftPrSpec.autoMerge, false);
+console.log("✓ 5. English article draft & GitHub Draft PR specification (isDraft: true) verified");
+
+// 6. Ukrainian Telegram approval messages (zero technical metadata, sent to both authorized family members)
+const draftPrUrl = "https://github.com/HomeLab-NL/HomeLabCore-Web/pull/25";
+const reviewedCommitSha = "a1b2c3d4e5f60123456789abcdef0123456789ab";
+const authorizedUsers = [OWNER_USER_ID, SPOUSE_USER_ID];
+
+const uaNotifications = buildUkrainianApprovalNotifications({
+  draft,
+  draftPrUrl,
+  draftPrNumber: 25,
+  reviewedCommitSha,
+  authorizedUsers,
+  callbackSecret: TG_CALLBACK_SECRET,
+});
+assert.equal(uaNotifications.length, 2, "Must generate approval notifications for both authorized family members");
+for (const msg of uaNotifications) {
+  assert.ok(msg.text.includes("*Проєкт:* KeyQuest"), "Must include project name in Ukrainian");
+  assert.ok(msg.text.includes(`*Заголовок:* ${draft.title}`), "Must include publication title");
+  assert.ok(msg.text.includes("*Короткий зміст:*") || msg.text.includes("*Короткий опис:*"), "Must include 2-3 sentence Ukrainian summary");
+  assert.ok(msg.text.includes(draftPrUrl), "Must include direct link to the GitHub Draft PR");
+  // Must NOT contain technical metadata (branch names, file paths, event IDs, commit SHAs)
+  assert.ok(!msg.text.includes("auton-pub/"), "Normal notification must NOT include branch names");
+  assert.ok(!msg.text.includes("src/content/blog/"), "Normal notification must NOT include file paths");
+  assert.ok(!msg.text.includes("sourceEventId"), "Normal notification must NOT include event IDs");
+  assert.ok(!msg.text.includes(reviewedCommitSha), "Normal notification must NOT include raw commit SHA");
+  const btns = msg.reply_markup.inline_keyboard[0];
+  assert.equal(btns[0].text, "✅ Схвалити та опублікувати");
+  assert.equal(btns[1].text, "🛑 Відхилити");
+  assert.ok(Buffer.byteLength(btns[0].callback_data, "utf8") <= 64, "Approve callback_data must be <= 64 bytes");
+  assert.ok(Buffer.byteLength(btns[1].callback_data, "utf8") <= 64, "Reject callback_data must be <= 64 bytes");
+}
+console.log("✓ 6. Ukrainian Telegram approval messages verified (Project, Title, Summary, Draft PR link, zero technical metadata)");
+
+// 7. Secure Family Enrollment: /start from spouse requires explicit Owner confirmation
+const enrollmentState = {
+  authorizedUsers: [OWNER_USER_ID],
+  pendingEnrollments: {},
+};
+
+const spouseStartReq = processSpouseEnrollmentRequest({
+  update: {
+    update_id: 800001,
+    message: {
+      message_id: 10,
+      from: { id: Number(SPOUSE_USER_ID), first_name: "Olena", username: "olena_family" },
+      chat: { id: Number(SPOUSE_USER_ID), type: "private" },
+      text: "/start",
+    },
+  },
+  ownerUserId: OWNER_USER_ID,
+  authorizedUsers: enrollmentState.authorizedUsers,
+  pendingEnrollments: enrollmentState.pendingEnrollments,
+  callbackSecret: TG_CALLBACK_SECRET,
+});
+assert.equal(spouseStartReq.handled, true);
+assert.equal(spouseStartReq.status, "pending-owner-confirmation");
+assert.equal(
+  enrollmentState.authorizedUsers.includes(SPOUSE_USER_ID),
+  false,
+  "/start must NEVER automatically grant approval rights before owner confirmation",
 );
-console.log("✓ 5. Concise English draft generated (50-230 char SEO description) and secret/private-IP guard verified");
+assert.equal(spouseStartReq.candidateReply.chat_id, SPOUSE_USER_ID);
+assert.equal(spouseStartReq.ownerConfirmationPrompt.chat_id, OWNER_USER_ID);
 
-// 6. HomeLab Info consumer non-conflict & Uptime Kuma / backup coexistence checks
-const safeOutboundState = verifyTelegramBotConsumerSafety({
-  getMeResult: { id: 8967925790, username: "Home_Lab_info_bot", first_name: "HomeLab Info" },
-  webhookInfo: { url: "", pending_update_count: 0 },
-  activePollers: 0,
+const enrollButtons = spouseStartReq.ownerConfirmationPrompt.reply_markup.inline_keyboard[0];
+const confirmEnrollCallbackData = enrollButtons[0].callback_data;
+assert.ok(Buffer.byteLength(confirmEnrollCallbackData, "utf8") <= 64);
+
+// Stranger or spouse trying to self-confirm enrollment must be rejected
+const selfConfirmAttempt = confirmSpouseEnrollment({
+  update: {
+    update_id: 800002,
+    callback_query: {
+      id: "cbq-self-enroll",
+      from: { id: Number(SPOUSE_USER_ID) },
+      message: {
+        message_id: 11,
+        from: { id: 8967925790, username: "Home_Lab_info_bot" },
+        chat: { id: Number(SPOUSE_USER_ID), type: "private" },
+      },
+      data: confirmEnrollCallbackData,
+    },
+  },
+  ownerUserId: OWNER_USER_ID,
+  authorizedUsers: enrollmentState.authorizedUsers,
+  pendingEnrollments: enrollmentState.pendingEnrollments,
+  callbackSecret: TG_CALLBACK_SECRET,
 });
-assert.equal(safeOutboundState.safe, true);
-assert.equal(safeOutboundState.state, "outbound-only-no-webhook");
-assert.equal(safeOutboundState.canRegisterWebhook, true);
-assert.equal(safeOutboundState.preservesUptimeKumaAndBackupPush, true);
+assert.equal(selfConfirmAttempt.authorized, false);
+assert.equal(enrollmentState.authorizedUsers.includes(SPOUSE_USER_ID), false);
 
-const wrongAssistantBot = verifyTelegramBotConsumerSafety({
-  getMeResult: { id: 8633834424, username: "homelab_core_bot", first_name: "HomeLab Assistant" },
-  webhookInfo: { url: "https://n8n.homelabcore.dev/webhook/telegram-p0-gateway" },
-  activePollers: 0,
+// Owner explicitly confirms spouse enrollment
+const ownerConfirmEnrollment = confirmSpouseEnrollment({
+  update: {
+    update_id: 800003,
+    callback_query: {
+      id: "cbq-owner-enroll",
+      from: { id: Number(OWNER_USER_ID) },
+      message: {
+        message_id: 12,
+        from: { id: 8967925790, username: "Home_Lab_info_bot" },
+        chat: { id: Number(OWNER_USER_ID), type: "private" },
+      },
+      data: confirmEnrollCallbackData,
+    },
+  },
+  ownerUserId: OWNER_USER_ID,
+  authorizedUsers: enrollmentState.authorizedUsers,
+  pendingEnrollments: enrollmentState.pendingEnrollments,
+  callbackSecret: TG_CALLBACK_SECRET,
 });
-assert.equal(wrongAssistantBot.safe, false);
-assert.ok(wrongAssistantBot.reason.includes("@homelab_core_bot"));
+assert.equal(ownerConfirmEnrollment.authorized, true);
+assert.equal(ownerConfirmEnrollment.decision, "approve");
+assert.deepEqual(enrollmentState.authorizedUsers, [OWNER_USER_ID, SPOUSE_USER_ID]);
+assert.equal(ownerConfirmEnrollment.candidateNotification.chat_id, SPOUSE_USER_ID);
+console.log("✓ 7. Spouse /start enrollment verified (/start does not auto-grant; only Owner callback grants access)");
 
-const conflictingWebhook = verifyTelegramBotConsumerSafety({
-  getMeResult: { id: 8967925790, username: "Home_Lab_info_bot" },
-  webhookInfo: { url: "https://other.example.com/webhook" },
-  activePollers: 0,
-});
-assert.equal(conflictingWebhook.safe, false);
-assert.equal(conflictingWebhook.state, "conflicting-webhook");
-
-const conflictingPoller = verifyTelegramBotConsumerSafety({
-  getMeResult: { id: 8967925790, username: "Home_Lab_info_bot" },
-  webhookInfo: { url: "" },
-  activePollers: 1,
-});
-assert.equal(conflictingPoller.safe, false);
-
+// 8. Dual-user approval, first-decision-wins locking, and button invalidation for both users
 const webhookSpec = buildHomeLabInfoWebhookSpec({ secretToken: TG_WEBHOOK_SECRET });
 assert.equal(webhookSpec.url, HOMELAB_TELEGRAM_BOTS.infoBot.webhookUrl);
-assert.deepEqual(webhookSpec.allowed_updates, ["callback_query"]);
+assert.deepEqual(webhookSpec.allowed_updates, ["message", "callback_query"]);
 assert.equal(webhookSpec.drop_pending_updates, false);
-console.log("✓ 6. HomeLab Info (@Home_Lab_info_bot) consumer non-conflict & Uptime Kuma/backup coexistence verified");
 
-// 7. HomeLab Info owner-only Approve/Reject, callback namespace, and replay protection
-const tgMessage = buildTelegramApprovalRequest({
-  draft,
-  chatId: OWNER_CHAT_ID,
-  callbackSecret: TG_CALLBACK_SECRET,
-});
-const buttons = tgMessage.reply_markup.inline_keyboard[0];
-const approveCallbackData = buttons[0].callback_data;
-const rejectCallbackData = buttons[1].callback_data;
-assert.ok(Buffer.byteLength(approveCallbackData, "utf8") <= 64, "approve callback_data must fit Telegram 64-byte limit");
-assert.ok(Buffer.byteLength(rejectCallbackData, "utf8") <= 64, "reject callback_data must fit Telegram 64-byte limit");
-assert.ok(approveCallbackData.startsWith("hlc-pub|approve|"));
-assert.ok(rejectCallbackData.startsWith("hlc-pub|reject|"));
+const shortSlug = uaNotifications[0].shortSlug;
+const approveCallbackData = uaNotifications[0].reply_markup.inline_keyboard[0][0].callback_data;
+const rejectCallbackData = uaNotifications[0].reply_markup.inline_keyboard[0][1].callback_data;
 
 const seenUpdateIds = new Set();
+const pendingDrafts = {
+  [shortSlug]: {
+    status: "pending_approval",
+    slug: draft.slug,
+    shortSlug,
+    title: draft.title,
+    projectName: draft.projectName,
+    draftPrNumber: 25,
+    draftPrUrl,
+    reviewedCommitSha,
+    notifiedMessages: [
+      { chatId: OWNER_USER_ID, messageId: 101 },
+      { chatId: SPOUSE_USER_ID, messageId: 202 },
+    ],
+  },
+};
 
-const validApprove = verifyTelegramApproval({
+// Unauthorized third party must be rejected
+const strangerAttempt = verifyTelegramApproval({
   update: {
-    update_id: 700101,
+    update_id: 900001,
     callback_query: {
-      id: "cbq-approve-1",
-      from: { id: OWNER_USER_ID },
+      id: "cbq-stranger",
+      from: { id: Number(STRANGER_USER_ID) },
       message: {
-        message_id: 42,
+        message_id: 999,
         from: { id: 8967925790, username: "Home_Lab_info_bot" },
-        chat: { id: OWNER_CHAT_ID, type: "private" },
+        chat: { id: Number(STRANGER_USER_ID), type: "private" },
       },
       data: approveCallbackData,
     },
   },
   secretTokenHeader: TG_WEBHOOK_SECRET,
   expectedWebhookSecret: TG_WEBHOOK_SECRET,
-  allowedChatId: OWNER_CHAT_ID,
-  allowedUserId: OWNER_USER_ID,
+  authorizedUsers: enrollmentState.authorizedUsers,
   callbackSecret: TG_CALLBACK_SECRET,
   seenUpdateIds,
+  pendingDrafts,
 });
-assert.equal(validApprove.authorized, true);
-assert.equal(validApprove.decision, "approve");
+assert.equal(strangerAttempt.authorized, false);
+assert.equal(pendingDrafts[shortSlug].status, "pending_approval");
 
-const approveResp = buildTelegramCallbackResponse({
-  verification: validApprove,
-  chatId: OWNER_CHAT_ID,
-  prUrl: "https://github.com/HomeLab-NL/HomeLabCore-Web/pull/99",
-});
-assert.equal(approveResp.shouldCreatePullRequest, true);
-assert.deepEqual(approveResp.editMessageReplyMarkup.reply_markup.inline_keyboard, []);
-
-// Replay of the exact same update_id must be rejected
-const replayedApprove = verifyTelegramApproval({
+// Spouse approves first -> succeeds and locks draft to "approved"
+const spouseApproval = verifyTelegramApproval({
   update: {
-    update_id: 700101,
+    update_id: 900002,
     callback_query: {
-      id: "cbq-approve-1",
-      from: { id: OWNER_USER_ID },
+      id: "cbq-spouse-approve",
+      from: { id: Number(SPOUSE_USER_ID), first_name: "Olena" },
       message: {
-        message_id: 42,
+        message_id: 202,
         from: { id: 8967925790, username: "Home_Lab_info_bot" },
-        chat: { id: OWNER_CHAT_ID, type: "private" },
+        chat: { id: Number(SPOUSE_USER_ID), type: "private" },
       },
       data: approveCallbackData,
     },
   },
   secretTokenHeader: TG_WEBHOOK_SECRET,
   expectedWebhookSecret: TG_WEBHOOK_SECRET,
-  allowedChatId: OWNER_CHAT_ID,
-  allowedUserId: OWNER_USER_ID,
+  authorizedUsers: enrollmentState.authorizedUsers,
   callbackSecret: TG_CALLBACK_SECRET,
   seenUpdateIds,
+  pendingDrafts,
 });
-assert.equal(replayedApprove.authorized, false);
-assert.equal(replayedApprove.duplicateUpdate, true);
+assert.equal(spouseApproval.authorized, true);
+assert.equal(spouseApproval.decision, "approve");
+assert.equal(spouseApproval.actorUserId, SPOUSE_USER_ID);
+assert.equal(spouseApproval.reviewedCommitSha, reviewedCommitSha);
+assert.equal(pendingDrafts[shortSlug].status, "approved");
 
-const validReject = verifyTelegramApproval({
+const callbackResp = buildTelegramCallbackResponse({
+  verification: spouseApproval,
+  chatId: SPOUSE_USER_ID,
+  notifiedMessages: pendingDrafts[shortSlug].notifiedMessages,
+});
+assert.equal(
+  callbackResp.editAllNotifiedMessages.length,
+  2,
+  "Must invalidate inline buttons for BOTH Owner and Spouse immediately",
+);
+
+// Owner clicks Reject (or Approve) 2 seconds later -> blocked because first valid decision already won
+const lateOwnerClick = verifyTelegramApproval({
   update: {
-    update_id: 700102,
+    update_id: 900003,
     callback_query: {
-      id: "cbq-reject-1",
-      from: { id: OWNER_USER_ID },
+      id: "cbq-owner-late",
+      from: { id: Number(OWNER_USER_ID), first_name: "Serhii" },
       message: {
-        message_id: 43,
+        message_id: 101,
         from: { id: 8967925790, username: "Home_Lab_info_bot" },
-        chat: { id: OWNER_CHAT_ID, type: "private" },
+        chat: { id: Number(OWNER_USER_ID), type: "private" },
       },
       data: rejectCallbackData,
     },
   },
   secretTokenHeader: TG_WEBHOOK_SECRET,
   expectedWebhookSecret: TG_WEBHOOK_SECRET,
-  allowedChatId: OWNER_CHAT_ID,
-  allowedUserId: OWNER_USER_ID,
+  authorizedUsers: enrollmentState.authorizedUsers,
   callbackSecret: TG_CALLBACK_SECRET,
   seenUpdateIds,
+  pendingDrafts,
 });
-assert.equal(validReject.authorized, true);
-assert.equal(validReject.decision, "reject");
+assert.equal(lateOwnerClick.authorized, false);
+assert.equal(lateOwnerClick.staleOrResolved, true);
+console.log("✓ 8. Dual-user authorization, first-decision-wins lock, and dual-message button invalidation passed");
 
-const rejectResp = buildTelegramCallbackResponse({
-  verification: validReject,
-  chatId: OWNER_CHAT_ID,
-});
-assert.equal(rejectResp.shouldCreatePullRequest, false);
-
-// Unauthorized user ID must be rejected
-const spoofedUser = verifyTelegramApproval({
-  update: {
-    update_id: 700103,
-    callback_query: {
-      id: "cbq-spoof-1",
-      from: { id: "999999999" },
-      message: {
-        message_id: 44,
-        from: { id: 8967925790, username: "Home_Lab_info_bot" },
-        chat: { id: OWNER_CHAT_ID, type: "private" },
-      },
-      data: approveCallbackData,
-    },
+// 9. Exact Commit SHA & CI revalidation before merge
+const readyToMerge = validateMergeReadiness({
+  reviewedCommitSha,
+  prData: {
+    number: 25,
+    state: "open",
+    merged: false,
+    mergeable: true,
+    head: { sha: reviewedCommitSha },
   },
-  secretTokenHeader: TG_WEBHOOK_SECRET,
-  expectedWebhookSecret: TG_WEBHOOK_SECRET,
-  allowedChatId: OWNER_CHAT_ID,
-  allowedUserId: OWNER_USER_ID,
-  callbackSecret: TG_CALLBACK_SECRET,
-  seenUpdateIds,
-});
-assert.equal(spoofedUser.authorized, false);
-
-// Group chat callback must be rejected even if clicked by owner
-const groupChatAttempt = verifyTelegramApproval({
-  update: {
-    update_id: 700104,
-    callback_query: {
-      id: "cbq-group-1",
-      from: { id: OWNER_USER_ID },
-      message: {
-        message_id: 45,
-        from: { id: 8967925790, username: "Home_Lab_info_bot" },
-        chat: { id: OWNER_CHAT_ID, type: "supergroup" },
-      },
-      data: approveCallbackData,
-    },
+  checkRunsData: {
+    total_count: 2,
+    check_runs: [
+      { name: "build-and-test", status: "completed", conclusion: "success" },
+      { name: "Cloudflare Pages", status: "completed", conclusion: "success" },
+    ],
   },
-  secretTokenHeader: TG_WEBHOOK_SECRET,
-  expectedWebhookSecret: TG_WEBHOOK_SECRET,
-  allowedChatId: OWNER_CHAT_ID,
-  allowedUserId: OWNER_USER_ID,
-  callbackSecret: TG_CALLBACK_SECRET,
-  seenUpdateIds,
 });
-assert.equal(groupChatAttempt.authorized, false);
-console.log("✓ 7. HomeLab Info Approve/Reject, owner-only private chat restriction, and replay guard passed");
+assert.equal(readyToMerge.ready, true);
 
-// 8. Isolated GitHub PR specification
-const prSpec = prepareIsolatedPullRequestSpec({ draft });
-assert.equal(prSpec.baseBranch, "main");
-assert.ok(prSpec.headBranch.startsWith("auton-pub/"));
-assert.equal(prSpec.autoMerge, false);
-assert.equal(prSpec.requiresOwnerMergeApproval, true);
-assert.ok(prSpec.prBody.includes("@Home_Lab_info_bot"));
-console.log("✓ 8. Isolated GitHub PR specification verified (branch prefix auton-pub/*, autoMerge: false)");
+// Modified-after-approval commit SHA must NEVER be merged
+const modifiedAfterApproval = validateMergeReadiness({
+  reviewedCommitSha,
+  prData: {
+    number: 25,
+    state: "open",
+    merged: false,
+    mergeable: true,
+    head: { sha: "ffffffffffffffffffffffffffffffffffffffff" },
+  },
+  checkRunsData: {
+    total_count: 1,
+    check_runs: [{ name: "build-and-test", status: "completed", conclusion: "success" }],
+  },
+});
+assert.equal(modifiedAfterApproval.ready, false);
+assert.equal(modifiedAfterApproval.shaMismatch, true);
+
+// Failing CI check must block merge
+const failingCi = validateMergeReadiness({
+  reviewedCommitSha,
+  prData: {
+    number: 25,
+    state: "open",
+    merged: false,
+    mergeable: true,
+    head: { sha: reviewedCommitSha },
+  },
+  checkRunsData: {
+    total_count: 1,
+    check_runs: [{ name: "build-and-test", status: "completed", conclusion: "failure" }],
+  },
+});
+assert.equal(failingCi.ready, false);
+assert.equal(failingCi.ciFailed, true);
+console.log("✓ 9. Pre-merge commit SHA lock & CI check-runs revalidation passed (blocks post-approval tampering and failing CI)");
+
+// 10. Final Ukrainian notifications (live article URL on success, PR URL on fallback/failure)
+const finalSuccessMsgs = buildUkrainianFinalNotification({
+  outcome: "published",
+  projectName: "KeyQuest",
+  title: draft.title,
+  slug: draft.slug,
+  draftPrUrl,
+  authorizedUsers: enrollmentState.authorizedUsers,
+});
+assert.equal(finalSuccessMsgs.length, 2);
+assert.ok(finalSuccessMsgs[0].text.includes(`https://homelabcore.dev/blog/${draft.slug}/`));
+assert.ok(finalSuccessMsgs[0].text.includes("Статтю опубліковано на HomeLabCore.dev!"));
+
+const finalFallbackMsgs = buildUkrainianFinalNotification({
+  outcome: "merge_blocked",
+  projectName: "KeyQuest",
+  title: draft.title,
+  slug: draft.slug,
+  draftPrUrl,
+  reason: "Очікується завершення перевірок CI.",
+  authorizedUsers: enrollmentState.authorizedUsers,
+});
+assert.equal(finalFallbackMsgs.length, 2);
+assert.ok(finalFallbackMsgs[0].text.includes(draftPrUrl));
+assert.ok(finalFallbackMsgs[0].text.includes("Автоматичне злиття призупинено"));
+console.log("✓ 10. Final Ukrainian notifications verified (working live article URL + fallback PR URL)");

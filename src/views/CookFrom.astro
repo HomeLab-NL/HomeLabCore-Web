@@ -50,7 +50,9 @@ const COPY = {
     core: ["Choose ingredients", "Generate a recipe", "Cook step by step"],
     coreNote: "Available without a subscription.",
     availTitle: "Availability",
-    availText: "Android closed testing is complete and Google Play production access is approved, while the public Android release is not yet confirmed. On iOS, a TestFlight MVP is prepared in a draft pull request, with build, upload, and testing not yet confirmed. Store links will be added here once public. For help in the meantime, visit",
+    availText: "CookFrom for Android is live and available on Google Play. On iOS, CookFrom is currently in testing and not yet publicly released. Download the Android app on",
+    googlePlayLink: "Google Play",
+    availSupportPrefix: "or visit",
     supportLink: "CookFrom Support",
   },
   nl: {
@@ -87,7 +89,9 @@ const COPY = {
     core: ["Kies ingrediënten", "Maak een recept", "Kook stap voor stap"],
     coreNote: "Beschikbaar zonder abonnement.",
     availTitle: "Beschikbaarheid",
-    availText: "De gesloten Android-test is afgerond en productietoegang op Google Play is goedgekeurd; de publieke Android-release is nog niet bevestigd. Voor iOS staat een TestFlight-MVP klaar in een concept-PR, waarvan build, upload en tests nog niet zijn bevestigd. Winkellinks volgen zodra een vermelding openbaar is. Hulp nodig in de tussentijd? Ga naar",
+    availText: "CookFrom voor Android is nu live en beschikbaar op Google Play. De iOS-versie is momenteel in testfase en nog niet publiek uitgebracht. Download de Android-app op",
+    googlePlayLink: "Google Play",
+    availSupportPrefix: "of ga naar",
     supportLink: "CookFrom Support (Engels)",
   },
   uk: {
@@ -124,7 +128,9 @@ const COPY = {
     core: ["Виберіть інгредієнти", "Отримайте рецепт", "Готуйте крок за кроком"],
     coreNote: "Доступно без підписки.",
     availTitle: "Доступність",
-    availText: "Закрите тестування Android завершено, а виробничий доступ у Google Play схвалено; публічний реліз Android ще не підтверджено. Для iOS у чернетці PR підготовлено TestFlight MVP, проте збірку, завантаження й тестування ще не підтверджено. Посилання на магазини з'являться тут після публікації. Якщо потрібна допомога вже зараз, відкрийте",
+    availText: "CookFrom для Android уже опубліковано й доступно в Google Play. Версія для iOS наразі перебуває на тестуванні та ще не випущена публічно. Завантажте застосунок для Android у",
+    googlePlayLink: "Google Play",
+    availSupportPrefix: "або відкрийте",
     supportLink: "CookFrom Support (англійською)",
   },
 }[lang];
@@ -133,7 +139,10 @@ const en = lang !== "en" ? "en" : undefined;
 <ProductLayout project={project} tab="overview" route="cookfrom" lang={lang} title={COPY.title} description={COPY.description} ogDescription={COPY.og}>
   <ProjectHero project={project} eyebrow="CookFrom" title={COPY.h1} lead={COPY.lead} lang={lang}>
     <div class="btn-row">
-      <a class="btn btn--primary" href="/support/cookfrom" hreflang={en}>{t.project.getSupport}</a>
+      {project.data.urls.googlePlay && (
+        <a class="btn btn--primary" href={project.data.urls.googlePlay} rel="noopener noreferrer">{t.project.googlePlay}</a>
+      )}
+      <a class="btn btn--ghost" href="/support/cookfrom" hreflang={en}>{t.project.getSupport}</a>
       <a class="btn btn--ghost" href="/privacy/cookfrom" hreflang={en}>{t.product.privacy}</a>
     </div>
   </ProjectHero>
@@ -199,7 +208,15 @@ const en = lang !== "en" ? "en" : undefined;
             ))}
           </dl>
         )}
-        <p class="muted">{COPY.availText} <a href="/support/cookfrom" hreflang={en}>{COPY.supportLink}</a>.</p>
+        <p class="muted">
+          {COPY.availText}{" "}
+          {project.data.urls.googlePlay && (
+            <>
+              <a href={project.data.urls.googlePlay} rel="noopener noreferrer">{COPY.googlePlayLink}</a>, {COPY.availSupportPrefix}{" "}
+            </>
+          )}
+          <a href="/support/cookfrom" hreflang={en}>{COPY.supportLink}</a>.
+        </p>
       </div>
     </div>
   </section>

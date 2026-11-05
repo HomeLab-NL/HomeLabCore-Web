@@ -4,9 +4,9 @@ import Status from "../Status.astro";
 import type { Locale } from "../../i18n/locales";
 
 const LABELS = {
-  en: { open: (name: string) => `Open ${name}` },
-  nl: { open: (name: string) => `Open ${name}` },
-  uk: { open: (name: string) => `Відкрити ${name}` },
+  en: { open: (name: string) => `Open ${name}`, googlePlay: "Google Play" },
+  nl: { open: (name: string) => `Open ${name}`, googlePlay: "Google Play" },
+  uk: { open: (name: string) => `Відкрити ${name}`, googlePlay: "Google Play" },
 };
 
 // One exhibition room on the homepage: a wall label (domain, status), a large title, the project's own summary and a link, next to the
@@ -40,8 +40,23 @@ const headingId = `room-${id}-title`;
       </p>
       <h2 class="room__title" id={headingId}>{title}</h2>
       {summary && <p class="room__summary">{summary}</p>}
+      {project?.data.platformStatus && (
+        <p class="room__note">
+          {project.data.platformStatus.map((ps) => `${ps.platform}: ${ps.status}`).join(" · ")}
+        </p>
+      )}
       <slot name="text" />
-      {href && <p><a class="room__link" href={href}>{linkText ?? L.open(title!)}<span aria-hidden="true"> →</span></a></p>}
+      {href && (
+        <p>
+          <a class="room__link" href={href}>{linkText ?? L.open(title!)}<span aria-hidden="true"> →</span></a>
+          {project?.data.urls.googlePlay && (
+            <>
+              <span aria-hidden="true"> · </span>
+              <a class="room__link" href={project.data.urls.googlePlay} rel="noopener noreferrer">{L.googlePlay}<span aria-hidden="true"> ↗</span></a>
+            </>
+          )}
+        </p>
+      )}
     </div>
     <div class="room__visual">
       <slot />

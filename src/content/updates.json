@@ -1,5 +1,14 @@
 [
   {
+    "id": "2026-11-05-cookfrom-google-play",
+    "date": "2026-11-05",
+    "title": "CookFrom for Android is now available on Google Play (v0.12.0), with iOS in testing.",
+    "projects": [
+      "cookfrom"
+    ],
+    "href": "/apps/cookfrom"
+  },
+  {
     "id": "2026-11-04-portfolio-refresh",
     "date": "2026-11-04",
     "title": "Published live KeyQuest web deployment, added Homework Tutor Smart Notebook artwork, and updated CookFrom Android and iOS platform status.",

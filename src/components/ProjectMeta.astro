@@ -51,4 +51,10 @@ const { kind, status, workingTitle, version, releaseDate, platformStatus, urls }
       <dd><a href={urls.live} rel="noopener noreferrer">{urls.live.replace(/^https?:\/\//, "").replace(/\/$/, "")}</a></dd>
     </>
   )}
+  {urls.googlePlay && (
+    <>
+      <dt>Google Play</dt>
+      <dd><a href={urls.googlePlay} rel="noopener noreferrer">play.google.com/store/apps/details?id=com.homelabnl.recipeai</a></dd>
+    </>
+  )}
 </dl>

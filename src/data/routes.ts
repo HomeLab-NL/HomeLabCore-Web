@@ -12,7 +12,7 @@ export interface Route {
 export const ROUTES = {
   home: { path: "/", lastmod: "2026-10-03", indexed: true },
   apps: { path: "/apps/", lastmod: "2026-10-03", indexed: true },
-  cookfrom: { path: "/apps/cookfrom", lastmod: "2026-10-03", indexed: true },
+  cookfrom: { path: "/apps/cookfrom", lastmod: "2026-11-05", indexed: true },
   opsPlanner: { path: "/apps/ops-planner/", lastmod: "2026-10-03", indexed: true },
   aiTutor: { path: "/apps/ai-tutor/", lastmod: "2026-10-03", indexed: true },
   keyboardTrainer: { path: "/apps/keyboard-trainer/", lastmod: "2026-10-03", indexed: true },

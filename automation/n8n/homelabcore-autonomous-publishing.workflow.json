@@ -1,10 +1,12 @@
 {
   "name": "HomeLabCore Autonomous Publishing Pipeline (HomeLab Info Bot)",
   "active": false,
-  "versionId": "1.2.0",
+  "versionId": "homelabcore-autonomous-publishing-v2",
   "meta": {
     "templateCredsSetupCompleted": false,
-    "description": "GitHub Event -> Filter -> AI Draft -> HomeLab Info (@Home_Lab_info_bot) Owner Approval -> GitHub Branch & PR -> Build Validation -> Cloudflare Pages"
+    "homelabCoreVersion": "2.0.0",
+    "telegramBotUsername": "Home_Lab_info_bot",
+    "telegramBotId": 8967925790
   },
   "nodes": [
     {
@@ -19,14 +21,16 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        180,
-        280
+        200,
+        260
       ],
       "webhookId": "homelabcore-github-events"
     },
     {
       "parameters": {
-        "jsCode": "function utf8Bytes(str) {\n  const s = String(str);\n  const out = [];\n  for (let i = 0; i < s.length; i++) {\n    let c = s.charCodeAt(i);\n    if (c < 0x80) out.push(c);\n    else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 0x3f));\n    else if (c >= 0xd800 && c <= 0xdbff && i + 1 < s.length) {\n      const c2 = s.charCodeAt(++i);\n      const u = 0x10000 + (((c & 0x3ff) << 10) | (c2 & 0x3ff));\n      out.push(0xf0 | (u >> 18), 0x80 | ((u >> 12) & 0x3f), 0x80 | ((u >> 6) & 0x3f), 0x80 | (u & 0x3f));\n    } else out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));\n  }\n  return out;\n}\nfunction toBase64(str) {\n  const bytes = utf8Bytes(str);\n  const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\";\n  let out = \"\";\n  for (let i = 0; i < bytes.length; i += 3) {\n    const b0 = bytes[i], b1 = i + 1 < bytes.length ? bytes[i + 1] : 0, b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;\n    const n = (b0 << 16) | (b1 << 8) | b2;\n    out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + (i + 1 < bytes.length ? chars[(n >> 6) & 63] : \"=\") + (i + 2 < bytes.length ? chars[n & 63] : \"=\");\n  }\n  return out;\n}\n// Pure-JS HMAC-SHA256 verification (compatible with N8N_BLOCK_ENV_ACCESS_IN_NODE=true and sandboxed Code runner)\nfunction sha256Bytes(ascii) {\n  function rr(v, n) { return (v >>> n) | (v << (32 - n)); }\n  const K = [\n    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,\n    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,\n    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,\n    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,\n    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,\n    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,\n    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,\n    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2\n  ];\n  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];\n  const msg = Array.from(ascii);\n  const bitLen = msg.length * 8;\n  msg.push(0x80);\n  while ((msg.length % 64) !== 56) msg.push(0);\n  const hi = Math.floor(bitLen / 0x100000000);\n  const lo = bitLen >>> 0;\n  for (let i = 3; i >= 0; i--) msg.push((hi >>> (i * 8)) & 0xff);\n  for (let i = 3; i >= 0; i--) msg.push((lo >>> (i * 8)) & 0xff);\n  const W = new Array(64);\n  for (let i = 0; i < msg.length; i += 64) {\n    for (let t = 0; t < 16; t++) {\n      W[t] = ((msg[i + t*4] << 24) | (msg[i + t*4 + 1] << 16) | (msg[i + t*4 + 2] << 8) | (msg[i + t*4 + 3])) >>> 0;\n    }\n    for (let t = 16; t < 64; t++) {\n      const s0 = (rr(W[t-15], 7) ^ rr(W[t-15], 18) ^ (W[t-15] >>> 3)) >>> 0;\n      const s1 = (rr(W[t-2], 17) ^ rr(W[t-2], 19) ^ (W[t-2] >>> 10)) >>> 0;\n      W[t] = (W[t-16] + s0 + W[t-7] + s1) >>> 0;\n    }\n    let [a, b, c, d, e, f, g, h] = H;\n    for (let t = 0; t < 64; t++) {\n      const S1 = (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) >>> 0;\n      const ch = ((e & f) ^ ((~e) & g)) >>> 0;\n      const temp1 = (h + S1 + ch + K[t] + W[t]) >>> 0;\n      const S0 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) >>> 0;\n      const maj = ((a & b) ^ (a & c) ^ (b & c)) >>> 0;\n      const temp2 = (S0 + maj) >>> 0;\n      h = g; g = f; f = e; e = (d + temp1) >>> 0; d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;\n    }\n    H = [(H[0]+a)>>>0,(H[1]+b)>>>0,(H[2]+c)>>>0,(H[3]+d)>>>0,(H[4]+e)>>>0,(H[5]+f)>>>0,(H[6]+g)>>>0,(H[7]+h)>>>0];\n  }\n  const out = [];\n  for (const w of H) out.push((w>>>24)&0xff, (w>>>16)&0xff, (w>>>8)&0xff, w&0xff);\n  return out;\n}\nfunction hmacSha256Hex(keyStr, messageStr) {\n  let key = utf8Bytes(keyStr);\n  const msg = utf8Bytes(messageStr);\n  if (key.length > 64) key = sha256Bytes(key);\n  while (key.length < 64) key.push(0);\n  const oKey = key.map(b => b ^ 0x5c);\n  const iKey = key.map(b => b ^ 0x36);\n  const inner = sha256Bytes(iKey.concat(msg));\n  const outer = sha256Bytes(oKey.concat(inner));\n  return outer.map(b => b.toString(16).padStart(2, '0')).join('');\n}\nfunction safeEq(a, b) {\n  const sa = String(a || '');\n  const sb = String(b || '');\n  if (!sa || sa.length !== sb.length) return false;\n  let diff = 0;\n  for (let i = 0; i < sa.length; i++) diff |= sa.charCodeAt(i) ^ sb.charCodeAt(i);\n  return diff === 0;\n}\n\nconst state = $getWorkflowStaticData('global');\nconst item = $input.first();\nconst headers = item.json.headers || {};\nconst payload = item.json.body || {};\n\n// One-time bootstrap of runtime staticData config at activation time (locked once initialized === true)\nif (!state.config?.initialized && payload?.action === 'homelab_init_config' && payload?.config?.ownerTelegramId && payload?.config?.githubWebhookSecret && payload?.config?.callbackSecret) {\n  state.config = {\n    initialized: true,\n    ownerTelegramId: String(payload.config.ownerTelegramId),\n    githubWebhookSecret: String(payload.config.githubWebhookSecret),\n    callbackSecret: String(payload.config.callbackSecret)\n  };\n  state.pendingDrafts = {};\n  state.processedEvents = {};\n  state.seenUpdateIds = [];\n  return [];\n}\n\nconst secret = state.config?.githubWebhookSecret || '';\nconst sigHeader = String(headers['x-hub-signature-256'] || '');\nif (!secret || !sigHeader.startsWith('sha256=')) {\n  throw new Error('Unauthorized: missing GitHub webhook signature or secret');\n}\nconst expected = 'sha256=' + hmacSha256Hex(secret, JSON.stringify(payload));\nif (!safeEq(expected, sigHeader)) {\n  throw new Error('Unauthorized: invalid GitHub X-Hub-Signature-256');\n}\n\nconst eventType = String(headers['x-github-event'] || '');\nif (eventType === 'ping') {\n  return [];\n}\n\nconst projectMap = {\n  'HomeLab-NL/whats-for-dinner': { id: 'cookfrom', name: 'CookFrom', tag: 'CookFrom' },\n  'HomeLab-NL/homework-tutor': { id: 'ai-tutor', name: 'Homework Tutor', tag: 'Homework Tutor' },\n  'homelabnl-alt/KeyQuest': { id: 'keyboard-trainer', name: 'KeyQuest', tag: 'KeyQuest' },\n  'HomeLab-NL/HomeLab-Core': { id: 'agentlab', name: 'AgentLab', tag: 'AgentLab' }\n};\n\nconst repo = payload.repository?.full_name || 'unknown/repo';\nconst proj = projectMap[repo] || null;\nlet eligible = false;\nlet category = 'release';\nlet title = '';\nlet summarySource = '';\nlet version = '';\nlet publishedAt = new Date().toISOString().slice(0, 10);\nlet sourceUrl = payload.repository?.html_url || '';\nlet sourceEventId = '';\n\nif (eventType === 'release' && payload.action === 'published' && payload.release && !payload.release.draft && !payload.release.prerelease) {\n  const r = payload.release;\n  title = String(r.name || r.tag_name || '').trim();\n  summarySource = String(r.body || '').trim();\n  if (!/\\[skip-publish\\]/i.test(title + ' ' + summarySource) && !/^(fix|chore|ci|build)\\b/i.test(title)) {\n    eligible = true;\n    category = 'release';\n    version = String(r.tag_name || '').replace(/^v/, '');\n    publishedAt = String(r.published_at || publishedAt).slice(0, 10);\n    sourceUrl = r.html_url || sourceUrl;\n    sourceEventId = `${repo}#release:${r.tag_name || r.id}`;\n  }\n} else if (eventType === 'milestone' && payload.action === 'closed' && payload.milestone) {\n  const m = payload.milestone;\n  if (/\\[publish\\]/i.test((m.title || '') + ' ' + (m.description || ''))) {\n    eligible = true;\n    category = 'milestone';\n    title = String(m.title || '').replace(/\\[publish\\]/gi, '').trim();\n    summarySource = String(m.description || '').replace(/\\[publish\\]/gi, '').trim();\n    publishedAt = String(m.closed_at || publishedAt).slice(0, 10);\n    sourceUrl = m.html_url || sourceUrl;\n    sourceEventId = `${repo}#milestone:${m.number || m.id}`;\n  }\n}\n\nif (!eligible) {\n  return [];\n}\nif (state.processedEvents && state.processedEvents[sourceEventId] === 'approved') {\n  return [];\n}\n\nreturn [{\n  json: {\n    eligible,\n    category,\n    repoFullName: repo,\n    projectId: proj ? proj.id : '',\n    projectName: proj ? proj.name : repo.split('/').pop(),\n    projectTag: proj ? proj.tag : 'HomeLabCore',\n    title,\n    summarySource,\n    version,\n    publishedAt,\n    sourceUrl,\n    sourceEventId\n  }\n}];"
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "function utf8Bytes(str) {\n  const s = String(str);\n  const out = [];\n  for (let i = 0; i < s.length; i++) {\n    let c = s.charCodeAt(i);\n    if (c < 0x80) out.push(c);\n    else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 0x3f));\n    else if (c >= 0xd800 && c <= 0xdbff && i + 1 < s.length) {\n      const c2 = s.charCodeAt(++i);\n      const u = 0x10000 + (((c & 0x3ff) << 10) | (c2 & 0x3ff));\n      out.push(0xf0 | (u >> 18), 0x80 | ((u >> 12) & 0x3f), 0x80 | ((u >> 6) & 0x3f), 0x80 | (u & 0x3f));\n    } else out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));\n  }\n  return out;\n}\nfunction toBase64(str) {\n  const bytes = utf8Bytes(str);\n  const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\";\n  let out = \"\";\n  for (let i = 0; i < bytes.length; i += 3) {\n    const b0 = bytes[i], b1 = i + 1 < bytes.length ? bytes[i + 1] : 0, b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;\n    const n = (b0 << 16) | (b1 << 8) | b2;\n    out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + (i + 1 < bytes.length ? chars[(n >> 6) & 63] : \"=\") + (i + 2 < bytes.length ? chars[n & 63] : \"=\");\n  }\n  return out;\n}\nfunction sha256Bytes(ascii) {\n  function rr(v, n) { return (v >>> n) | (v << (32 - n)); }\n  const K = [\n    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,\n    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,\n    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,\n    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,\n    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,\n    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,\n    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,\n    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2\n  ];\n  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];\n  const msg = Array.from(ascii);\n  const bitLen = msg.length * 8;\n  msg.push(0x80);\n  while ((msg.length % 64) !== 56) msg.push(0);\n  const hi = Math.floor(bitLen / 0x100000000);\n  const lo = bitLen >>> 0;\n  for (let i = 3; i >= 0; i--) msg.push((hi >>> (i * 8)) & 0xff);\n  for (let i = 3; i >= 0; i--) msg.push((lo >>> (i * 8)) & 0xff);\n  const W = new Array(64);\n  for (let i = 0; i < msg.length; i += 64) {\n    for (let t = 0; t < 16; t++) {\n      W[t] = ((msg[i + t*4] << 24) | (msg[i + t*4 + 1] << 16) | (msg[i + t*4 + 2] << 8) | (msg[i + t*4 + 3])) >>> 0;\n    }\n    for (let t = 16; t < 64; t++) {\n      const s0 = (rr(W[t-15], 7) ^ rr(W[t-15], 18) ^ (W[t-15] >>> 3)) >>> 0;\n      const s1 = (rr(W[t-2], 17) ^ rr(W[t-2], 19) ^ (W[t-2] >>> 10)) >>> 0;\n      W[t] = (W[t-16] + s0 + W[t-7] + s1) >>> 0;\n    }\n    let [a, b, c, d, e, f, g, h] = H;\n    for (let t = 0; t < 64; t++) {\n      const S1 = (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) >>> 0;\n      const ch = ((e & f) ^ ((~e) & g)) >>> 0;\n      const temp1 = (h + S1 + ch + K[t] + W[t]) >>> 0;\n      const S0 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) >>> 0;\n      const maj = ((a & b) ^ (a & c) ^ (b & c)) >>> 0;\n      const temp2 = (S0 + maj) >>> 0;\n      h = g; g = f; f = e; e = (d + temp1) >>> 0; d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;\n    }\n    H = [(H[0]+a)>>>0,(H[1]+b)>>>0,(H[2]+c)>>>0,(H[3]+d)>>>0,(H[4]+e)>>>0,(H[5]+f)>>>0,(H[6]+g)>>>0,(H[7]+h)>>>0];\n  }\n  const out = [];\n  for (const w of H) out.push((w>>>24)&0xff, (w>>>16)&0xff, (w>>>8)&0xff, w&0xff);\n  return out;\n}\nfunction sha256Hex(str) {\n  return sha256Bytes(utf8Bytes(str)).map(b => b.toString(16).padStart(2, '0')).join('');\n}\nfunction hmacSha256Hex(keyStr, messageStr) {\n  let key = utf8Bytes(keyStr);\n  const msg = utf8Bytes(messageStr);\n  if (key.length > 64) key = sha256Bytes(key);\n  while (key.length < 64) key.push(0);\n  const oKey = key.map(b => b ^ 0x5c);\n  const iKey = key.map(b => b ^ 0x36);\n  const inner = sha256Bytes(iKey.concat(msg));\n  const outer = sha256Bytes(oKey.concat(inner));\n  return outer.map(b => b.toString(16).padStart(2, '0')).join('');\n}\nfunction safeEq(a, b) {\n  const sa = String(a || '');\n  const sb = String(b || '');\n  if (!sa || sa.length !== sb.length) return false;\n  let diff = 0;\n  for (let i = 0; i < sa.length; i++) diff |= sa.charCodeAt(i) ^ sb.charCodeAt(i);\n  return diff === 0;\n}\n\nconst state = $getWorkflowStaticData('global');\nconst item = $input.first();\nconst headers = item.json.headers || {};\nconst payload = item.json.body || {};\n\nif (!state.config?.initialized && payload?.action === 'homelab_init_config' && payload?.config?.ownerTelegramId && payload?.config?.githubWebhookSecret && payload?.config?.callbackSecret) {\n  state.config = {\n    initialized: true,\n    ownerTelegramId: String(payload.config.ownerTelegramId),\n    authorizedUsers: [String(payload.config.ownerTelegramId)],\n    githubWebhookSecret: String(payload.config.githubWebhookSecret),\n    callbackSecret: String(payload.config.callbackSecret)\n  };\n  state.pendingDrafts = {};\n  state.pendingEnrollments = {};\n  state.processedEvents = {};\n  state.seenUpdateIds = [];\n  return [];\n}\n\nconst secret = state.config?.githubWebhookSecret || '';\nconst sigHeader = String(headers['x-hub-signature-256'] || '');\nif (!secret || !sigHeader.startsWith('sha256=')) {\n  throw new Error('Unauthorized: missing GitHub webhook signature or secret');\n}\nconst expected = 'sha256=' + hmacSha256Hex(secret, JSON.stringify(payload));\nif (!safeEq(expected, sigHeader)) {\n  throw new Error('Unauthorized: invalid GitHub X-Hub-Signature-256');\n}\n\nconst eventType = String(headers['x-github-event'] || '');\nif (eventType === 'ping') {\n  return [];\n}\n\n// Guard against self-triggered auton-pub/* branches or PRs\nconst headRef = String(payload?.pull_request?.head?.ref || payload?.ref || '');\nif (headRef.includes('auton-pub/')) {\n  return [];\n}\n\nconst projectMap = {\n  'HomeLab-NL/whats-for-dinner': { id: 'cookfrom', name: 'CookFrom', tag: 'CookFrom', private: true, publicUrl: 'https://play.google.com/store/apps/details?id=com.homelabnl.recipeai', overviewUrl: 'https://homelabcore.dev/apps/cookfrom' },\n  'HomeLab-NL/ops-planner': { id: 'ops-planner', name: 'Ops Planner', tag: 'Ops Planner', private: true, publicUrl: 'https://homelabcore.dev/apps/ops-planner', overviewUrl: 'https://homelabcore.dev/apps/ops-planner' },\n  'HomeLab-NL/homework-tutor': { id: 'ai-tutor', name: 'Homework Tutor', tag: 'Homework Tutor', private: true, publicUrl: 'https://homelabcore.dev/apps/ai-tutor/', overviewUrl: 'https://homelabcore.dev/apps/ai-tutor/' },\n  'homelabnl-alt/KeyQuest': { id: 'keyboard-trainer', name: 'KeyQuest', tag: 'KeyQuest', private: false, publicUrl: 'https://keyquest-b9l7.onrender.com/', overviewUrl: 'https://homelabcore.dev/apps/keyboard-trainer/' },\n  'HomeLab-NL/keyboard-trainer': { id: 'keyboard-trainer', name: 'KeyQuest', tag: 'KeyQuest', private: true, publicUrl: 'https://keyquest-b9l7.onrender.com/', overviewUrl: 'https://homelabcore.dev/apps/keyboard-trainer/' },\n  'HomeLab-NL/HomeLab-Core': { id: 'agentlab', name: 'AgentLab', tag: 'AgentLab', private: true, publicUrl: 'https://homelabcore.dev/lab/agentlab/', overviewUrl: 'https://homelabcore.dev/lab/agentlab/' },\n  'HomeLab-NL/amom-godot': { id: 'at-the-mountains-of-madness', name: 'At the Mountains of Madness', tag: 'At the Mountains of Madness', private: true, publicUrl: 'https://homelabcore.dev/lab/at-the-mountains-of-madness/', overviewUrl: 'https://homelabcore.dev/lab/at-the-mountains-of-madness/' },\n  'HomeLab-NL/HomeLabCore-Web': { id: '', name: 'HomeLabCore', tag: 'HomeLabCore', private: false, publicUrl: 'https://homelabcore.dev/', overviewUrl: 'https://homelabcore.dev/' }\n};\n\nconst repo = payload.repository?.full_name || 'unknown/repo';\nconst proj = projectMap[repo] || null;\nlet eligible = false;\nlet category = 'release';\nlet title = '';\nlet summarySource = '';\nlet version = '';\nlet publishedAt = new Date().toISOString().slice(0, 10);\nlet sourceUrl = '';\nlet sourceEventId = '';\n\nif (eventType === 'release' && payload.action === 'published' && payload.release && !payload.release.draft && !payload.release.prerelease) {\n  const r = payload.release;\n  const tag = String(r.tag_name || '').trim();\n  title = String(r.name || tag || '').trim();\n  summarySource = String(r.body || '').trim();\n  const isRc = /(?:^|[-_.\\s])(?:rc[0-9]*|release\\s*candidate|alpha|beta)(?:$|[-_.\\s0-9])/i.test(tag + ' ' + title) && !/\\[publish\\]/i.test(title + ' ' + summarySource);\n  if (!isRc && !/\\[skip-publish\\]/i.test(title + ' ' + summarySource) && !/^(fix|chore|ci|build)\\b/i.test(title)) {\n    eligible = true;\n    category = 'release';\n    version = tag.replace(/^v/, '');\n    title = title.replace(/\\[publish\\]/gi, '').trim();\n    summarySource = summarySource.replace(/\\[publish\\]/gi, '').trim();\n    publishedAt = String(r.published_at || publishedAt).slice(0, 10);\n    sourceUrl = (proj && proj.private) ? (proj.publicUrl || proj.overviewUrl) : (r.html_url || payload.repository?.html_url || '');\n    sourceEventId = `${repo}#release:${tag || r.id}`;\n  }\n} else if (eventType === 'milestone' && payload.action === 'closed' && payload.milestone) {\n  const m = payload.milestone;\n  if (/\\[publish\\]/i.test((m.title || '') + ' ' + (m.description || ''))) {\n    eligible = true;\n    category = 'milestone';\n    title = String(m.title || '').replace(/\\[publish\\]/gi, '').trim();\n    summarySource = String(m.description || '').replace(/\\[publish\\]/gi, '').trim();\n    publishedAt = String(m.closed_at || publishedAt).slice(0, 10);\n    sourceUrl = (proj && proj.private) ? (proj.publicUrl || proj.overviewUrl) : (m.html_url || payload.repository?.html_url || '');\n    sourceEventId = `${repo}#milestone:${m.number || m.id}`;\n  }\n}\n\nif (!eligible) {\n  return [];\n}\nconst existingStatus = state.processedEvents ? state.processedEvents[sourceEventId] : null;\nif (existingStatus === 'approved' || existingStatus === 'pending' || existingStatus === 'merged') {\n  return [];\n}\n\nreturn [{\n  json: {\n    eligible,\n    category,\n    repoFullName: repo,\n    projectId: proj ? proj.id : '',\n    projectName: proj ? proj.name : repo.split('/').pop(),\n    projectTag: proj ? proj.tag : 'HomeLabCore',\n    title,\n    summarySource,\n    version,\n    publishedAt,\n    sourceUrl,\n    sourceEventId\n  }\n}];\n"
       },
       "id": "1002-filter-event",
       "name": "Verify Signature & Filter Event",
@@ -34,7 +38,7 @@
       "typeVersion": 2,
       "position": [
         420,
-        280
+        260
       ]
     },
     {
@@ -50,34 +54,153 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        660,
-        280
+        640,
+        260
       ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "github-pat-placeholder",
+          "id": "homelabcore-github-token-placeholder",
           "name": "HomeLabCore Web GitHub API"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "function utf8Bytes(str) {\n  const s = String(str);\n  const out = [];\n  for (let i = 0; i < s.length; i++) {\n    let c = s.charCodeAt(i);\n    if (c < 0x80) out.push(c);\n    else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 0x3f));\n    else if (c >= 0xd800 && c <= 0xdbff && i + 1 < s.length) {\n      const c2 = s.charCodeAt(++i);\n      const u = 0x10000 + (((c & 0x3ff) << 10) | (c2 & 0x3ff));\n      out.push(0xf0 | (u >> 18), 0x80 | ((u >> 12) & 0x3f), 0x80 | ((u >> 6) & 0x3f), 0x80 | (u & 0x3f));\n    } else out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));\n  }\n  return out;\n}\nfunction toBase64(str) {\n  const bytes = utf8Bytes(str);\n  const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\";\n  let out = \"\";\n  for (let i = 0; i < bytes.length; i += 3) {\n    const b0 = bytes[i], b1 = i + 1 < bytes.length ? bytes[i + 1] : 0, b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;\n    const n = (b0 << 16) | (b1 << 8) | b2;\n    out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + (i + 1 < bytes.length ? chars[(n >> 6) & 63] : \"=\") + (i + 2 < bytes.length ? chars[n & 63] : \"=\");\n  }\n  return out;\n}\n// Prevent duplicate publication, generate concise English draft, enforce secret/private-IP guard,\n// and sign namespaced HomeLab Info (@Home_Lab_info_bot) callback payloads.\nfunction sha256Bytes(ascii) {\n  function rr(v, n) { return (v >>> n) | (v << (32 - n)); }\n  const K = [\n    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,\n    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,\n    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,\n    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,\n    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,\n    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,\n    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,\n    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2\n  ];\n  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];\n  const msg = Array.from(ascii);\n  const bitLen = msg.length * 8;\n  msg.push(0x80);\n  while ((msg.length % 64) !== 56) msg.push(0);\n  const hi = Math.floor(bitLen / 0x100000000);\n  const lo = bitLen >>> 0;\n  for (let i = 3; i >= 0; i--) msg.push((hi >>> (i * 8)) & 0xff);\n  for (let i = 3; i >= 0; i--) msg.push((lo >>> (i * 8)) & 0xff);\n  const W = new Array(64);\n  for (let i = 0; i < msg.length; i += 64) {\n    for (let t = 0; t < 16; t++) {\n      W[t] = ((msg[i + t*4] << 24) | (msg[i + t*4 + 1] << 16) | (msg[i + t*4 + 2] << 8) | (msg[i + t*4 + 3])) >>> 0;\n    }\n    for (let t = 16; t < 64; t++) {\n      const s0 = (rr(W[t-15], 7) ^ rr(W[t-15], 18) ^ (W[t-15] >>> 3)) >>> 0;\n      const s1 = (rr(W[t-2], 17) ^ rr(W[t-2], 19) ^ (W[t-2] >>> 10)) >>> 0;\n      W[t] = (W[t-16] + s0 + W[t-7] + s1) >>> 0;\n    }\n    let [a, b, c, d, e, f, g, h] = H;\n    for (let t = 0; t < 64; t++) {\n      const S1 = (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) >>> 0;\n      const ch = ((e & f) ^ ((~e) & g)) >>> 0;\n      const temp1 = (h + S1 + ch + K[t] + W[t]) >>> 0;\n      const S0 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) >>> 0;\n      const maj = ((a & b) ^ (a & c) ^ (b & c)) >>> 0;\n      const temp2 = (S0 + maj) >>> 0;\n      h = g; g = f; f = e; e = (d + temp1) >>> 0; d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;\n    }\n    H = [(H[0]+a)>>>0,(H[1]+b)>>>0,(H[2]+c)>>>0,(H[3]+d)>>>0,(H[4]+e)>>>0,(H[5]+f)>>>0,(H[6]+g)>>>0,(H[7]+h)>>>0];\n  }\n  const out = [];\n  for (const w of H) out.push((w>>>24)&0xff, (w>>>16)&0xff, (w>>>8)&0xff, w&0xff);\n  return out;\n}\nfunction hmacSha256Hex(keyStr, messageStr) {\n  let key = utf8Bytes(keyStr);\n  const msg = utf8Bytes(messageStr);\n  if (key.length > 64) key = sha256Bytes(key);\n  while (key.length < 64) key.push(0);\n  const oKey = key.map(b => b ^ 0x5c);\n  const iKey = key.map(b => b ^ 0x36);\n  const inner = sha256Bytes(iKey.concat(msg));\n  const outer = sha256Bytes(oKey.concat(inner));\n  return outer.map(b => b.toString(16).padStart(2, '0')).join('');\n}\n\nconst state = $getWorkflowStaticData('global');\nconst event = $('Verify Signature & Filter Event').first().json;\nconst existingFiles = $input.all().map((i) => i.json.name || '');\n\nconst rawTitle = event.title.includes(event.projectName)\n  ? event.title\n  : `${event.projectName}${event.version ? ' ' + event.version : ''}: ${event.title}`;\nconst fullTitle = rawTitle.length > 56 ? rawTitle.slice(0, 55).replace(/\\s+\\S*$/, '') : rawTitle;\n\nconst slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 56);\nconst slug = `${event.publishedAt}-${slugify(fullTitle)}`;\nif (existingFiles.includes(`${slug}.md`)) {\n  return [];\n}\n\nconst forbidden = [\n  /\\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}\\b/,\n  /\\bgithub_pat_[A-Za-z0-9_]{20,}\\b/,\n  /\\bsk-[A-Za-z0-9_-]{20,}\\b/,\n  /\\b\\d{8,10}:[A-Za-z0-9_-]{35}\\b/,\n  /\\b10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b192\\.168\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b172\\.(?:1[6-9]|2\\d|3[0-1])\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b100\\.(?:6[4-9]|[7-9]\\d|1[0-1]\\d|12[0-7])\\.\\d{1,3}\\.\\d{1,3}\\b/\n];\nfor (const re of forbidden) {\n  if (re.test(fullTitle + '\\n' + event.summarySource)) {\n    throw new Error('Security guard blocked sensitive token or private IP in event payload');\n  }\n}\n\nconst lines = String(event.summarySource || '').split(/\\r?\\n/).map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));\nconst firstPara = lines.find((l) => !l.startsWith('-') && !l.startsWith('*')) || `Verified ${event.category} update for ${event.projectName}.`;\nconst bullets = lines.filter((l) => l.startsWith('- ') || l.startsWith('* ')).map((l) => `- ${l.slice(2).trim()}`);\n\nlet desc = `${event.projectName}: ${firstPara}`.replace(/\\s+/g, ' ').trim();\nif (desc.length < 50) desc = `${fullTitle} \u2014 verified ${event.category} update published on HomeLabCore.`;\nif (desc.length > 230) desc = desc.slice(0, 226).replace(/\\s+\\S*$/, '') + '...';\n\nconst tags = [event.projectTag || 'HomeLabCore', event.category === 'release' ? 'Release' : 'Milestone'];\nconst markdown = [\n  '---',\n  `title: ${JSON.stringify(fullTitle)}`,\n  `description: ${JSON.stringify(desc)}`,\n  `published: \"${event.publishedAt}\"`,\n  `category: \"${event.category}\"`,\n  ...(event.projectId ? [`project: \"${event.projectId}\"`] : []),\n  ...(event.version ? [`version: ${JSON.stringify(event.version)}`] : []),\n  'tags:',\n  ...tags.map((t) => `  - ${JSON.stringify(t)}`),\n  `sourceEventId: ${JSON.stringify(event.sourceEventId)}`,\n  ...(event.sourceUrl ? [`sourceUrl: ${JSON.stringify(event.sourceUrl)}`] : []),\n  '---',\n  '',\n  firstPara,\n  '',\n  '## Verified changes',\n  '',\n  ...(bullets.length ? bullets : [`- Published ${event.category} update for ${event.projectName}.`]),\n  '',\n  `Source reference: [${event.repoFullName}](${event.sourceUrl}).`,\n  ''\n].join('\\n');\n\nconst shortSlug = slug.slice(0, 28);\nconst cbSecret = state.config?.callbackSecret || '';\nconst sign = (action) => {\n  const payload = `hlc-pub|${action}|${shortSlug}`;\n  const sig = hmacSha256Hex(cbSecret, payload).slice(0, 16);\n  return `${payload}|${sig}`;\n};\n\nconst approveCallback = sign('approve');\nconst rejectCallback = sign('reject');\nconst filePath = `src/content/blog/${slug}.md`;\nconst branchName = `auton-pub/${slug}`;\nconst telegramText = [\n  '\ud83c\udf10 *HomeLabCore Web \u2014 Publication Approval*',\n  '_via HomeLab Info (@Home_Lab_info_bot)_',\n  '',\n  `*Title:* ${fullTitle}`,\n  `*Category:* \\`${event.category}\\``,\n  `*Branch:* \\`${branchName}\\``,\n  `*File:* \\`${filePath}\\``,\n  `*Event ID:* \\`${event.sourceEventId}\\``,\n  '',\n  `*Summary:* ${desc}`,\n  '',\n  'Approve to open an isolated GitHub PR and run Astro build validation?'\n].join('\\n');\n\nconst nextPending = { ...(state.pendingDrafts || {}) };\nnextPending[shortSlug] = {\n  slug,\n  shortSlug,\n  filePath,\n  branchName,\n  title: fullTitle,\n  description: desc,\n  sourceEventId: event.sourceEventId,\n  markdownBase64: toBase64(markdown),\n  status: 'pending',\n  createdAt: new Date().toISOString()\n};\nstate.pendingDrafts = nextPending;\n\nreturn [{\n  json: {\n    slug,\n    shortSlug,\n    filePath,\n    branchName,\n    title: fullTitle,\n    description: desc,\n    sourceEventId: event.sourceEventId,\n    ownerChatId: String(state.config.ownerTelegramId),\n    telegramText,\n    approveCallback,\n    rejectCallback\n  }\n}];"
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "function utf8Bytes(str) {\n  const s = String(str);\n  const out = [];\n  for (let i = 0; i < s.length; i++) {\n    let c = s.charCodeAt(i);\n    if (c < 0x80) out.push(c);\n    else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 0x3f));\n    else if (c >= 0xd800 && c <= 0xdbff && i + 1 < s.length) {\n      const c2 = s.charCodeAt(++i);\n      const u = 0x10000 + (((c & 0x3ff) << 10) | (c2 & 0x3ff));\n      out.push(0xf0 | (u >> 18), 0x80 | ((u >> 12) & 0x3f), 0x80 | ((u >> 6) & 0x3f), 0x80 | (u & 0x3f));\n    } else out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));\n  }\n  return out;\n}\nfunction toBase64(str) {\n  const bytes = utf8Bytes(str);\n  const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\";\n  let out = \"\";\n  for (let i = 0; i < bytes.length; i += 3) {\n    const b0 = bytes[i], b1 = i + 1 < bytes.length ? bytes[i + 1] : 0, b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;\n    const n = (b0 << 16) | (b1 << 8) | b2;\n    out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + (i + 1 < bytes.length ? chars[(n >> 6) & 63] : \"=\") + (i + 2 < bytes.length ? chars[n & 63] : \"=\");\n  }\n  return out;\n}\nfunction sha256Bytes(ascii) {\n  function rr(v, n) { return (v >>> n) | (v << (32 - n)); }\n  const K = [\n    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,\n    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,\n    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,\n    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,\n    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,\n    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,\n    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,\n    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2\n  ];\n  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];\n  const msg = Array.from(ascii);\n  const bitLen = msg.length * 8;\n  msg.push(0x80);\n  while ((msg.length % 64) !== 56) msg.push(0);\n  const hi = Math.floor(bitLen / 0x100000000);\n  const lo = bitLen >>> 0;\n  for (let i = 3; i >= 0; i--) msg.push((hi >>> (i * 8)) & 0xff);\n  for (let i = 3; i >= 0; i--) msg.push((lo >>> (i * 8)) & 0xff);\n  const W = new Array(64);\n  for (let i = 0; i < msg.length; i += 64) {\n    for (let t = 0; t < 16; t++) {\n      W[t] = ((msg[i + t*4] << 24) | (msg[i + t*4 + 1] << 16) | (msg[i + t*4 + 2] << 8) | (msg[i + t*4 + 3])) >>> 0;\n    }\n    for (let t = 16; t < 64; t++) {\n      const s0 = (rr(W[t-15], 7) ^ rr(W[t-15], 18) ^ (W[t-15] >>> 3)) >>> 0;\n      const s1 = (rr(W[t-2], 17) ^ rr(W[t-2], 19) ^ (W[t-2] >>> 10)) >>> 0;\n      W[t] = (W[t-16] + s0 + W[t-7] + s1) >>> 0;\n    }\n    let [a, b, c, d, e, f, g, h] = H;\n    for (let t = 0; t < 64; t++) {\n      const S1 = (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) >>> 0;\n      const ch = ((e & f) ^ ((~e) & g)) >>> 0;\n      const temp1 = (h + S1 + ch + K[t] + W[t]) >>> 0;\n      const S0 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) >>> 0;\n      const maj = ((a & b) ^ (a & c) ^ (b & c)) >>> 0;\n      const temp2 = (S0 + maj) >>> 0;\n      h = g; g = f; f = e; e = (d + temp1) >>> 0; d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;\n    }\n    H = [(H[0]+a)>>>0,(H[1]+b)>>>0,(H[2]+c)>>>0,(H[3]+d)>>>0,(H[4]+e)>>>0,(H[5]+f)>>>0,(H[6]+g)>>>0,(H[7]+h)>>>0];\n  }\n  const out = [];\n  for (const w of H) out.push((w>>>24)&0xff, (w>>>16)&0xff, (w>>>8)&0xff, w&0xff);\n  return out;\n}\nfunction sha256Hex(str) {\n  return sha256Bytes(utf8Bytes(str)).map(b => b.toString(16).padStart(2, '0')).join('');\n}\nfunction hmacSha256Hex(keyStr, messageStr) {\n  let key = utf8Bytes(keyStr);\n  const msg = utf8Bytes(messageStr);\n  if (key.length > 64) key = sha256Bytes(key);\n  while (key.length < 64) key.push(0);\n  const oKey = key.map(b => b ^ 0x5c);\n  const iKey = key.map(b => b ^ 0x36);\n  const inner = sha256Bytes(iKey.concat(msg));\n  const outer = sha256Bytes(oKey.concat(inner));\n  return outer.map(b => b.toString(16).padStart(2, '0')).join('');\n}\nfunction safeEq(a, b) {\n  const sa = String(a || '');\n  const sb = String(b || '');\n  if (!sa || sa.length !== sb.length) return false;\n  let diff = 0;\n  for (let i = 0; i < sa.length; i++) diff |= sa.charCodeAt(i) ^ sb.charCodeAt(i);\n  return diff === 0;\n}\n\nconst state = $getWorkflowStaticData('global');\nconst event = $('Verify Signature & Filter Event').first().json;\nconst existingFiles = $input.all().map((i) => i.json.name || '');\n\nconst vSuffix = (event.version && !event.title.includes(event.version)) ? (' ' + event.version) : '';\nconst rawTitle = event.title.includes(event.projectName)\n  ? event.title\n  : `${event.projectName}${vSuffix}: ${event.title}`;\nconst fullTitle = rawTitle.length > 56 ? rawTitle.slice(0, 55).replace(/\\s+\\S*$/, '') : rawTitle;\n\nconst slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 56);\nconst slug = `${event.publishedAt}-${slugify(fullTitle)}`;\nif (existingFiles.includes(`${slug}.md`)) {\n  return [];\n}\n\nconst forbidden = [\n  /\\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}\\b/,\n  /\\bgithub_pat_[A-Za-z0-9_]{20,}\\b/,\n  /\\bsk-[A-Za-z0-9_-]{20,}\\b/,\n  /\\b\\d{8,10}:[A-Za-z0-9_-]{35}\\b/,\n  /\\b10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b192\\.168\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b172\\.(?:1[6-9]|2\\d|3[0-1])\\.\\d{1,3}\\.\\d{1,3}\\b/,\n  /\\b100\\.(?:6[4-9]|[7-9]\\d|1[0-1]\\d|12[0-7])\\.\\d{1,3}\\.\\d{1,3}\\b/\n];\nfor (const re of forbidden) {\n  if (re.test(fullTitle + '\\n' + event.summarySource)) {\n    throw new Error('Security guard blocked sensitive token or private IP in event payload');\n  }\n}\n\nconst lines = String(event.summarySource || '').split(/\\r?\\n/).map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));\nconst firstPara = lines.find((l) => !l.startsWith('-') && !l.startsWith('*')) || `Verified ${event.category} update for ${event.projectName}.`;\nconst bullets = lines.filter((l) => l.startsWith('- ') || l.startsWith('* ')).map((l) => `- ${l.slice(2).trim()}`);\n\nlet desc = `${event.projectName}: ${firstPara}`.replace(/\\s+/g, ' ').trim();\nif (desc.length < 50) desc = `${fullTitle} — verified ${event.category} update published on HomeLabCore.`;\nif (desc.length > 230) desc = desc.slice(0, 226).replace(/\\s+\\S*$/, '') + '...';\n\nconst extraSentence = bullets.length > 0\n  ? bullets.slice(0, 2).map((b) => b.replace(/^- /, '').replace(/\\.$/, '')).join('; ') + '.'\n  : 'Оновлення підготовлено для публікації у блозі HomeLabCore.';\nconst shortSummary = `${firstPara.replace(/\\.*$/, '.')} ${extraSentence}`.trim();\n\nconst tags = [event.projectTag || 'HomeLabCore', event.category === 'release' ? 'Release' : 'Milestone'];\nconst refLabel = event.projectName || event.repoFullName;\nconst markdown = [\n  '---',\n  `title: ${JSON.stringify(fullTitle)}`,\n  `description: ${JSON.stringify(desc)}`,\n  `published: \"${event.publishedAt}\"`,\n  `category: \"${event.category}\"`,\n  ...(event.projectId ? [`project: \"${event.projectId}\"`] : []),\n  ...(event.version ? [`version: ${JSON.stringify(event.version)}`] : []),\n  'tags:',\n  ...tags.map((t) => `  - ${JSON.stringify(t)}`),\n  `sourceEventId: ${JSON.stringify(event.sourceEventId)}`,\n  ...(event.sourceUrl ? [`sourceUrl: ${JSON.stringify(event.sourceUrl)}`] : []),\n  '---',\n  '',\n  firstPara,\n  '',\n  '## Verified changes',\n  '',\n  ...(bullets.length ? bullets : [`- Published ${event.category} update for ${event.projectName}.`]),\n  '',\n  `Source reference: [${refLabel}](${event.sourceUrl}).`,\n  ''\n].join('\\n');\n\nconst draftId = sha256Hex(slug).slice(0, 16);\nconst filePath = `src/content/blog/${slug}.md`;\nconst branchName = `auton-pub/${slug}`;\n\nreturn [{\n  json: {\n    draftId,\n    slug,\n    filePath,\n    branchName,\n    projectName: event.projectName || 'HomeLabCore',\n    title: fullTitle,\n    description: desc,\n    shortSummary,\n    sourceEventId: event.sourceEventId,\n    markdownBase64: toBase64(markdown)\n  }\n}];\n"
       },
-      "id": "1004-ai-draft-and-guard",
+      "id": "1004-generate-draft",
       "name": "AI Draft & Security Guard",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        900,
-        280
+        860,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/git/ref/heads/main",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "1005a-get-main-sha",
+      "name": "Get GitHub Main Ref SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1080,
+        260
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "homelabcore-github-token-placeholder",
+          "name": "HomeLabCore Web GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/git/refs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ ref: 'refs/heads/' + $('AI Draft & Security Guard').first().json.branchName, sha: $json.object.sha }) }}",
+        "options": {}
+      },
+      "id": "1005b-create-branch",
+      "name": "Create Isolated Branch on GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        260
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "homelabcore-github-token-placeholder",
+          "name": "HomeLabCore Web GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/contents/{{ $('AI Draft & Security Guard').first().json.filePath }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ message: 'docs(blog): publish ' + $('AI Draft & Security Guard').first().json.title + ' [automated]', content: $('AI Draft & Security Guard').first().json.markdownBase64, branch: $('AI Draft & Security Guard').first().json.branchName }) }}",
+        "options": {}
+      },
+      "id": "1005c-commit-file",
+      "name": "Commit Draft Markdown to Branch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1520,
+        260
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "homelabcore-github-token-placeholder",
+          "name": "HomeLabCore Web GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/pulls",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ title: 'docs(blog): ' + $('AI Draft & Security Guard').first().json.title, head: $('AI Draft & Security Guard').first().json.branchName, base: 'main', draft: true, body: '## Чернетка публікації блогу / Automated Publication Draft\\n\\n- **Проєкт / Project:** ' + $('AI Draft & Security Guard').first().json.projectName + '\\n- **Заголовок / Title:** ' + $('AI Draft & Security Guard').first().json.title + '\\n- **Канал схвалення / Approval Channel:** HomeLab Info (`@Home_Lab_info_bot`)\\n\\n### Короткий зміст / Summary\\n' + $('AI Draft & Security Guard').first().json.shortSummary }) }}",
+        "options": {}
+      },
+      "id": "1005d-open-draft-pr",
+      "name": "Create Isolated GitHub PR",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1740,
+        260
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "homelabcore-github-token-placeholder",
+          "name": "HomeLabCore Web GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "function utf8Bytes(str) {\n  const s = String(str);\n  const out = [];\n  for (let i = 0; i < s.length; i++) {\n    let c = s.charCodeAt(i);\n    if (c < 0x80) out.push(c);\n    else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 0x3f));\n    else if (c >= 0xd800 && c <= 0xdbff && i + 1 < s.length) {\n      const c2 = s.charCodeAt(++i);\n      const u = 0x10000 + (((c & 0x3ff) << 10) | (c2 & 0x3ff));\n      out.push(0xf0 | (u >> 18), 0x80 | ((u >> 12) & 0x3f), 0x80 | ((u >> 6) & 0x3f), 0x80 | (u & 0x3f));\n    } else out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));\n  }\n  return out;\n}\nfunction toBase64(str) {\n  const bytes = utf8Bytes(str);\n  const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\";\n  let out = \"\";\n  for (let i = 0; i < bytes.length; i += 3) {\n    const b0 = bytes[i], b1 = i + 1 < bytes.length ? bytes[i + 1] : 0, b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;\n    const n = (b0 << 16) | (b1 << 8) | b2;\n    out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + (i + 1 < bytes.length ? chars[(n >> 6) & 63] : \"=\") + (i + 2 < bytes.length ? chars[n & 63] : \"=\");\n  }\n  return out;\n}\nfunction sha256Bytes(ascii) {\n  function rr(v, n) { return (v >>> n) | (v << (32 - n)); }\n  const K = [\n    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,\n    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,\n    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,\n    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,\n    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,\n    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,\n    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,\n    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2\n  ];\n  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];\n  const msg = Array.from(ascii);\n  const bitLen = msg.length * 8;\n  msg.push(0x80);\n  while ((msg.length % 64) !== 56) msg.push(0);\n  const hi = Math.floor(bitLen / 0x100000000);\n  const lo = bitLen >>> 0;\n  for (let i = 3; i >= 0; i--) msg.push((hi >>> (i * 8)) & 0xff);\n  for (let i = 3; i >= 0; i--) msg.push((lo >>> (i * 8)) & 0xff);\n  const W = new Array(64);\n  for (let i = 0; i < msg.length; i += 64) {\n    for (let t = 0; t < 16; t++) {\n      W[t] = ((msg[i + t*4] << 24) | (msg[i + t*4 + 1] << 16) | (msg[i + t*4 + 2] << 8) | (msg[i + t*4 + 3])) >>> 0;\n    }\n    for (let t = 16; t < 64; t++) {\n      const s0 = (rr(W[t-15], 7) ^ rr(W[t-15], 18) ^ (W[t-15] >>> 3)) >>> 0;\n      const s1 = (rr(W[t-2], 17) ^ rr(W[t-2], 19) ^ (W[t-2] >>> 10)) >>> 0;\n      W[t] = (W[t-16] + s0 + W[t-7] + s1) >>> 0;\n    }\n    let [a, b, c, d, e, f, g, h] = H;\n    for (let t = 0; t < 64; t++) {\n      const S1 = (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) >>> 0;\n      const ch = ((e & f) ^ ((~e) & g)) >>> 0;\n      const temp1 = (h + S1 + ch + K[t] + W[t]) >>> 0;\n      const S0 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) >>> 0;\n      const maj = ((a & b) ^ (a & c) ^ (b & c)) >>> 0;\n      const temp2 = (S0 + maj) >>> 0;\n      h = g; g = f; f = e; e = (d + temp1) >>> 0; d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;\n    }\n    H = [(H[0]+a)>>>0,(H[1]+b)>>>0,(H[2]+c)>>>0,(H[3]+d)>>>0,(H[4]+e)>>>0,(H[5]+f)>>>0,(H[6]+g)>>>0,(H[7]+h)>>>0];\n  }\n  const out = [];\n  for (const w of H) out.push((w>>>24)&0xff, (w>>>16)&0xff, (w>>>8)&0xff, w&0xff);\n  return out;\n}\nfunction sha256Hex(str) {\n  return sha256Bytes(utf8Bytes(str)).map(b => b.toString(16).padStart(2, '0')).join('');\n}\nfunction hmacSha256Hex(keyStr, messageStr) {\n  let key = utf8Bytes(keyStr);\n  const msg = utf8Bytes(messageStr);\n  if (key.length > 64) key = sha256Bytes(key);\n  while (key.length < 64) key.push(0);\n  const oKey = key.map(b => b ^ 0x5c);\n  const iKey = key.map(b => b ^ 0x36);\n  const inner = sha256Bytes(iKey.concat(msg));\n  const outer = sha256Bytes(oKey.concat(inner));\n  return outer.map(b => b.toString(16).padStart(2, '0')).join('');\n}\nfunction safeEq(a, b) {\n  const sa = String(a || '');\n  const sb = String(b || '');\n  if (!sa || sa.length !== sb.length) return false;\n  let diff = 0;\n  for (let i = 0; i < sa.length; i++) diff |= sa.charCodeAt(i) ^ sb.charCodeAt(i);\n  return diff === 0;\n}\n\nconst state = $getWorkflowStaticData('global');\nconst draft = $('AI Draft & Security Guard').first().json;\nconst commitRes = $('Commit Draft Markdown to Branch').first().json;\nconst prRes = $('Create Isolated GitHub PR').first().json;\n\nconst reviewedCommitSha = String(commitRes.commit?.sha || prRes.head?.sha || '');\nconst prNumber = prRes.number;\nconst prUrl = prRes.html_url;\nconst prNodeId = prRes.node_id;\n\nif (!reviewedCommitSha || !prNumber || !prUrl) {\n  throw new Error('Failed to create Draft PR or capture reviewedCommitSha');\n}\n\nconst cbSecret = state.config?.callbackSecret || '';\nconst draftId = draft.draftId;\nconst sha10 = reviewedCommitSha.slice(0, 10);\nconst signV2 = (shortAction) => {\n  const sig = hmacSha256Hex(cbSecret, `p|${shortAction}|${draftId}|${sha10}|${reviewedCommitSha}`).slice(0, 16);\n  return `p|${shortAction}|${draftId}|${sha10}|${sig}`;\n};\n\nconst approveCallback = signV2('a');\nconst rejectCallback = signV2('r');\n\nconst cleanSummary = String(draft.shortSummary || draft.description || '').replace(/[*_`\\[\\]]/g, '');\nconst cleanTitle = String(draft.title || '').replace(/[*_`\\[\\]]/g, '');\nconst cleanProj = String(draft.projectName || 'HomeLabCore').replace(/[*_`\\[\\]]/g, '');\n\nconst telegramText = [\n  '📰 *Нова стаття для сайту HomeLabCore*',\n  '',\n  `*Проєкт:* ${cleanProj}`,\n  `*Заголовок:* ${cleanTitle}`,\n  '',\n  '*Короткий зміст:*',\n  cleanSummary,\n  '',\n  `🔗 [Переглянути повний текст статті у чернетці PR #${prNumber}](${prUrl})`,\n  '',\n  'Оберіть дію після перегляду статті:'\n].join('\\n');\n\nconst nextPending = { ...(state.pendingDrafts || {}) };\nnextPending[draftId] = {\n  draftId,\n  slug: draft.slug,\n  filePath: draft.filePath,\n  branchName: draft.branchName,\n  projectName: cleanProj,\n  title: cleanTitle,\n  description: draft.description,\n  shortSummary: cleanSummary,\n  sourceEventId: draft.sourceEventId,\n  prNumber,\n  prUrl,\n  prNodeId,\n  reviewedCommitSha,\n  liveUrl: `https://homelabcore.dev/blog/${draft.slug}/`,\n  status: 'pending',\n  messages: [],\n  createdAt: new Date().toISOString()\n};\nstate.pendingDrafts = nextPending;\n\nconst nextProcessed = { ...(state.processedEvents || {}) };\nnextProcessed[draft.sourceEventId] = 'pending';\nstate.processedEvents = nextProcessed;\n\nconst ownerId = String(state.config?.ownerTelegramId || '');\nconst authUsers = Array.isArray(state.config?.authorizedUsers) && state.config.authorizedUsers.length > 0\n  ? Array.from(new Set([ownerId, ...state.config.authorizedUsers.map(String)].filter(Boolean)))\n  : [ownerId];\n\nreturn authUsers.map((chatId) => ({\n  json: {\n    draftId,\n    chatId: String(chatId),\n    telegramText,\n    approveCallback,\n    rejectCallback\n  }\n}));\n"
+      },
+      "id": "1005e-prepare-family-notifications",
+      "name": "Prepare Family Approval Notifications",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1960,
+        260
       ]
     },
     {
       "parameters": {
         "resource": "message",
         "operation": "sendMessage",
-        "chatId": "={{ String($json.ownerChatId) }}",
+        "chatId": "={{ String($json.chatId) }}",
         "text": "={{ String($json.telegramText) }}",
         "replyMarkup": "inlineKeyboard",
         "inlineKeyboard": {
@@ -86,13 +209,13 @@
               "row": {
                 "buttons": [
                   {
-                    "text": "\u2705 Approve & Open PR",
+                    "text": "✅ Схвалити та опублікувати",
                     "additionalFields": {
                       "callback_data": "={{ String($json.approveCallback) }}"
                     }
                   },
                   {
-                    "text": "\ud83d\uded1 Reject Draft",
+                    "text": "🛑 Відхилити",
                     "additionalFields": {
                       "callback_data": "={{ String($json.rejectCallback) }}"
                     }
@@ -103,9 +226,9 @@
           ]
         },
         "additionalFields": {
-          "appendAttribution": false,
           "parse_mode": "Markdown",
-          "disable_web_page_preview": true
+          "disable_web_page_preview": true,
+          "appendAttribution": false
         }
       },
       "id": "1005-telegram-approval-request",
@@ -113,8 +236,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1140,
-        280
+        2180,
+        260
       ],
       "credentials": {
         "telegramApi": {
@@ -122,6 +245,21 @@
           "name": "HomeLab Info Bot (Web Publishing)"
         }
       }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst state = $getWorkflowStaticData('global');\nconst draft = $('AI Draft & Security Guard').first().json;\nconst draftId = draft.draftId;\nconst sentItems = $input.all();\nconst messages = [];\nfor (const item of sentItems) {\n  const res = item.json.result || item.json;\n  const chatId = res.chat?.id ? String(res.chat.id) : null;\n  const messageId = res.message_id || null;\n  if (chatId && messageId) {\n    messages.push({ chatId, messageId });\n  }\n}\nconst pending = { ...(state.pendingDrafts || {}) };\nif (pending[draftId]) {\n  pending[draftId] = { ...pending[draftId], messages };\n  state.pendingDrafts = pending;\n}\nreturn [{ json: { draftId, notifiedCount: messages.length, messages } }];\n"
+      },
+      "id": "1005f-record-msg-ids",
+      "name": "Record Sent Approval Message IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        260
+      ]
     },
     {
       "parameters": {
@@ -136,8 +274,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        180,
-        580
+        200,
+        620
       ],
       "webhookId": "homelab-info-web-approval",
       "credentials": {
@@ -149,34 +287,71 @@
     },
     {
       "parameters": {
-        "jsCode": "function utf8Bytes(str) {\n  const s = String(str);\n  const out = [];\n  for (let i = 0; i < s.length; i++) {\n    let c = s.charCodeAt(i);\n    if (c < 0x80) out.push(c);\n    else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 0x3f));\n    else if (c >= 0xd800 && c <= 0xdbff && i + 1 < s.length) {\n      const c2 = s.charCodeAt(++i);\n      const u = 0x10000 + (((c & 0x3ff) << 10) | (c2 & 0x3ff));\n      out.push(0xf0 | (u >> 18), 0x80 | ((u >> 12) & 0x3f), 0x80 | ((u >> 6) & 0x3f), 0x80 | (u & 0x3f));\n    } else out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));\n  }\n  return out;\n}\nfunction toBase64(str) {\n  const bytes = utf8Bytes(str);\n  const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\";\n  let out = \"\";\n  for (let i = 0; i < bytes.length; i += 3) {\n    const b0 = bytes[i], b1 = i + 1 < bytes.length ? bytes[i + 1] : 0, b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;\n    const n = (b0 << 16) | (b1 << 8) | b2;\n    out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + (i + 1 < bytes.length ? chars[(n >> 6) & 63] : \"=\") + (i + 2 < bytes.length ? chars[n & 63] : \"=\");\n  }\n  return out;\n}\n// Validate HomeLab Info (@Home_Lab_info_bot, id 8967925790) callback query,\n// enforce owner-only private chat authorization, and verify HMAC callback signature.\nfunction sha256Bytes(ascii) {\n  function rr(v, n) { return (v >>> n) | (v << (32 - n)); }\n  const K = [\n    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,\n    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,\n    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,\n    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,\n    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,\n    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,\n    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,\n    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2\n  ];\n  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];\n  const msg = Array.from(ascii);\n  const bitLen = msg.length * 8;\n  msg.push(0x80);\n  while ((msg.length % 64) !== 56) msg.push(0);\n  const hi = Math.floor(bitLen / 0x100000000);\n  const lo = bitLen >>> 0;\n  for (let i = 3; i >= 0; i--) msg.push((hi >>> (i * 8)) & 0xff);\n  for (let i = 3; i >= 0; i--) msg.push((lo >>> (i * 8)) & 0xff);\n  const W = new Array(64);\n  for (let i = 0; i < msg.length; i += 64) {\n    for (let t = 0; t < 16; t++) {\n      W[t] = ((msg[i + t*4] << 24) | (msg[i + t*4 + 1] << 16) | (msg[i + t*4 + 2] << 8) | (msg[i + t*4 + 3])) >>> 0;\n    }\n    for (let t = 16; t < 64; t++) {\n      const s0 = (rr(W[t-15], 7) ^ rr(W[t-15], 18) ^ (W[t-15] >>> 3)) >>> 0;\n      const s1 = (rr(W[t-2], 17) ^ rr(W[t-2], 19) ^ (W[t-2] >>> 10)) >>> 0;\n      W[t] = (W[t-16] + s0 + W[t-7] + s1) >>> 0;\n    }\n    let [a, b, c, d, e, f, g, h] = H;\n    for (let t = 0; t < 64; t++) {\n      const S1 = (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) >>> 0;\n      const ch = ((e & f) ^ ((~e) & g)) >>> 0;\n      const temp1 = (h + S1 + ch + K[t] + W[t]) >>> 0;\n      const S0 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) >>> 0;\n      const maj = ((a & b) ^ (a & c) ^ (b & c)) >>> 0;\n      const temp2 = (S0 + maj) >>> 0;\n      h = g; g = f; f = e; e = (d + temp1) >>> 0; d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;\n    }\n    H = [(H[0]+a)>>>0,(H[1]+b)>>>0,(H[2]+c)>>>0,(H[3]+d)>>>0,(H[4]+e)>>>0,(H[5]+f)>>>0,(H[6]+g)>>>0,(H[7]+h)>>>0];\n  }\n  const out = [];\n  for (const w of H) out.push((w>>>24)&0xff, (w>>>16)&0xff, (w>>>8)&0xff, w&0xff);\n  return out;\n}\nfunction hmacSha256Hex(keyStr, messageStr) {\n  let key = utf8Bytes(keyStr);\n  const msg = utf8Bytes(messageStr);\n  if (key.length > 64) key = sha256Bytes(key);\n  while (key.length < 64) key.push(0);\n  const oKey = key.map(b => b ^ 0x5c);\n  const iKey = key.map(b => b ^ 0x36);\n  const inner = sha256Bytes(iKey.concat(msg));\n  const outer = sha256Bytes(oKey.concat(inner));\n  return outer.map(b => b.toString(16).padStart(2, '0')).join('');\n}\nfunction safeEq(a, b) {\n  const sa = String(a || '');\n  const sb = String(b || '');\n  if (!sa || sa.length !== sb.length) return false;\n  let diff = 0;\n  for (let i = 0; i < sa.length; i++) diff |= sa.charCodeAt(i) ^ sb.charCodeAt(i);\n  return diff === 0;\n}\n\nconst state = $getWorkflowStaticData('global');\nconst item = $input.first();\nconst body = item.json.body || {};\nconst cb = body.callback_query;\nif (!cb || !String(cb.data || '').startsWith('hlc-pub|')) {\n  return [];\n}\n\nconst seen = Array.isArray(state.seenUpdateIds) ? state.seenUpdateIds : [];\nif (body.update_id !== undefined && seen.includes(body.update_id)) {\n  return [];\n}\n\nconst senderBot = cb.message?.from;\nif (senderBot?.id && Number(senderBot.id) !== 8967925790) {\n  throw new Error('Callback did not originate from HomeLab Info bot (8967925790)');\n}\nif (cb.message?.chat?.type && cb.message.chat.type !== 'private') {\n  throw new Error('Approvals restricted to owner private chat');\n}\n\nconst ownerId = String(state.config?.ownerTelegramId || '');\nif (!ownerId || String(cb.from?.id) !== ownerId || String(cb.message?.chat?.id) !== ownerId) {\n  throw new Error('Unauthorized Telegram user or chat ID');\n}\n\nconst parts = String(cb.data || '').split('|');\nif (parts.length !== 4) {\n  throw new Error('Malformed hlc-pub callback_data');\n}\nconst [ns, action, shortSlug, sig] = parts;\nif (ns !== 'hlc-pub' || !['approve', 'reject'].includes(action)) {\n  return [];\n}\nconst expectedSig = hmacSha256Hex(state.config?.callbackSecret || '', `hlc-pub|${action}|${shortSlug}`).slice(0, 16);\nif (!safeEq(sig, expectedSig)) {\n  throw new Error('Invalid callback_data HMAC signature');\n}\n\nconst pending = { ...(state.pendingDrafts || {}) };\nconst draft = pending[shortSlug];\nif (!draft || draft.status !== 'pending') {\n  return [];\n}\n\nconst isApproved = action === 'approve';\npending[shortSlug] = { ...draft, status: isApproved ? 'approved' : 'rejected', decidedAt: new Date().toISOString() };\nstate.pendingDrafts = pending;\n\nconst processed = { ...(state.processedEvents || {}) };\nprocessed[draft.sourceEventId] = isApproved ? 'approved' : 'rejected';\nstate.processedEvents = processed;\n\nif (body.update_id !== undefined) {\n  state.seenUpdateIds = [...seen, body.update_id].slice(-200);\n}\n\nconst statusLine = isApproved\n  ? '\u2705 *Status:* Approved by owner \u2014 creating isolated GitHub PR...'\n  : '\ud83d\uded1 *Status:* Rejected by owner \u2014 draft discarded.';\nconst updatedMessageText = [\n  '\ud83c\udf10 *HomeLabCore Web \u2014 Publication Approval*',\n  '_via HomeLab Info (`@Home_Lab_info_bot`)_',\n  '',\n  `*Title:* ${draft.title}`,\n  `*Branch:* \\`${draft.branchName}\\``,\n  `*File:* \\`${draft.filePath}\\``,\n  '',\n  statusLine\n].join('\\n');\n\nreturn [{\n  json: {\n    decision: action,\n    approved: isApproved,\n    shortSlug,\n    slug: draft.slug,\n    filePath: draft.filePath,\n    branchName: draft.branchName,\n    title: draft.title,\n    description: draft.description,\n    sourceEventId: draft.sourceEventId,\n    markdownBase64: draft.markdownBase64,\n    ownerChatId: ownerId,\n    callbackQueryId: String(cb.id || ''),\n    messageId: cb.message?.message_id,\n    toastText: isApproved ? '\u2705 Approved \u2014 opening isolated GitHub PR' : '\ud83d\uded1 Rejected \u2014 publication draft discarded',\n    updatedMessageText\n  }\n}];"
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "function utf8Bytes(str) {\n  const s = String(str);\n  const out = [];\n  for (let i = 0; i < s.length; i++) {\n    let c = s.charCodeAt(i);\n    if (c < 0x80) out.push(c);\n    else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 0x3f));\n    else if (c >= 0xd800 && c <= 0xdbff && i + 1 < s.length) {\n      const c2 = s.charCodeAt(++i);\n      const u = 0x10000 + (((c & 0x3ff) << 10) | (c2 & 0x3ff));\n      out.push(0xf0 | (u >> 18), 0x80 | ((u >> 12) & 0x3f), 0x80 | ((u >> 6) & 0x3f), 0x80 | (u & 0x3f));\n    } else out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));\n  }\n  return out;\n}\nfunction toBase64(str) {\n  const bytes = utf8Bytes(str);\n  const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\";\n  let out = \"\";\n  for (let i = 0; i < bytes.length; i += 3) {\n    const b0 = bytes[i], b1 = i + 1 < bytes.length ? bytes[i + 1] : 0, b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;\n    const n = (b0 << 16) | (b1 << 8) | b2;\n    out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + (i + 1 < bytes.length ? chars[(n >> 6) & 63] : \"=\") + (i + 2 < bytes.length ? chars[n & 63] : \"=\");\n  }\n  return out;\n}\nfunction sha256Bytes(ascii) {\n  function rr(v, n) { return (v >>> n) | (v << (32 - n)); }\n  const K = [\n    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,\n    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,\n    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,\n    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,\n    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,\n    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,\n    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,\n    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2\n  ];\n  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];\n  const msg = Array.from(ascii);\n  const bitLen = msg.length * 8;\n  msg.push(0x80);\n  while ((msg.length % 64) !== 56) msg.push(0);\n  const hi = Math.floor(bitLen / 0x100000000);\n  const lo = bitLen >>> 0;\n  for (let i = 3; i >= 0; i--) msg.push((hi >>> (i * 8)) & 0xff);\n  for (let i = 3; i >= 0; i--) msg.push((lo >>> (i * 8)) & 0xff);\n  const W = new Array(64);\n  for (let i = 0; i < msg.length; i += 64) {\n    for (let t = 0; t < 16; t++) {\n      W[t] = ((msg[i + t*4] << 24) | (msg[i + t*4 + 1] << 16) | (msg[i + t*4 + 2] << 8) | (msg[i + t*4 + 3])) >>> 0;\n    }\n    for (let t = 16; t < 64; t++) {\n      const s0 = (rr(W[t-15], 7) ^ rr(W[t-15], 18) ^ (W[t-15] >>> 3)) >>> 0;\n      const s1 = (rr(W[t-2], 17) ^ rr(W[t-2], 19) ^ (W[t-2] >>> 10)) >>> 0;\n      W[t] = (W[t-16] + s0 + W[t-7] + s1) >>> 0;\n    }\n    let [a, b, c, d, e, f, g, h] = H;\n    for (let t = 0; t < 64; t++) {\n      const S1 = (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) >>> 0;\n      const ch = ((e & f) ^ ((~e) & g)) >>> 0;\n      const temp1 = (h + S1 + ch + K[t] + W[t]) >>> 0;\n      const S0 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) >>> 0;\n      const maj = ((a & b) ^ (a & c) ^ (b & c)) >>> 0;\n      const temp2 = (S0 + maj) >>> 0;\n      h = g; g = f; f = e; e = (d + temp1) >>> 0; d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;\n    }\n    H = [(H[0]+a)>>>0,(H[1]+b)>>>0,(H[2]+c)>>>0,(H[3]+d)>>>0,(H[4]+e)>>>0,(H[5]+f)>>>0,(H[6]+g)>>>0,(H[7]+h)>>>0];\n  }\n  const out = [];\n  for (const w of H) out.push((w>>>24)&0xff, (w>>>16)&0xff, (w>>>8)&0xff, w&0xff);\n  return out;\n}\nfunction sha256Hex(str) {\n  return sha256Bytes(utf8Bytes(str)).map(b => b.toString(16).padStart(2, '0')).join('');\n}\nfunction hmacSha256Hex(keyStr, messageStr) {\n  let key = utf8Bytes(keyStr);\n  const msg = utf8Bytes(messageStr);\n  if (key.length > 64) key = sha256Bytes(key);\n  while (key.length < 64) key.push(0);\n  const oKey = key.map(b => b ^ 0x5c);\n  const iKey = key.map(b => b ^ 0x36);\n  const inner = sha256Bytes(iKey.concat(msg));\n  const outer = sha256Bytes(oKey.concat(inner));\n  return outer.map(b => b.toString(16).padStart(2, '0')).join('');\n}\nfunction safeEq(a, b) {\n  const sa = String(a || '');\n  const sb = String(b || '');\n  if (!sa || sa.length !== sb.length) return false;\n  let diff = 0;\n  for (let i = 0; i < sa.length; i++) diff |= sa.charCodeAt(i) ^ sb.charCodeAt(i);\n  return diff === 0;\n}\n\nconst state = $getWorkflowStaticData('global');\nconst item = $input.first();\nconst body = item.json.body || {};\n\nconst seen = Array.isArray(state.seenUpdateIds) ? state.seenUpdateIds : [];\nif (body.update_id !== undefined && seen.includes(body.update_id)) {\n  return [];\n}\n\nconst ownerId = String(state.config?.ownerTelegramId || '');\nconst cbSecret = state.config?.callbackSecret || '';\nconst authUsers = Array.isArray(state.config?.authorizedUsers) && state.config.authorizedUsers.length > 0\n  ? Array.from(new Set([ownerId, ...state.config.authorizedUsers.map(String)].filter(Boolean)))\n  : [ownerId];\n\n// 1. Handle /start or /enroll private message for Family Enrollment\nif (body.message && !body.callback_query) {\n  const msg = body.message;\n  if (msg.chat?.type !== 'private') {\n    return [];\n  }\n  const text = String(msg.text || '').trim();\n  const senderId = String(msg.from?.id || '');\n  const chatId = String(msg.chat?.id || '');\n  if (!senderId || senderId !== chatId) {\n    return [];\n  }\n  if (body.update_id !== undefined) {\n    state.seenUpdateIds = [...seen, body.update_id].slice(-200);\n  }\n  if (senderId === ownerId && /^\\/revoke_family\\b/i.test(text)) {\n    state.config = { ...state.config, authorizedUsers: [ownerId] };\n    return [{\n      json: {\n        mode: 'direct_messages',\n        messagesToSend: [{\n          chatId: ownerId,\n          text: '🔒 *Сімейний доступ скасовано.* Лише власник має право схвалювати публікації.'\n        }]\n      }\n    }];\n  }\n  if (!/^\\/(?:start|enroll)\\b/i.test(text)) {\n    return [];\n  }\n  if (authUsers.includes(senderId)) {\n    return [{\n      json: {\n        mode: 'direct_messages',\n        messagesToSend: [{\n          chatId,\n          text: '👋 Вітаємо в *HomeLab Info*! Ви вже маєте підтверджений доступ до перегляду та схвалення публікацій на сайті HomeLabCore.dev.'\n        }]\n      }\n    }];\n  }\n\n  const firstName = String(msg.from?.first_name || 'Член родини').replace(/[*_`\\[\\]]/g, '');\n  const enrollments = { ...(state.pendingEnrollments || {}) };\n  enrollments[senderId] = {\n    userId: senderId,\n    chatId,\n    firstName,\n    status: 'pending',\n    requestedAt: new Date().toISOString()\n  };\n  state.pendingEnrollments = enrollments;\n\n  const appSig = hmacSha256Hex(cbSecret, `e|a|${senderId}`).slice(0, 16);\n  const rejSig = hmacSha256Hex(cbSecret, `e|r|${senderId}`).slice(0, 16);\n\n  return [{\n    json: {\n      mode: 'enrollment_request',\n      candidateChatId: chatId,\n      candidateText: '👋 Запит на сімейний доступ до публікацій *HomeLabCore.dev* надіслано власнику на підтвердження. Доки власник не підтвердить запит, права на схвалення статей не надаються.',\n      ownerChatId: ownerId,\n      ownerText: [\n        '🔐 *Запит на сімейний доступ (HomeLabCore.dev)*',\n        '',\n        `Користувач *${firstName}* надіслав команду \\`/start\\` і просить доступ до отримання та схвалення нових статей сайту.`,\n        '',\n        'Надати права схвалення публікацій?'\n      ].join('\\n'),\n      approveCallback: `e|a|${senderId}|${appSig}`,\n      rejectCallback: `e|r|${senderId}|${rejSig}`\n    }\n  }];\n}\n\nconst cb = body.callback_query;\nif (!cb) {\n  return [];\n}\nconst rawData = String(cb.data || '');\nconst senderBot = cb.message?.from;\nif (senderBot?.id && Number(senderBot.id) !== 8967925790) {\n  throw new Error('Callback did not originate from HomeLab Info bot (8967925790)');\n}\nif (cb.message?.chat?.type && cb.message.chat.type !== 'private') {\n  throw new Error('Approvals restricted to private chat');\n}\n\nconst actorId = String(cb.from?.id || '');\nconst actorChatId = String(cb.message?.chat?.id || '');\nconst actorName = String(cb.from?.first_name || (actorId === ownerId ? 'Власник' : 'Член родини')).replace(/[*_`\\[\\]]/g, '');\n\n// 2. Handle Owner Confirmation of Spouse Enrollment (e|a|<id>|<sig> or e|r|<id>|<sig>)\nif (rawData.startsWith('e|')) {\n  if (!ownerId || actorId !== ownerId || actorChatId !== ownerId) {\n    throw new Error('Only the primary owner can confirm or reject family enrollment');\n  }\n  const parts = rawData.split('|');\n  if (parts.length !== 4) {\n    throw new Error('Malformed enrollment callback_data');\n  }\n  const [, shortAct, candidateId, sig] = parts;\n  if (!['a', 'r'].includes(shortAct)) {\n    return [];\n  }\n  const expectedSig = hmacSha256Hex(cbSecret, `e|${shortAct}|${candidateId}`).slice(0, 16);\n  if (!safeEq(sig, expectedSig)) {\n    throw new Error('Invalid enrollment callback HMAC signature');\n  }\n  const enrollments = { ...(state.pendingEnrollments || {}) };\n  const rec = enrollments[candidateId];\n  if (!rec || rec.status !== 'pending') {\n    return [];\n  }\n  const isApproved = shortAct === 'a';\n  enrollments[candidateId] = { ...rec, status: isApproved ? 'approved' : 'rejected', decidedAt: new Date().toISOString() };\n  state.pendingEnrollments = enrollments;\n\n  const updatedUsers = [...authUsers];\n  if (isApproved && !updatedUsers.includes(candidateId) && updatedUsers.length < 2) {\n    updatedUsers.push(candidateId);\n  }\n  state.config = { ...state.config, authorizedUsers: updatedUsers };\n  if (body.update_id !== undefined) {\n    state.seenUpdateIds = [...seen, body.update_id].slice(-200);\n  }\n\n  const ownerUpdatedText = isApproved\n    ? `✅ *Сімейний доступ надано:* користувач *${rec.firstName}* тепер отримуватиме сповіщення про нові чернетки статей та зможе їх схвалювати або відхиляти.`\n    : `🛑 *Запит на сімейний доступ відхилено* (${rec.firstName}).`;\n\n  return [{\n    json: {\n      mode: 'enrollment_decision',\n      approved: isApproved,\n      callbackQueryId: String(cb.id || ''),\n      toastText: isApproved ? '✅ Сімейний доступ надано' : '🛑 Запит відхилено',\n      editMessages: [{ chatId: ownerId, messageId: cb.message?.message_id, text: ownerUpdatedText }],\n      messagesToSend: isApproved ? [{\n        chatId: candidateId,\n        text: '✅ *Доступ підтверджено!* Тепер ви отримуватимете сповіщення про нові статті для сайту HomeLabCore.dev і зможете схвалювати або відхиляти їх публікацію.'\n      }] : []\n    }\n  }];\n}\n\n// 3. Handle Publication Approval / Rejection (p|<a|r>|<draftId>|<sha10>|<sig> or legacy hlc-pub|...)\nconst isV2 = rawData.startsWith('p|');\nconst isLegacy = rawData.startsWith('hlc-pub|');\nif (!isV2 && !isLegacy) {\n  return [];\n}\n\nif (!actorId || actorId !== actorChatId || !authUsers.includes(actorId)) {\n  throw new Error('Unauthorized Telegram user or chat ID');\n}\n\nlet action = '';\nlet draftKey = '';\nconst pending = { ...(state.pendingDrafts || {}) };\n\nif (isV2) {\n  const parts = rawData.split('|');\n  if (parts.length !== 5) {\n    throw new Error('Malformed v2 publication callback_data');\n  }\n  const [, shortAct, draftId, sha10, sig] = parts;\n  if (!['a', 'r'].includes(shortAct)) {\n    return [];\n  }\n  action = shortAct === 'a' ? 'approve' : 'reject';\n  draftKey = draftId;\n  const draft = pending[draftKey];\n  if (!draft) {\n    return [];\n  }\n  if (!String(draft.reviewedCommitSha || '').startsWith(sha10)) {\n    throw new Error('Callback commit SHA prefix mismatch');\n  }\n  const expectedSig = hmacSha256Hex(cbSecret, `p|${shortAct}|${draftId}|${sha10}|${draft.reviewedCommitSha}`).slice(0, 16);\n  if (!safeEq(sig, expectedSig)) {\n    throw new Error('Invalid callback_data HMAC signature');\n  }\n} else {\n  const parts = rawData.split('|');\n  if (parts.length !== 4) {\n    throw new Error('Malformed hlc-pub callback_data');\n  }\n  const [, act, shortSlug, sig] = parts;\n  if (!['approve', 'reject'].includes(act)) {\n    return [];\n  }\n  const expectedSig = hmacSha256Hex(cbSecret, `hlc-pub|${act}|${shortSlug}`).slice(0, 16);\n  if (!safeEq(sig, expectedSig)) {\n    throw new Error('Invalid callback_data HMAC signature');\n  }\n  action = act;\n  draftKey = shortSlug;\n}\n\nconst draft = pending[draftKey];\nif (!draft) {\n  return [];\n}\nif (body.update_id !== undefined) {\n  state.seenUpdateIds = [...seen, body.update_id].slice(-200);\n}\n\n// First valid approval or rejection wins\nif (draft.status !== 'pending') {\n  return [{\n    json: {\n      mode: 'already_decided',\n      callbackQueryId: String(cb.id || ''),\n      toastText: 'ℹ️ Рішення щодо цієї статті вже прийнято.',\n      editMessages: [],\n      messagesToSend: []\n    }\n  }];\n}\n\nconst isApproved = action === 'approve';\npending[draftKey] = {\n  ...draft,\n  status: isApproved ? 'approved' : 'rejected',\n  decidedBy: actorId,\n  decidedByName: actorName,\n  decidedAt: new Date().toISOString()\n};\nstate.pendingDrafts = pending;\n\nconst processed = { ...(state.processedEvents || {}) };\nprocessed[draft.sourceEventId] = isApproved ? 'approved' : 'rejected';\nstate.processedEvents = processed;\n\nconst statusLine = isApproved\n  ? `✅ *Статус:* Схвалено (${actorName}) — перевіряємо CI та публікуємо на сайт...`\n  : `🛑 *Статус:* Відхилено (${actorName}) — чернетку PR закрито, стаття не публікуватиметься.`;\n\nconst updatedMessageText = [\n  '📰 *Нова стаття для сайту HomeLabCore*',\n  '',\n  `*Проєкт:* ${draft.projectName || 'HomeLabCore'}`,\n  `*Заголовок:* ${draft.title}`,\n  ...(draft.prUrl ? [`🔗 [Чернетка PR #${draft.prNumber}](${draft.prUrl})`] : []),\n  '',\n  statusLine\n].join('\\n');\n\nconst targetMessages = Array.isArray(draft.messages) && draft.messages.length > 0\n  ? draft.messages\n  : [{ chatId: actorChatId, messageId: cb.message?.message_id }];\n\nreturn [{\n  json: {\n    mode: 'publication_decision',\n    decision: action,\n    approved: isApproved,\n    draftId: draftKey,\n    slug: draft.slug,\n    filePath: draft.filePath,\n    branchName: draft.branchName,\n    projectName: draft.projectName || 'HomeLabCore',\n    title: draft.title,\n    prNumber: draft.prNumber,\n    prUrl: draft.prUrl,\n    prNodeId: draft.prNodeId,\n    reviewedCommitSha: draft.reviewedCommitSha,\n    liveUrl: draft.liveUrl || `https://homelabcore.dev/blog/${draft.slug}/`,\n    authorizedUsers: authUsers,\n    callbackQueryId: String(cb.id || ''),\n    toastText: isApproved ? '✅ Схвалено — перевіряємо CI та публікуємо статтю' : '🛑 Відхилено — чернетку PR буде закрито',\n    editMessages: targetMessages.map((m) => ({\n      chatId: String(m.chatId),\n      messageId: m.messageId,\n      text: updatedMessageText\n    }))\n  }\n}];\n"
       },
-      "id": "1007-verify-telegram-approval",
+      "id": "1007-verify-telegram-callback",
       "name": "Verify HomeLab Info Owner Authorization",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         420,
-        580
+        620
       ]
     },
     {
       "parameters": {
-        "resource": "callback",
-        "operation": "answerQuery",
-        "queryId": "={{ String($json.callbackQueryId) }}",
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-enroll-req",
+              "leftValue": "={{ $json.mode }}",
+              "rightValue": "enrollment_request",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1007a-gate-enrollment-req",
+      "name": "Is Enrollment Request?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.candidateChatId) }}",
+        "text": "={{ String($json.candidateText) }}",
         "additionalFields": {
-          "text": "={{ String($json.toastText) }}",
-          "show_alert": false
+          "parse_mode": "Markdown",
+          "disable_web_page_preview": true,
+          "appendAttribution": false
         }
       },
-      "id": "1007b-ack-telegram-callback",
-      "name": "Acknowledge HomeLab Info Callback",
+      "id": "1007a1-reply-candidate",
+      "name": "Reply Enrollment Pending to Candidate",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        660,
-        580
+        860,
+        480
       ],
       "onError": "continueRegularOutput",
       "credentials": {
@@ -189,11 +364,102 @@
     {
       "parameters": {
         "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($('Verify HomeLab Info Owner Authorization').first().json.ownerChatId) }}",
+        "text": "={{ String($('Verify HomeLab Info Owner Authorization').first().json.ownerText) }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ Підтвердити доступ",
+                    "additionalFields": {
+                      "callback_data": "={{ String($('Verify HomeLab Info Owner Authorization').first().json.approveCallback) }}"
+                    }
+                  },
+                  {
+                    "text": "🛑 Відхилити запит",
+                    "additionalFields": {
+                      "callback_data": "={{ String($('Verify HomeLab Info Owner Authorization').first().json.rejectCallback) }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown",
+          "disable_web_page_preview": true,
+          "appendAttribution": false
+        }
+      },
+      "id": "1007a2-prompt-owner-enroll",
+      "name": "Send Owner Enrollment Confirmation Prompt",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1080,
+        480
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "homelab-info-bot-placeholder",
+          "name": "HomeLab Info Bot (Web Publishing)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "operation": "answerQuery",
+        "queryId": "={{ String($json.callbackQueryId || '') }}",
+        "additionalFields": {
+          "text": "={{ String($json.toastText || 'OK') }}",
+          "show_alert": false
+        }
+      },
+      "id": "1007b-ack-telegram-callback",
+      "name": "Acknowledge HomeLab Info Callback",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        860,
+        680
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "id": "homelab-info-bot-placeholder",
+          "name": "HomeLab Info Bot (Web Publishing)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst info = $('Verify HomeLab Info Owner Authorization').first().json;\nconst edits = Array.isArray(info.editMessages) ? info.editMessages : [];\nif (edits.length === 0) {\n  return [{ json: { skipEdit: true, chatId: '0', messageId: 0, text: '' } }];\n}\nreturn edits.map((e) => ({ json: { skipEdit: false, chatId: String(e.chatId), messageId: e.messageId, text: String(e.text) } }));\n"
+      },
+      "id": "1007b2-expand-edits",
+      "name": "Expand Button Updates for All Users",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
         "operation": "editMessageText",
         "messageType": "message",
-        "chatId": "={{ String($('Verify HomeLab Info Owner Authorization').first().json.ownerChatId) }}",
-        "messageId": "={{ $('Verify HomeLab Info Owner Authorization').first().json.messageId }}",
-        "text": "={{ String($('Verify HomeLab Info Owner Authorization').first().json.updatedMessageText) }}",
+        "chatId": "={{ String($json.chatId) }}",
+        "messageId": "={{ $json.messageId }}",
+        "text": "={{ String($json.text) }}",
         "replyMarkup": "none",
         "additionalFields": {
           "parse_mode": "Markdown",
@@ -205,8 +471,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        880,
-        580
+        1300,
+        680
       ],
       "onError": "continueRegularOutput",
       "credentials": {
@@ -218,62 +484,219 @@
     },
     {
       "parameters": {
-        "jsCode": "// Continue to GitHub branch/PR creation only when owner clicked Approve.\nconst item = $('Verify HomeLab Info Owner Authorization').first().json;\nif (!item.approved) {\n  return [];\n}\nreturn [{ json: item }];"
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst info = $('Verify HomeLab Info Owner Authorization').first().json;\nreturn [{ json: { ...info, ciPollCount: 0 } }];\n"
       },
-      "id": "1007d-gate-approved-only",
-      "name": "Gate Approved Decision",
+      "id": "1007d-collapse-after-edit",
+      "name": "Restore Decision Context",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1100,
-        580
+        1520,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-approved-true",
+              "leftValue": "={{ $json.mode === 'publication_decision' && $json.approved === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1008-if-approved",
+      "name": "Gate Approved Decision",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1740,
+        680
       ]
     },
     {
       "parameters": {
         "method": "GET",
-        "url": "https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/git/ref/heads/main",
+        "url": "=https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/pulls/{{ $json.prNumber }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "options": {}
       },
-      "id": "1008a-get-main-sha",
-      "name": "Get GitHub Main Ref SHA",
+      "id": "1009a-fetch-pr",
+      "name": "Fetch PR State on GitHub",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1320,
-        580
+        1960,
+        560
       ],
+      "onError": "continueRegularOutput",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "github-pat-placeholder",
+          "id": "homelabcore-github-token-placeholder",
           "name": "HomeLabCore Web GitHub API"
         }
       }
     },
     {
       "parameters": {
+        "method": "GET",
+        "url": "=https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/commits/{{ $('Gate Approved Decision').first().json.reviewedCommitSha }}/check-runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "1009b-fetch-checks",
+      "name": "Fetch Commit Check Runs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2180,
+        560
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "homelabcore-github-token-placeholder",
+          "name": "HomeLabCore Web GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst prev = $node['Gate Approved Decision'].json;\nconst pr = $('Fetch PR State on GitHub').first().json;\nconst checksResp = $('Fetch Commit Check Runs').first().json;\nconst pollCount = Number(prev.ciPollCount || 0);\n\nif (!pr || pr.state !== 'open') {\n  return [{\n    json: {\n      ...prev,\n      readyToMerge: false,\n      waitForCi: false,\n      abortReason: 'Чернетка PR вже закрита або недоступна.'\n    }\n  }];\n}\n\nconst actualSha = String(pr.head?.sha || '');\nif (!actualSha || actualSha !== String(prev.reviewedCommitSha)) {\n  return [{\n    json: {\n      ...prev,\n      readyToMerge: false,\n      waitForCi: false,\n      shaMismatch: true,\n      abortReason: 'Вміст PR було змінено після створення чернетки (SHA коміту не збігається з перевіреним). Публікацію зупинено.'\n    }\n  }];\n}\n\nconst runs = Array.isArray(checksResp.check_runs) ? checksResp.check_runs : [];\nconst failing = runs.filter((r) => r.status === 'completed' && !['success', 'neutral', 'skipped'].includes(String(r.conclusion || '')));\nif (failing.length > 0) {\n  return [{\n    json: {\n      ...prev,\n      readyToMerge: false,\n      waitForCi: false,\n      ciFailed: true,\n      abortReason: `Перевірка CI завершилася помилкою (${failing.map((f) => f.name).join(', ')}).`\n    }\n  }];\n}\n\nconst pending = runs.filter((r) => r.status !== 'completed');\nif ((runs.length === 0 || pending.length > 0) && pollCount < 18) {\n  return [{\n    json: {\n      ...prev,\n      ciPollCount: pollCount + 1,\n      readyToMerge: false,\n      waitForCi: true\n    }\n  }];\n}\n\nif (pending.length > 0) {\n  return [{\n    json: {\n      ...prev,\n      readyToMerge: false,\n      waitForCi: false,\n      abortReason: `Перевірки CI тривають довше очікуваного (${pending.map((p) => p.name).join(', ')}).`\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    ...prev,\n    prNodeId: pr.node_id || prev.prNodeId,\n    readyToMerge: true,\n    waitForCi: false\n  }\n}];\n"
+      },
+      "id": "1009c-validate-sha-ci",
+      "name": "Validate Commit SHA & CI Checks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-wait-ci",
+              "leftValue": "={{ $json.waitForCi }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1009d-if-wait-ci",
+      "name": "Should Wait for CI?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2620,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 20,
+        "unit": "seconds"
+      },
+      "id": "1009e-wait-ci",
+      "name": "Wait 20s for CI",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2840,
+        440
+      ],
+      "webhookId": "homelabcore-wait-ci"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-ready-merge",
+              "leftValue": "={{ $json.readyToMerge }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1010-gate-ready-merge",
+      "name": "Gate Ready to Merge",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2840,
+        600
+      ]
+    },
+    {
+      "parameters": {
         "method": "POST",
-        "url": "https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/git/refs",
+        "url": "https://api.github.com/graphql",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ ref: 'refs/heads/' + $('Gate Approved Decision').first().json.branchName, sha: $json.object.sha }) }}",
+        "jsonBody": "={{ JSON.stringify({ query: 'mutation($id: ID!) { markPullRequestReadyForReview(input: { pullRequestId: $id }) { pullRequest { isDraft } } }', variables: { id: $json.prNodeId } }) }}",
         "options": {}
       },
-      "id": "1008b-create-branch",
-      "name": "Create Isolated Branch on GitHub",
+      "id": "1011a-mark-ready",
+      "name": "Mark Draft PR Ready for Review",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1540,
-        580
+        3060,
+        540
       ],
+      "onError": "continueRegularOutput",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "github-pat-placeholder",
+          "id": "homelabcore-github-token-placeholder",
           "name": "HomeLabCore Web GitHub API"
         }
       }
@@ -281,74 +704,217 @@
     {
       "parameters": {
         "method": "PUT",
-        "url": "={{ 'https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/contents/' + $('Gate Approved Decision').first().json.filePath }}",
+        "url": "=https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/pulls/{{ $('Gate Ready to Merge').first().json.prNumber }}/merge",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ message: 'docs(blog): publish ' + $('Gate Approved Decision').first().json.title + ' [automated]', content: $('Gate Approved Decision').first().json.markdownBase64, branch: $('Gate Approved Decision').first().json.branchName }) }}",
+        "jsonBody": "={{ JSON.stringify({ merge_method: 'squash', sha: $('Gate Ready to Merge').first().json.reviewedCommitSha }) }}",
         "options": {}
       },
-      "id": "1008c-commit-draft",
-      "name": "Commit Draft Markdown to Branch",
+      "id": "1011b-merge-pr",
+      "name": "Merge Approved PR with SHA Guard",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1760,
-        580
+        3280,
+        540
       ],
+      "onError": "continueRegularOutput",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "github-pat-placeholder",
+          "id": "homelabcore-github-token-placeholder",
           "name": "HomeLabCore Web GitHub API"
         }
       }
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/pulls",
+        "method": "DELETE",
+        "url": "=https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/git/refs/heads/{{ $('Gate Ready to Merge').first().json.branchName }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "1011c-delete-merged-branch",
+      "name": "Delete Merged Branch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3500,
+        540
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "homelabcore-github-token-placeholder",
+          "name": "HomeLabCore Web GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 55,
+        "unit": "seconds"
+      },
+      "id": "1011d-wait-cf-deploy",
+      "name": "Wait for Cloudflare Pages Deploy",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3720,
+        540
+      ],
+      "webhookId": "homelabcore-wait-cf"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst state = $getWorkflowStaticData('global');\nconst info = $('Gate Ready to Merge').first().json;\nconst mergeRes = $('Merge Approved PR with SHA Guard').first().json;\nconst isMerged = Boolean(mergeRes && mergeRes.merged === true);\n\nconst users = Array.isArray(info.authorizedUsers) && info.authorizedUsers.length > 0\n  ? info.authorizedUsers\n  : [String(state.config?.ownerTelegramId || '')];\n\nif (isMerged) {\n  const pending = { ...(state.pendingDrafts || {}) };\n  if (pending[info.draftId]) {\n    pending[info.draftId] = { ...pending[info.draftId], status: 'merged', mergedAt: new Date().toISOString() };\n    state.pendingDrafts = pending;\n  }\n  const processed = { ...(state.processedEvents || {}) };\n  if (pending[info.draftId]?.sourceEventId) {\n    processed[pending[info.draftId].sourceEventId] = 'merged';\n    state.processedEvents = processed;\n  }\n  const text = [\n    '🚀 *Статтю опубліковано на HomeLabCore.dev!*',\n    '',\n    `*Проєкт:* ${info.projectName}`,\n    `*Заголовок:* ${info.title}`,\n    '',\n    `🌐 *Читати на сайті:* ${info.liveUrl}`,\n    `🔗 [Переглянути PR #${info.prNumber}](${info.prUrl})`\n  ].join('\\n');\n  return users.map((chatId) => ({ json: { chatId: String(chatId), text } }));\n} else {\n  const errMsg = mergeRes?.message || 'Не вдалося виконати автоматичне злиття PR.';\n  const text = [\n    '⚠️ *Автоматичне злиття потребує уваги*',\n    '',\n    `*Проєкт:* ${info.projectName}`,\n    `*Заголовок:* ${info.title}`,\n    `*Причина:* ${errMsg}`,\n    '',\n    `🔗 Перевірте PR вручну: ${info.prUrl}`\n  ].join('\\n');\n  return users.map((chatId) => ({ json: { chatId: String(chatId), text } }));\n}\n"
+      },
+      "id": "1011e-prepare-final-msg",
+      "name": "Prepare Final Live Confirmation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3940,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-is-reject",
+              "leftValue": "={{ $json.mode === 'publication_decision' && $json.decision === 'reject' }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1012a-if-rejected",
+      "name": "Is Rejected Publication?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1960,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/pulls/{{ $json.prNumber }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ title: 'docs(blog): ' + $('Gate Approved Decision').first().json.title, head: $('Gate Approved Decision').first().json.branchName, base: 'main', body: '## Automated Publication Draft\\n\\n- **Source Event ID:** `' + $('Gate Approved Decision').first().json.sourceEventId + '`\\n- **Target File:** `' + $('Gate Approved Decision').first().json.filePath + '`\\n- **Approval Channel:** HomeLab Info (`@Home_Lab_info_bot`)\\n\\nRequires passing GitHub Actions CI (`build-and-test`, `verify`) and Cloudflare Pages preview checks before merge to `main`.' }) }}",
+        "jsonBody": "{\"state\": \"closed\"}",
         "options": {}
       },
-      "id": "1008d-create-isolated-pr",
-      "name": "Create Isolated GitHub PR",
+      "id": "1012b-close-rejected-pr",
+      "name": "Close Rejected Draft PR",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1980,
-        580
+        2180,
+        760
       ],
+      "onError": "continueRegularOutput",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "github-pat-placeholder",
+          "id": "homelabcore-github-token-placeholder",
           "name": "HomeLabCore Web GitHub API"
         }
       }
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://api.github.com/repos/HomeLab-NL/HomeLabCore-Web/git/refs/heads/{{ $('Is Rejected Publication?').first().json.branchName }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "1012c-delete-rejected-branch",
+      "name": "Delete Rejected Branch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        760
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "homelabcore-github-token-placeholder",
+          "name": "HomeLabCore Web GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{ json: $('Is Rejected Publication?').first().json }];"
+      },
+      "id": "1012d-restore-reject-ctx",
+      "name": "Restore Reject Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2620,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst state = $getWorkflowStaticData('global');\nconst item = $input.first().json;\nconst users = Array.isArray(item.authorizedUsers) && item.authorizedUsers.length > 0\n  ? item.authorizedUsers\n  : [String(state.config?.ownerTelegramId || '')];\n\nif (item.mode === 'enrollment_decision' || item.mode === 'direct_messages') {\n  const msgs = Array.isArray(item.messagesToSend) ? item.messagesToSend : [];\n  return msgs.map((m) => ({ json: { chatId: String(m.chatId), text: String(m.text) } }));\n}\n\nif (item.decision === 'reject') {\n  const text = [\n    '🛑 *Публікацію скасовано*',\n    '',\n    `*Проєкт:* ${item.projectName}`,\n    `*Заголовок:* ${item.title}`,\n    '',\n    `Чернетку [PR #${item.prNumber}](${item.prUrl}) закрито, гілку видалено. Стаття не була опублікована.`\n  ].join('\\n');\n  return users.map((chatId) => ({ json: { chatId: String(chatId), text } }));\n}\n\nif (item.abortReason) {\n  const text = [\n    '⚠️ *Автоматична публікація зупинена*',\n    '',\n    `*Проєкт:* ${item.projectName}`,\n    `*Заголовок:* ${item.title}`,\n    `*Причина:* ${item.abortReason}`,\n    '',\n    `🔗 Перевірте PR вручну: ${item.prUrl}`\n  ].join('\\n');\n  return users.map((chatId) => ({ json: { chatId: String(chatId), text } }));\n}\n\nreturn [];\n"
+      },
+      "id": "1013-prepare-status-msg",
+      "name": "Prepare Status or Rejection Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3060,
+        780
+      ]
     },
     {
       "parameters": {
         "resource": "message",
         "operation": "sendMessage",
-        "chatId": "={{ String($('Gate Approved Decision').first().json.ownerChatId) }}",
-        "text": "={{ '\u2705 *HomeLabCore Web \u2014 Pull Request Created*\\n\\n*Title:* ' + $('Gate Approved Decision').first().json.title + '\\n*Branch:* `' + $('Gate Approved Decision').first().json.branchName + '`\\n*PR:* [#' + $json.number + '](' + $json.html_url + ')\\n\\nCI and Cloudflare Pages preview checks are now running.' }}",
+        "chatId": "={{ String($json.chatId) }}",
+        "text": "={{ String($json.text) }}",
         "additionalFields": {
-          "appendAttribution": false,
           "parse_mode": "Markdown",
-          "disable_web_page_preview": true
+          "disable_web_page_preview": false,
+          "appendAttribution": false
         }
       },
-      "id": "1009-send-pr-confirmation",
-      "name": "Send PR Created Confirmation",
+      "id": "1014-send-final-notification",
+      "name": "Send Final Publication Notification",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2200,
-        580
+        4160,
+        660
       ],
       "onError": "continueRegularOutput",
       "credentials": {
@@ -397,61 +963,6 @@
       "main": [
         [
           {
-            "node": "HomeLab Info Approval Prompt",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HomeLab Info Callback Webhook": {
-      "main": [
-        [
-          {
-            "node": "Verify HomeLab Info Owner Authorization",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Verify HomeLab Info Owner Authorization": {
-      "main": [
-        [
-          {
-            "node": "Acknowledge HomeLab Info Callback",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Acknowledge HomeLab Info Callback": {
-      "main": [
-        [
-          {
-            "node": "Update Approval Prompt Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Update Approval Prompt Status": {
-      "main": [
-        [
-          {
-            "node": "Gate Approved Decision",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gate Approved Decision": {
-      "main": [
-        [
-          {
             "node": "Get GitHub Main Ref SHA",
             "type": "main",
             "index": 0
@@ -496,7 +1007,339 @@
       "main": [
         [
           {
-            "node": "Send PR Created Confirmation",
+            "node": "Prepare Family Approval Notifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Family Approval Notifications": {
+      "main": [
+        [
+          {
+            "node": "HomeLab Info Approval Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HomeLab Info Approval Prompt": {
+      "main": [
+        [
+          {
+            "node": "Record Sent Approval Message IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HomeLab Info Callback Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify HomeLab Info Owner Authorization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify HomeLab Info Owner Authorization": {
+      "main": [
+        [
+          {
+            "node": "Is Enrollment Request?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Enrollment Request?": {
+      "main": [
+        [
+          {
+            "node": "Reply Enrollment Pending to Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Acknowledge HomeLab Info Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply Enrollment Pending to Candidate": {
+      "main": [
+        [
+          {
+            "node": "Send Owner Enrollment Confirmation Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge HomeLab Info Callback": {
+      "main": [
+        [
+          {
+            "node": "Expand Button Updates for All Users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expand Button Updates for All Users": {
+      "main": [
+        [
+          {
+            "node": "Update Approval Prompt Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Approval Prompt Status": {
+      "main": [
+        [
+          {
+            "node": "Restore Decision Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore Decision Context": {
+      "main": [
+        [
+          {
+            "node": "Gate Approved Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gate Approved Decision": {
+      "main": [
+        [
+          {
+            "node": "Fetch PR State on GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Rejected Publication?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch PR State on GitHub": {
+      "main": [
+        [
+          {
+            "node": "Fetch Commit Check Runs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Commit Check Runs": {
+      "main": [
+        [
+          {
+            "node": "Validate Commit SHA & CI Checks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Commit SHA & CI Checks": {
+      "main": [
+        [
+          {
+            "node": "Should Wait for CI?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Wait for CI?": {
+      "main": [
+        [
+          {
+            "node": "Wait 20s for CI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gate Ready to Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 20s for CI": {
+      "main": [
+        [
+          {
+            "node": "Fetch PR State on GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gate Ready to Merge": {
+      "main": [
+        [
+          {
+            "node": "Mark Draft PR Ready for Review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Status or Rejection Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Draft PR Ready for Review": {
+      "main": [
+        [
+          {
+            "node": "Merge Approved PR with SHA Guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Approved PR with SHA Guard": {
+      "main": [
+        [
+          {
+            "node": "Delete Merged Branch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Merged Branch": {
+      "main": [
+        [
+          {
+            "node": "Wait for Cloudflare Pages Deploy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Cloudflare Pages Deploy": {
+      "main": [
+        [
+          {
+            "node": "Prepare Final Live Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Final Live Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Send Final Publication Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Rejected Publication?": {
+      "main": [
+        [
+          {
+            "node": "Close Rejected Draft PR",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Status or Rejection Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Close Rejected Draft PR": {
+      "main": [
+        [
+          {
+            "node": "Delete Rejected Branch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Rejected Branch": {
+      "main": [
+        [
+          {
+            "node": "Restore Reject Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore Reject Context": {
+      "main": [
+        [
+          {
+            "node": "Prepare Status or Rejection Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Status or Rejection Notification": {
+      "main": [
+        [
+          {
+            "node": "Send Final Publication Notification",
             "type": "main",
             "index": 0
           }
