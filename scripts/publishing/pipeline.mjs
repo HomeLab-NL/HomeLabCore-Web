@@ -279,11 +279,44 @@ export function classifyGitHubEvent({ eventType, payload }) {
     if (payload?.action !== "closed" || !ms) {
       return { eligible: false, reason: `Ignored milestone action: ${payload?.action ?? "none"}` };
     }
-    const desc = String(ms.description ?? "");
-    const title = String(ms.title ?? "");
+    const desc = String(ms.description ?? "").trim();
+    const title = String(ms.title ?? "").trim();
     if (!/\[publish\]/i.test(desc) && !/\[publish\]/i.test(title)) {
       return { eligible: false, reason: "Milestone not explicitly marked with [publish]" };
     }
+
+    // Quality guard: never interpret milestone closure as proof of a release unless explicit
+    // Reject low-information, routine, or empty milestone summaries
+    const cleanDesc = desc.replace(/\[publish\]/gi, "").trim();
+    const cleanTitle = title.replace(/\[publish\]/gi, "").trim();
+    if (!cleanDesc || cleanDesc.length < 20) {
+      return {
+        eligible: false,
+        reason: "Milestone description is too brief or lacks meaningful verified user-facing changes",
+      };
+    }
+
+    // Require meaningful bullet points or detailed narrative (prevent routine chore/refactor publishing)
+    const bulletCount = (cleanDesc.match(/^[-*]\s+/gm) || []).length;
+    if (bulletCount === 0 && cleanDesc.length < 50) {
+      return {
+        eligible: false,
+        reason: "Milestone lacks detailed changes or bullet points describing user-facing improvements",
+      };
+    }
+
+    // Guard against stale milestones (closed date vs created date / old software activity)
+    const closedDateStr = ms.closed_at || new Date().toISOString();
+    const closedDate = new Date(closedDateStr);
+    const now = new Date();
+    // If milestone was closed more than 14 days ago, reject as stale
+    if (now.getTime() - closedDate.getTime() > 14 * 24 * 60 * 60 * 1000) {
+      return {
+        eligible: false,
+        reason: `Milestone closed date (${closedDateStr.slice(0, 10)}) is older than 14 days; rejected as stale`,
+      };
+    }
+
     const publicSourceUrl = projectMeta?.private
       ? projectMeta.publicUrl || projectMeta.overviewUrl
       : ms.html_url || payload?.repository?.html_url || projectMeta?.overviewUrl;
@@ -293,9 +326,10 @@ export function classifyGitHubEvent({ eventType, payload }) {
       category: "milestone",
       repoFullName,
       project: projectMeta,
-      title: title.replace(/\[publish\]/gi, "").trim(),
-      summarySource: desc.replace(/\[publish\]/gi, "").trim(),
-      publishedAt: (ms.closed_at || new Date().toISOString()).slice(0, 10),
+      title: cleanTitle,
+      summarySource: cleanDesc,
+      publishedAt: closedDateStr.slice(0, 10),
+      eventDate: closedDateStr.slice(0, 10),
       sourceUrl: publicSourceUrl,
       sourceEventId: `${repoFullName}#milestone:${ms.number || ms.id}`,
     };
@@ -553,6 +587,16 @@ export function signTelegramCallback({ action, slug, draftId, commitSha, secret 
   if (!secret || typeof secret !== "string") {
     throw new Error("Missing callback secret for HMAC signing");
   }
+  if (action === "unpublish" || action === "u" || action === "confirm_unpublish" || action === "cu") {
+    const id16 = String(draftId).slice(0, 16);
+    const code = action === "confirm_unpublish" || action === "cu" ? "cu" : "u";
+    const sig = crypto
+      .createHmac("sha256", secret)
+      .update(`u|${code}|${id16}`, "utf8")
+      .digest("hex")
+      .slice(0, 16);
+    return `u|${code}|${id16}|${sig}`;
+  }
   if (commitSha && draftId) {
     const shortAction = action === "approve" || action === "a" ? "a" : "r";
     const id16 = String(draftId).slice(0, 16);
@@ -616,6 +660,7 @@ export function buildUkrainianApprovalNotifications({
     ``,
     `*Проєкт:* ${draft.projectName || "HomeLabCore"}`,
     `*Заголовок:* ${draft.title}`,
+    `*Дата події:* ${draft.publishedAt || "Сьогодні"}`,
     ``,
     `*Короткий зміст:*`,
     `${draft.shortSummary || draft.description}`,
@@ -920,8 +965,9 @@ export function verifyTelegramApproval({
 
   const rawData = String(cb.data ?? "");
   const isV2 = rawData.startsWith("p|");
+  const isUnpublish = rawData.startsWith("u|");
   const isLegacy = rawData.startsWith(`${HOMELAB_TELEGRAM_BOTS.infoBot.callbackPrefix}|`);
-  if (!isV2 && !isLegacy) {
+  if (!isV2 && !isLegacy && !isUnpublish) {
     return { authorized: false, ignored: true, reason: "Callback data outside publication namespace" };
   }
 
@@ -953,6 +999,84 @@ export function verifyTelegramApproval({
   let decision = "";
   let shortSlug = "";
   let reviewedCommitSha = null;
+
+  if (isUnpublish) {
+    const parts = rawData.split("|");
+    if (parts.length !== 4) {
+      return { authorized: false, reason: "Malformed unpublish callback_data" };
+    }
+    const [, uAction, draftId, sig] = parts;
+    const expectedSig = crypto
+      .createHmac("sha256", callbackSecret)
+      .update(`u|${uAction}|${draftId}`, "utf8")
+      .digest("hex")
+      .slice(0, 16);
+    const sigBuf = Buffer.from(sig, "utf8");
+    const expSigBuf = Buffer.from(expectedSig, "utf8");
+    if (sigBuf.length !== expSigBuf.length || !crypto.timingSafeEqual(sigBuf, expSigBuf)) {
+      return { authorized: false, reason: "Invalid unpublish callback HMAC signature" };
+    }
+
+    const isConfirmed = uAction === "cu";
+    const draftRecord = pendingDrafts ? pendingDrafts[draftId] : null;
+
+    if (!isConfirmed) {
+      // Step 1: prompt for confirmation
+      const confirmCb = signTelegramCallback({ action: "confirm_unpublish", draftId, secret: callbackSecret });
+      const cancelCb = signTelegramCallback({ action: "reject", draftId, commitSha: "cancel", secret: callbackSecret });
+      return {
+        authorized: true,
+        decision: "unpublish_prompt",
+        draftId,
+        actorUserId: userId,
+        shortSlug: draftId,
+        callbackQueryId: cb.id ?? null,
+        messageId: cb.message?.message_id ?? null,
+        confirmationPrompt: {
+          chat_id: chatId,
+          message_id: cb.message?.message_id,
+          parse_mode: "Markdown",
+          text: `⚠️ *Підтвердження відкликання публікації*\n\nВи дійсно бажаєте видалити цю статтю з сайту HomeLabCore.dev та RSS-стрічки?`,
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: "🔴 Так, видалити з сайту", callback_data: confirmCb },
+                { text: "❌ Скасувати", callback_data: cancelCb },
+              ],
+            ],
+          },
+        },
+      };
+    }
+
+    // Step 2: Confirmed unpublish execution
+    if (draftRecord) {
+      if (draftRecord.unpublishStatus === "in_progress" || draftRecord.unpublishStatus === "completed") {
+        return {
+          authorized: false,
+          alreadyDecided: true,
+          idempotent: true,
+          reason: "Unpublish operation already in progress or completed for this article",
+        };
+      }
+      draftRecord.unpublishStatus = "in_progress";
+      draftRecord.unpublishedBy = userId;
+      draftRecord.unpublishedAt = new Date().toISOString();
+    }
+
+    return {
+      authorized: true,
+      decision: "unpublish_confirmed",
+      draftId,
+      actorUserId: userId,
+      slug: draftRecord?.slug || draftId,
+      filePath: draftRecord?.filePath || (draftRecord?.slug ? `src/content/blog/${draftRecord.slug}.md` : null),
+      reviewedCommitSha: draftRecord?.reviewedCommitSha || null,
+      shortSlug: draftId,
+      callbackQueryId: cb.id ?? null,
+      messageId: cb.message?.message_id ?? null,
+    };
+  }
 
   if (isV2) {
     const parts = rawData.split("|");
@@ -1192,6 +1316,7 @@ export function buildUkrainianFinalNotification({
   liveUrl,
   errorReason = "",
   authorizedUsers = [],
+  callbackSecret = null,
 }) {
   const users = Array.isArray(authorizedUsers) ? authorizedUsers.map(String) : [];
   const finalProjectName = projectName || draft?.projectName || "HomeLabCore";
@@ -1211,6 +1336,33 @@ export function buildUkrainianFinalNotification({
       `🌐 *Читати на сайті:* ${finalLiveUrl}`,
       ...(finalPrUrl ? [`🔗 [Переглянути PR${prNumber ? ` #${prNumber}` : ""}](${finalPrUrl})`] : []),
     ].join("\n");
+
+    const draftId = draft?.draftId || (finalSlug ? crypto.createHash("sha256").update(finalSlug, "utf8").digest("hex").slice(0, 16) : "");
+    const replyMarkup = callbackSecret && draftId
+      ? {
+          inline_keyboard: [
+            [
+              {
+                text: "↩️ Скасувати публікацію",
+                callback_data: signTelegramCallback({
+                  action: "unpublish",
+                  draftId,
+                  commitSha: draft?.reviewedCommitSha || "head",
+                  secret: callbackSecret,
+                }),
+              },
+            ],
+          ],
+        }
+      : undefined;
+
+    return users.map((chatId) => ({
+      chat_id: chatId,
+      parse_mode: "Markdown",
+      disable_web_page_preview: false,
+      text,
+      ...(replyMarkup ? { reply_markup: replyMarkup } : {}),
+    }));
   } else if (outcome === "rejected") {
     text = [
       `🛑 *Публікацію скасовано*`,
@@ -1273,5 +1425,35 @@ export function prepareIsolatedPullRequestSpec({ draft }) {
     ].join("\n"),
     requiresOwnerMergeApproval: true,
     autoMerge: false,
+  };
+}
+
+export function prepareUnpublishPullRequestSpec({ draft, targetFilePath, initiatedBy }) {
+  const filePath = targetFilePath || draft?.filePath;
+  const slug = draft?.slug || (filePath ? filePath.split("/").pop().replace(/\.md$/, "") : "article");
+  const branchName = `rollback/unpublish-${slug}`;
+  const title = draft?.title || slug;
+  return {
+    baseBranch: "main",
+    headBranch: branchName,
+    filePath,
+    targetArticleSlug: slug,
+    isDraft: false,
+    commitMessage: `fix(blog): unpublish ${title} [automated undo]`,
+    prTitle: `fix(blog): unpublish ${title}`,
+    prBody: [
+      `## Відкликання публікації статті / Automated Article Unpublish`,
+      ``,
+      `- **Проєкт / Project:** ${draft?.projectName || "HomeLabCore"}`,
+      `- **Заголовок / Title:** ${title}`,
+      `- **Цільовий файл для видалення / Target File:** \`${filePath}\``,
+      `- **Ініціатор відкликання / Initiated By:** ${initiatedBy || "Authorized Family Member"}`,
+      `- **Вихідна подія / Source Event:** \`${draft?.sourceEventId || "N/A"}\``,
+      ``,
+      `### Аудит та можливість відновлення / Audit & Restoration`,
+      `- Даний PR видаляє виключно зазначений файл статті, не зачіпаючи інший вміст сайту.`,
+      `- Історія та вміст збережені в історії комітів Git для можливості відновлення за потреби.`,
+      `- Злиття виконується автоматично після успішного проходження CI тестів та деплою.`,
+    ].join("\n"),
   };
 }

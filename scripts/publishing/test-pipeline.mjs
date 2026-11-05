@@ -22,6 +22,7 @@ import {
   generateArticleDraft,
   isDuplicateEvent,
   prepareIsolatedPullRequestSpec,
+  prepareUnpublishPullRequestSpec,
   processSpouseEnrollmentRequest,
   validateMergeReadiness,
   verifyGitHubSignature,
@@ -146,7 +147,7 @@ const opsPlannerMilestone = classifyGitHubEvent({
       number: 2,
       title: "Ops Planner 1.3: Multi-Standard Clause Cross-Walk [publish]",
       description: "[publish] Added cross-walk mapping between ISO 9001 and IATF 16949 clauses.\n- Clause comparison table\n- Action item export",
-      closed_at: "2026-11-05T15:00:00Z",
+      closed_at: new Date().toISOString(),
       html_url: "https://github.com/HomeLab-NL/ops-planner/milestone/2",
     },
   },
@@ -154,6 +155,40 @@ const opsPlannerMilestone = classifyGitHubEvent({
 assert.equal(opsPlannerMilestone.eligible, true);
 assert.equal(opsPlannerMilestone.project?.id, "ops-planner");
 assert.equal(opsPlannerMilestone.sourceEventId, "HomeLab-NL/ops-planner#milestone:2");
+
+// Reject stale milestone closed more than 14 days ago
+const staleMilestone = classifyGitHubEvent({
+  eventType: "milestone",
+  payload: {
+    action: "closed",
+    repository: { full_name: "HomeLab-NL/ops-planner" },
+    milestone: {
+      number: 99,
+      title: "Old refactoring [publish]",
+      description: "[publish] Old changes.\n- item 1\n- item 2",
+      closed_at: "2025-01-01T00:00:00Z",
+    },
+  },
+});
+assert.equal(staleMilestone.eligible, false);
+assert.ok(staleMilestone.reason.includes("older than 14 days"));
+
+// Reject low-information milestone lacking verified user-facing changes
+const lowInfoMilestone = classifyGitHubEvent({
+  eventType: "milestone",
+  payload: {
+    action: "closed",
+    repository: { full_name: "HomeLab-NL/ops-planner" },
+    milestone: {
+      number: 100,
+      title: "Cleanup [publish]",
+      description: "[publish] done",
+      closed_at: new Date().toISOString(),
+    },
+  },
+});
+assert.equal(lowInfoMilestone.eligible, false);
+assert.ok(lowInfoMilestone.reason.includes("too brief"));
 console.log("✓ 3. Multi-repo event classification passed (releases & [publish] milestones accepted; RCs, routine pushes, and self-PRs ignored)");
 
 // 4. Duplicate prevention check against src/content/blog/ and in-memory state
@@ -208,6 +243,7 @@ assert.equal(uaNotifications.length, 2, "Must generate approval notifications fo
 for (const msg of uaNotifications) {
   assert.ok(msg.text.includes("*Проєкт:* KeyQuest"), "Must include project name in Ukrainian");
   assert.ok(msg.text.includes(`*Заголовок:* ${draft.title}`), "Must include publication title");
+  assert.ok(msg.text.includes("*Дата події:*"), "Must include source event date");
   assert.ok(msg.text.includes("*Короткий зміст:*") || msg.text.includes("*Короткий опис:*"), "Must include 2-3 sentence Ukrainian summary");
   assert.ok(msg.text.includes(draftPrUrl), "Must include direct link to the GitHub Draft PR");
   // Must NOT contain technical metadata (branch names, file paths, event IDs, commit SHAs)
@@ -507,4 +543,118 @@ const finalFallbackMsgs = buildUkrainianFinalNotification({
 assert.equal(finalFallbackMsgs.length, 2);
 assert.ok(finalFallbackMsgs[0].text.includes(draftPrUrl));
 assert.ok(finalFallbackMsgs[0].text.includes("Автоматичне злиття призупинено"));
-console.log("✓ 10. Final Ukrainian notifications verified (working live article URL + fallback PR URL)");
+// 11. Telegram Undo / Unpublish workflow (idempotency, confirmation prompt, authorized user lock)
+const finalPublishedMsgs = buildUkrainianFinalNotification({
+  outcome: "published",
+  projectName: "KeyQuest",
+  title: draft.title,
+  slug: draft.slug,
+  draftPrUrl,
+  authorizedUsers: enrollmentState.authorizedUsers,
+  callbackSecret: TG_CALLBACK_SECRET,
+});
+assert.ok(finalPublishedMsgs[0].reply_markup?.inline_keyboard?.length > 0, "Must provide Unpublish action button");
+const unpublishCbData = finalPublishedMsgs[0].reply_markup.inline_keyboard[0][0].callback_data;
+assert.ok(unpublishCbData.startsWith("u|u|"), "Unpublish callback must start with u|u|");
+
+// Step 1 of Unpublish: Triggering unpublish sends a second confirmation prompt
+const unpublishPrompt = verifyTelegramApproval({
+  update: {
+    update_id: 950001,
+    callback_query: {
+      id: "cbq-unpub-1",
+      from: { id: Number(OWNER_USER_ID) },
+      message: {
+        message_id: 301,
+        from: { id: 8967925790, username: "Home_Lab_info_bot" },
+        chat: { id: Number(OWNER_USER_ID), type: "private" },
+      },
+      data: unpublishCbData,
+    },
+  },
+  secretTokenHeader: TG_WEBHOOK_SECRET,
+  expectedWebhookSecret: TG_WEBHOOK_SECRET,
+  authorizedUsers: enrollmentState.authorizedUsers,
+  callbackSecret: TG_CALLBACK_SECRET,
+});
+assert.equal(unpublishPrompt.authorized, true);
+assert.equal(unpublishPrompt.decision, "unpublish_prompt");
+assert.ok(unpublishPrompt.confirmationPrompt.reply_markup.inline_keyboard[0][0].text.includes("Так, видалити"));
+const confirmUnpublishCbData = unpublishPrompt.confirmationPrompt.reply_markup.inline_keyboard[0][0].callback_data;
+assert.ok(confirmUnpublishCbData.startsWith("u|cu|"));
+
+// Step 2: Confirming unpublish executes removal and transitions draft state
+const pendingUnpublishDrafts = {
+  [draft.draftId]: {
+    slug: draft.slug,
+    filePath: draft.filePath,
+    reviewedCommitSha,
+    status: "merged",
+    unpublishStatus: "none",
+  },
+};
+
+const confirmedUnpublish = verifyTelegramApproval({
+  update: {
+    update_id: 950002,
+    callback_query: {
+      id: "cbq-unpub-2",
+      from: { id: Number(OWNER_USER_ID) },
+      message: {
+        message_id: 302,
+        from: { id: 8967925790, username: "Home_Lab_info_bot" },
+        chat: { id: Number(OWNER_USER_ID), type: "private" },
+      },
+      data: confirmUnpublishCbData,
+    },
+  },
+  secretTokenHeader: TG_WEBHOOK_SECRET,
+  expectedWebhookSecret: TG_WEBHOOK_SECRET,
+  authorizedUsers: enrollmentState.authorizedUsers,
+  callbackSecret: TG_CALLBACK_SECRET,
+  pendingDrafts: pendingUnpublishDrafts,
+});
+assert.equal(confirmedUnpublish.authorized, true);
+assert.equal(confirmedUnpublish.decision, "unpublish_confirmed");
+assert.equal(confirmedUnpublish.filePath, draft.filePath);
+assert.equal(pendingUnpublishDrafts[draft.draftId].unpublishStatus, "in_progress");
+
+// Step 3: Idempotent replay of confirmation must be safely rejected
+const replayedUnpublish = verifyTelegramApproval({
+  update: {
+    update_id: 950003,
+    callback_query: {
+      id: "cbq-unpub-3",
+      from: { id: Number(OWNER_USER_ID) },
+      message: {
+        message_id: 302,
+        from: { id: 8967925790, username: "Home_Lab_info_bot" },
+        chat: { id: Number(OWNER_USER_ID), type: "private" },
+      },
+      data: confirmUnpublishCbData,
+    },
+  },
+  secretTokenHeader: TG_WEBHOOK_SECRET,
+  expectedWebhookSecret: TG_WEBHOOK_SECRET,
+  authorizedUsers: enrollmentState.authorizedUsers,
+  callbackSecret: TG_CALLBACK_SECRET,
+  pendingDrafts: pendingUnpublishDrafts,
+});
+assert.equal(replayedUnpublish.authorized, false);
+assert.equal(replayedUnpublish.idempotent, true);
+
+// Verify isolated unpublish PR specification targets exact article
+const unpublishPrSpec = prepareUnpublishPullRequestSpec({
+  draft,
+  targetFilePath: draft.filePath,
+  initiatedBy: "Serhii (Owner)",
+});
+assert.equal(unpublishPrSpec.baseBranch, "main");
+assert.equal(unpublishPrSpec.headBranch, `rollback/unpublish-${draft.slug}`);
+assert.equal(unpublishPrSpec.filePath, draft.filePath);
+assert.equal(unpublishPrSpec.isDraft, false);
+assert.ok(unpublishPrSpec.prTitle.includes(`unpublish ${draft.title}`));
+assert.ok(unpublishPrSpec.prBody.includes(draft.filePath));
+assert.ok(unpublishPrSpec.prBody.includes("Аудит та можливість відновлення"));
+
+console.log("✓ 11. Safe 2-step Undo / Unpublish verified (authorized users, confirmation prompt, exact article target, idempotency)");
