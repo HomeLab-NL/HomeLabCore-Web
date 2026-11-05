@@ -4,9 +4,15 @@ Read **[AGENTS.md](./AGENTS.md)** first for shared repository rules, schemas, va
 
 ---
 
-## 1. Standard Ad-Hoc Workflow (Zero-Conflict Git Flow)
+## 1. Standard Ad-Hoc Workflow (Zero n8n Dependency)
 
-GitHub (`HomeLab-NL/HomeLabCore-Web`) is the single source of truth. Never edit `main` directly and never rely on unpushed local branches.
+Ordinary manual website updates use a direct GitHub workflow with **no n8n or Telegram bot dependency**:
+
+```
+Owner request → Claude Code → GitHub (branch & PR) → GitHub Actions CI → Cloudflare Pages
+```
+
+GitHub (`HomeLab-NL/HomeLabCore-Web`) is the single source of truth. Never edit `main` directly and never rely on unpushed local branches. Even if the n8n autonomous publishing workflow is paused or offline, ad-hoc updates through Claude Code work identically.
 
 ```bash
 # 1. Fetch latest remote state and prune merged branches
@@ -24,14 +30,18 @@ npm ci
 npm run og
 npm run check && npm run build && npm test && npm run test:publishing
 
-# 5. Commit, push branch, and open a Pull Request (merge only after CI checks pass and zero conflicts remain)
+# 5. Commit, push branch, and open a Pull Request
 git add -A
 git commit -m "content(<scope>): <concise description>"
 git push -u origin claude/<short-task-name>
 gh pr create --base main --head claude/<short-task-name> --fill
+
+# 6. Wait for CI (build-and-test, verify, Cloudflare Pages preview) to pass, then merge & verify live site
+gh pr checks --watch
+gh pr merge --squash --delete-branch
 ```
 
-After the PR is reviewed and merged on GitHub, clean up the worktree:
+After the PR is merged on GitHub and Cloudflare Pages deploys `main` to `https://homelabcore.dev`, clean up the worktree:
 
 ```bash
 cd /path/to/HomeLabCore-Web
