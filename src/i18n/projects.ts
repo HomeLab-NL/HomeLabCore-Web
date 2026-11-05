@@ -27,17 +27,16 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
       platformStatus: [
         {
           platform: "Android",
-          status: "Gesloten test afgerond · Google Play-productietoegang goedgekeurd; publieke release nog niet bevestigd",
-          version: "0.12.0+141 RC",
+          status: "Live · Beschikbaar op Google Play",
+          version: "0.12.0",
         },
         {
           platform: "iOS",
-          status: "TestFlight-MVP voorbereid in concept-PR; build, upload en testen nog niet bevestigd",
+          status: "In testfase",
         },
       ],
       missing: [
-        "Bevestiging van de publieke Google Play-release en winkellink",
-        "Bevestigde iOS-build, upload en TestFlight-test",
+        "Publieke release in de iOS App Store",
       ],
       hero: { caption: "CookFrom — Android-bèta", alt: "CookFrom: actuele app-schermen. Echte Android-bèta · 0.11.78." },
       cover: {
@@ -197,17 +196,16 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
       platformStatus: [
         {
           platform: "Android",
-          status: "Закрите тестування завершено · виробничий доступ у Google Play схвалено; публічний реліз ще не підтверджено",
-          version: "0.12.0+141 RC",
+          status: "Доступно · Опубліковано в Google Play",
+          version: "0.12.0",
         },
         {
           platform: "iOS",
-          status: "TestFlight MVP підготовлено в чернетці PR; збірку, завантаження й тестування ще не підтверджено",
+          status: "На тестуванні",
         },
       ],
       missing: [
-        "Підтвердження публічного релізу в Google Play і посилання на магазин",
-        "Підтверджені збірка, завантаження й тестування iOS у TestFlight",
+        "Публічний реліз у iOS App Store",
       ],
       hero: { caption: "CookFrom — бета-версія для Android", alt: "CookFrom: актуальні екрани застосунку. Справжня бета-версія для Android · 0.11.78." },
       cover: {
@@ -364,6 +362,7 @@ export const PROJECT_TEXT: Record<"nl" | "uk", Record<string, ProjectText>> = {
 /** Dutch and Ukrainian titles for the entries in src/content/updates.json. */
 export const UPDATE_TEXT: Record<"nl" | "uk", Record<string, string>> = {
   nl: {
+    "2026-11-05-cookfrom-google-play": "CookFrom voor Android is nu beschikbaar op Google Play (v0.12.0); de iOS-versie is in testfase.",
     "2026-11-04-portfolio-refresh": "KeyQuest live-webversie gepubliceerd, Homework Tutor Smart Notebook-ontwerp toegevoegd en CookFrom platformstatus voor Android en iOS bijgewerkt.",
     "2026-10-04-mountains-concept-art": "Concept art toegevoegd voor At the Mountains of Madness, die de beoogde beeldstijl vastlegt.",
     "2026-10-03-project-visuals": "Echte app-schermen toegevoegd voor CookFrom, Ops Planner, AI Tutor en Keyboard Trainer, en architectuurdiagrammen voor AgentLab.",
@@ -372,6 +371,7 @@ export const UPDATE_TEXT: Record<"nl" | "uk", Record<string, string>> = {
     "2026-09-01-cookfrom": "Productpagina, privacybeleid en supportpagina van CookFrom gepubliceerd.",
   },
   uk: {
+    "2026-11-05-cookfrom-google-play": "CookFrom для Android опубліковано в Google Play (v0.12.0); версія для iOS перебуває на тестуванні.",
     "2026-11-04-portfolio-refresh": "Опубліковано живу веб-версію KeyQuest, додано дизайн «Розумний Зошит» для Homework Tutor та оновлено статус платформ Android та iOS для CookFrom.",
     "2026-10-04-mountains-concept-art": "Додано концепт-арт для At the Mountains of Madness, який задає візуальний стиль гри.",
     "2026-10-03-project-visuals": "Додано справжні екрани CookFrom, Ops Planner, AI Tutor і Keyboard Trainer, а також архітектурні схеми AgentLab.",
