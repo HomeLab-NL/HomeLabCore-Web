@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { getCollection } from "astro:content";
 import { SITE_URL } from "../data/site";
+import { getBlogPosts } from "../lib/blog";
 
 const escapeXml = (s: string): string =>
   s
@@ -11,13 +11,11 @@ const escapeXml = (s: string): string =>
     .replace(/'/g, "&apos;");
 
 export const GET: APIRoute = async () => {
-  const posts = (await getCollection("blog", (b) => !b.data.draft)).sort(
-    (a, b) => b.data.published.getTime() - a.data.published.getTime(),
-  );
+  const posts = await getBlogPosts("en");
 
   const items = posts
-    .map((post) => {
-      const url = `${SITE_URL}/blog/${post.id}/`;
+    .map(({ post, slug }) => {
+      const url = `${SITE_URL}/blog/${slug}/`;
       return [
         "    <item>",
         `      <title>${escapeXml(post.data.title)}</title>`,

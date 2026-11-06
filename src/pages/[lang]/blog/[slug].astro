@@ -1,0 +1,30 @@
+---
+import type { GetStaticPaths } from "astro";
+import BlogPostPage from "../../../components/BlogPostPage.astro";
+import { TRANSLATED_LOCALES, type Locale } from "../../../i18n/locales";
+import { getBlogPosts, type BlogPost } from "../../../lib/blog";
+
+export const getStaticPaths = (async () => {
+  const paths: { params: { lang: Locale; slug: string }; props: { entry: BlogPost; slug: string; lang: Locale } }[] = [];
+  for (const lang of TRANSLATED_LOCALES) {
+    const posts = await getBlogPosts(lang);
+    for (const { post, slug } of posts) {
+      paths.push({
+        params: { lang, slug },
+        props: { entry: post, slug, lang },
+      });
+    }
+  }
+  return paths;
+}) satisfies GetStaticPaths;
+
+interface Props {
+  entry: BlogPost;
+  slug: string;
+  lang: Locale;
+}
+
+const { entry, slug, lang } = Astro.props;
+---
+<BlogPostPage entry={entry} slug={slug} lang={lang} />
+

@@ -20,7 +20,7 @@
     "og": "node scripts/og/render-og.mjs",
     "build:css": "esbuild dist/assets/css/styles.css --minify --outfile=dist/assets/css/styles.css --allow-overwrite --log-level=warning",
     "test:headers": "node scripts/check-headers.mjs",
-    "test:publishing": "node scripts/publishing/test-pipeline.mjs"
+    "test:publishing": "node scripts/publishing/test-pipeline.mjs && node scripts/publishing/verify-unpublish-e2e.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

@@ -5,7 +5,7 @@ import { ROUTES, type RouteKey } from "../data/routes";
 import { SITE_URL, THEME_STORAGE_KEY, type NavKey } from "../data/site";
 import { accentCss, allProjects } from "../lib/projects";
 import { socialImage } from "../lib/social";
-import { LOCALES, LOCALE_INFO, TRANSLATED_PATHS, localizedPath, type Locale } from "../i18n/locales";
+import { LOCALES, LOCALE_INFO, isTranslatedPath, localizedPath, type Locale } from "../i18n/locales";
 import { ui } from "../i18n/ui";
 
 interface Props {
@@ -43,7 +43,7 @@ const { path: routePath, indexed } = ROUTES[route];
 const path = pathOverride ?? routePath;
 const url = SITE_URL + localizedPath(path, lang);
 // Translated pages list every language version (and English as the default).
-const alternates = indexed && TRANSLATED_PATHS.has(path)
+const alternates = indexed && isTranslatedPath(path)
   ? [...LOCALES.map((l) => ({ hreflang: LOCALE_INFO[l].hreflang, href: SITE_URL + localizedPath(path, l) })), { hreflang: "x-default", href: SITE_URL + path }]
   : [];
 const accents = accentCss(await allProjects());

@@ -1,9 +1,10 @@
 ---
-import { getCollection, getEntry } from "astro:content";
+import { getEntry } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHead from "../components/SectionHead.astro";
-import { type Locale } from "../i18n/locales";
+import { localizedPath, type Locale } from "../i18n/locales";
 import { formatDate, isoDate, localizeProject } from "../lib/projects";
+import { getBlogPosts } from "../lib/blog";
 
 interface Props {
   lang: Locale;
@@ -17,7 +18,7 @@ const COPY = {
     og: "Technical blog, release notes, and development log by HomeLabCore.",
     label: "Blog & devlog",
     h1: "Technical blog & devlog",
-    intro: "Verified release notes, engineering milestones, and development updates across HomeLabCore projects. Articles are published in English.",
+    intro: "Verified release notes, engineering milestones, and development updates across HomeLabCore projects.",
     rssLabel: "RSS feed",
     readArticle: "Read article",
     cat: {
@@ -33,9 +34,9 @@ const COPY = {
     og: "Technisch blog, releasenotes en ontwikkeljournaal van HomeLabCore.",
     label: "Blog & devlog",
     h1: "Technisch blog & devlog",
-    intro: "Geverifieerde releasenotes, technische mijlpalen en ontwikkelupdates van HomeLabCore-projecten. Artikelen worden in het Engels gepubliceerd.",
+    intro: "Geverifieerde releasenotes, technische mijlpalen en ontwikkelupdates van HomeLabCore-projecten.",
     rssLabel: "RSS-feed",
-    readArticle: "Artikel lezen (Engels)",
+    readArticle: "Artikel lezen",
     cat: {
       release: "Release",
       devlog: "Devlog",
@@ -49,9 +50,9 @@ const COPY = {
     og: "Технічний блог, нотатки про релізи та журнал розробки HomeLabCore.",
     label: "Блог і девлог",
     h1: "Технічний блог і девлог",
-    intro: "Підтверджені нотатки про релізи, інженерні етапи та оновлення розробки проєктів HomeLabCore. Статті публікуються англійською мовою.",
+    intro: "Підтверджені нотатки про релізи, інженерні етапи та оновлення розробки проєктів HomeLabCore.",
     rssLabel: "RSS-стрічка",
-    readArticle: "Читати статтю (англійською)",
+    readArticle: "Читати статтю",
     cat: {
       release: "Реліз",
       devlog: "Девлог",
@@ -61,16 +62,14 @@ const COPY = {
   },
 }[lang];
 
-const posts = (await getCollection("blog", (b) => !b.data.draft)).sort(
-  (a, b) => b.data.published.getTime() - a.data.published.getTime(),
-);
+const blogEntries = await getBlogPosts(lang);
 const items = await Promise.all(
-  posts.map(async (post) => {
+  blogEntries.map(async ({ post, slug }) => {
     const proj = post.data.project ? localizeProject((await getEntry(post.data.project))!, lang) : undefined;
-    return { post, proj };
+    const postUrl = localizedPath(`/blog/${slug}/`, lang);
+    return { post, proj, slug, postUrl };
   }),
 );
-const enAttr = lang !== "en" ? "en" : undefined;
 ---
 <BaseLayout
   route="blog"
@@ -87,7 +86,7 @@ const enAttr = lang !== "en" ? "en" : undefined;
       </SectionHead>
 
       <div class="card-grid card-grid--2">
-        {items.map(({ post, proj }) => (
+        {items.map(({ post, proj, postUrl }) => (
           <article class="panel" data-project={proj?.id}>
             <p class="meta">
               <time datetime={isoDate(post.data.published)}>{formatDate(post.data.published)}</time>
@@ -107,11 +106,11 @@ const enAttr = lang !== "en" ? "en" : undefined;
               )}
             </p>
             <h2>
-              <a href={`/blog/${post.id}/`} hreflang={enAttr}>{post.data.title}</a>
+              <a href={postUrl}>{post.data.title}</a>
             </h2>
             <p class="muted">{post.data.description}</p>
             <p class="small">
-              <a href={`/blog/${post.id}/`} hreflang={enAttr}>{COPY.readArticle} <span aria-hidden="true">→</span></a>
+              <a href={postUrl}>{COPY.readArticle} <span aria-hidden="true">→</span></a>
             </p>
           </article>
         ))}

@@ -164,7 +164,7 @@ const benchmarks = defineCollection({
 // Technical blog & development log (release notes, devlogs, architecture notes,
 // and automated milestone publications).
 const blog = defineCollection({
-  loader: glob({ pattern: "*.{md,mdx}", base: "./src/content/blog" }),
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/blog" }),
   schema: z.object({
     /** Max 56 chars so `${title} — HomeLabCore` stays <= 70 chars for html-validate long-title. */
     title: z.string().min(1).max(56),
@@ -180,6 +180,7 @@ const blog = defineCollection({
     sourceEventId: z.string().optional(),
     sourceUrl: z.string().optional(),
     draft: z.boolean().default(false),
+    lang: z.enum(["en", "nl", "uk"]).default("en"),
   }),
 });
 

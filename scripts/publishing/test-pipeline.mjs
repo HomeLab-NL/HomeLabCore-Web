@@ -12,6 +12,7 @@ import {
   PROJECT_REPO_MAP,
   SecurityPolicyError,
   assertNoSensitiveData,
+  assertTrilingualPublicationCompleteness,
   buildHomeLabInfoWebhookSpec,
   buildTelegramApprovalRequest,
   buildTelegramCallbackResponse,
@@ -212,19 +213,45 @@ assert.equal(
 );
 console.log("✓ 4. Cross-repository duplicate publication prevention verified");
 
-// 5. AI draft generation & Draft PR specification (isDraft: true)
+// 5. Trilingual article draft generation (EN/UK/NL), shared publication ID, and Draft PR specification (isDraft: true)
 const draft = generateArticleDraft(classifiedRelease);
 assert.ok(draft.description.length >= 50 && draft.description.length <= 230, "Draft description must be 50-230 chars");
 assert.ok(draft.summaryUa && draft.summaryUa.length >= 40, "Draft must include a concise 2-3 sentence Ukrainian summary");
 assert.ok(draft.markdown.includes('project: "keyboard-trainer"'));
 assert.ok(draft.markdown.includes('sourceEventId: "homelabnl-alt/KeyQuest#release:v1.1.0"'));
 
+// Verify Trilingual variants share exact publication ID (slug)
+assert.equal(draft.filePath, `src/content/blog/${draft.slug}.md`);
+assert.equal(draft.filePathUk, `src/content/blog/uk/${draft.slug}.md`);
+assert.equal(draft.filePathNl, `src/content/blog/nl/${draft.slug}.md`);
+assert.ok(draft.markdownUk.includes('lang: "uk"'), "Ukrainian markdown must have lang: 'uk'");
+assert.ok(draft.markdownUk.includes("## Підтверджені зміни"), "Ukrainian markdown must have localized header");
+assert.ok(draft.markdownNl.includes('lang: "nl"'), "Dutch markdown must have lang: 'nl'");
+assert.ok(draft.markdownNl.includes("## Geverifieerde wijzigingen"), "Dutch markdown must have localized header");
+assert.ok(assertTrilingualPublicationCompleteness(draft), "Trilingual completeness validation must pass");
+
+// Guard: prevent partial publication if a translation is missing
+assert.throws(
+  () => assertTrilingualPublicationCompleteness({ ...draft, markdownUk: "" }),
+  /Missing or empty markdown content for UK translation/,
+  "Must block publication if Ukrainian translation is missing",
+);
+assert.throws(
+  () => assertTrilingualPublicationCompleteness({ ...draft, markdownNl: "" }),
+  /Missing or empty markdown content for NL translation/,
+  "Must block publication if Dutch translation is missing",
+);
+
 const draftPrSpec = prepareIsolatedPullRequestSpec({ draft, isDraft: true });
 assert.equal(draftPrSpec.baseBranch, "main");
 assert.ok(draftPrSpec.headBranch.startsWith("auton-pub/"));
 assert.equal(draftPrSpec.isDraft, true, "PR must be created as a GitHub Draft PR first");
 assert.equal(draftPrSpec.autoMerge, false);
-console.log("✓ 5. English article draft & GitHub Draft PR specification (isDraft: true) verified");
+assert.equal(draftPrSpec.files.length, 3, "Draft PR must bundle all three language variants (EN, UK, NL)");
+assert.equal(draftPrSpec.files[0].lang, "en");
+assert.equal(draftPrSpec.files[1].lang, "uk");
+assert.equal(draftPrSpec.files[2].lang, "nl");
+console.log("✓ 5. Trilingual article draft (EN/UK/NL), shared publication ID, and GitHub Draft PR specification verified");
 
 // 6. Ukrainian Telegram approval messages (zero technical metadata, sent to both authorized family members)
 const draftPrUrl = "https://github.com/HomeLab-NL/HomeLabCore-Web/pull/25";
@@ -617,6 +644,10 @@ const confirmedUnpublish = verifyTelegramApproval({
 assert.equal(confirmedUnpublish.authorized, true);
 assert.equal(confirmedUnpublish.decision, "unpublish_confirmed");
 assert.equal(confirmedUnpublish.filePath, draft.filePath);
+assert.equal(confirmedUnpublish.targetFiles.length, 3);
+assert.equal(confirmedUnpublish.targetFiles[0], `src/content/blog/${draft.slug}.md`);
+assert.equal(confirmedUnpublish.targetFiles[1], `src/content/blog/uk/${draft.slug}.md`);
+assert.equal(confirmedUnpublish.targetFiles[2], `src/content/blog/nl/${draft.slug}.md`);
 assert.equal(pendingUnpublishDrafts[draft.draftId].unpublishStatus, "in_progress");
 
 // Step 3: Idempotent replay of confirmation must be safely rejected
@@ -643,7 +674,7 @@ const replayedUnpublish = verifyTelegramApproval({
 assert.equal(replayedUnpublish.authorized, false);
 assert.equal(replayedUnpublish.idempotent, true);
 
-// Verify isolated unpublish PR specification targets exact article
+// Verify isolated unpublish PR specification targets exact article across all three languages
 const unpublishPrSpec = prepareUnpublishPullRequestSpec({
   draft,
   targetFilePath: draft.filePath,
@@ -652,9 +683,15 @@ const unpublishPrSpec = prepareUnpublishPullRequestSpec({
 assert.equal(unpublishPrSpec.baseBranch, "main");
 assert.equal(unpublishPrSpec.headBranch, `rollback/unpublish-${draft.slug}`);
 assert.equal(unpublishPrSpec.filePath, draft.filePath);
+assert.equal(unpublishPrSpec.targetFiles.length, 3);
+assert.equal(unpublishPrSpec.targetFiles[0], `src/content/blog/${draft.slug}.md`);
+assert.equal(unpublishPrSpec.targetFiles[1], `src/content/blog/uk/${draft.slug}.md`);
+assert.equal(unpublishPrSpec.targetFiles[2], `src/content/blog/nl/${draft.slug}.md`);
 assert.equal(unpublishPrSpec.isDraft, false);
 assert.ok(unpublishPrSpec.prTitle.includes(`unpublish ${draft.title}`));
 assert.ok(unpublishPrSpec.prBody.includes(draft.filePath));
+assert.ok(unpublishPrSpec.prBody.includes(`src/content/blog/uk/${draft.slug}.md`));
+assert.ok(unpublishPrSpec.prBody.includes(`src/content/blog/nl/${draft.slug}.md`));
 assert.ok(unpublishPrSpec.prBody.includes("Аудит та можливість відновлення"));
 
 console.log("✓ 11. Safe 2-step Undo / Unpublish verified (authorized users, confirmation prompt, exact article target, idempotency)");

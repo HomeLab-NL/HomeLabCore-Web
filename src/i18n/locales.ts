@@ -28,6 +28,13 @@ export const TRANSLATED_PATHS = new Set([
   "/about",
 ]);
 
+/** Whether an English path exists in Dutch and Ukrainian. */
+export function isTranslatedPath(path: string): boolean {
+  if (TRANSLATED_PATHS.has(path)) return true;
+  if (path.startsWith("/blog/") && path.length > "/blog/".length) return true;
+  return false;
+}
+
 /** The URL of an English page in another language (always with a trailing slash). */
 export function localizedPath(path: string, lang: Locale): string {
   if (lang === "en") return path;
@@ -36,5 +43,5 @@ export function localizedPath(path: string, lang: Locale): string {
 
 /** Link target for an internal English path: the translation if one exists, else the English page. */
 export function href(path: string, lang: Locale): string {
-  return TRANSLATED_PATHS.has(path) ? localizedPath(path, lang) : path;
+  return isTranslatedPath(path) ? localizedPath(path, lang) : path;
 }
