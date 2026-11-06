@@ -66,6 +66,19 @@ const en = {
     featuresTitle: (name: string) => `What ${name} includes`,
     contextTitle: "Background & context",
   },
+  blog: {
+    back: "← Blog & devlog",
+    tags: "Article tags",
+    relatedProject: "Related project:",
+    openLive: "Open live app",
+    readArticle: "Read article",
+    categories: {
+      release: "Release",
+      devlog: "Devlog",
+      architecture: "Architecture",
+      milestone: "Milestone",
+    },
+  },
 };
 
 export type UI = typeof en;
@@ -134,6 +147,19 @@ const nl: UI = {
     featuresTitle: (name) => `Wat ${name} biedt`,
     contextTitle: "Achtergrond & context",
   },
+  blog: {
+    back: "← Blog & devlog",
+    tags: "Artikeltags",
+    relatedProject: "Gerelateerd project:",
+    openLive: "Live-app openen",
+    readArticle: "Artikel lezen",
+    categories: {
+      release: "Release",
+      devlog: "Devlog",
+      architecture: "Architectuur",
+      milestone: "Mijlpaal",
+    },
+  },
 };
 
 const uk: UI = {
@@ -199,6 +225,19 @@ const uk: UI = {
     featuresLabel: "Можливості",
     featuresTitle: (name) => `Що включає ${name}`,
     contextTitle: "Контекст і передісторія",
+  },
+  blog: {
+    back: "← Блог і девлог",
+    tags: "Теги статті",
+    relatedProject: "Пов’язаний проєкт:",
+    openLive: "Відкрити застосунок",
+    readArticle: "Читати статтю",
+    categories: {
+      release: "Реліз",
+      devlog: "Девлог",
+      architecture: "Архітектура",
+      milestone: "Етап",
+    },
   },
 };
 

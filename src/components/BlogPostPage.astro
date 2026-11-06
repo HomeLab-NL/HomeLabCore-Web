@@ -1,0 +1,79 @@
+---
+import { getEntry, render } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { href, type Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+import { formatDate, isoDate, localizeProject } from "../lib/projects";
+import type { BlogPost } from "../lib/blog";
+
+interface Props {
+  entry: BlogPost;
+  slug: string;
+  lang?: Locale;
+}
+
+const { entry, slug, lang = "en" } = Astro.props;
+const { Content } = await render(entry);
+const rawProject = entry.data.project ? await getEntry(entry.data.project) : undefined;
+const project = rawProject ? localizeProject(rawProject, lang) : undefined;
+const articlePath = `/blog/${slug}/`;
+const t = ui(lang);
+---
+<BaseLayout
+  route="blog"
+  pathOverride={articlePath}
+  title={`${entry.data.title} — HomeLabCore`}
+  description={entry.data.description}
+  ogType="article"
+  project={project?.id}
+  navSection="blog"
+  lang={lang}
+>
+  <article class="section">
+    <div class="container measure">
+      <p class="meta">
+        <a href={href("/blog/", lang)}>{t.blog.back}</a>
+        {" · "}
+        <time datetime={isoDate(entry.data.published)}>{formatDate(entry.data.published)}</time>
+        {" · "}
+        <span class="badge">{t.blog.categories[entry.data.category]}</span>
+        {project && (
+          <>
+            {" · "}
+            <a href={href(project.data.urls.overview, lang)}>{project.data.name}</a>
+          </>
+        )}
+        {entry.data.version && (
+          <>
+            {" · "}
+            <span>{entry.data.version}</span>
+          </>
+        )}
+      </p>
+      <h1>{entry.data.title}</h1>
+      <p class="lead">{entry.data.description}</p>
+      {entry.data.tags.length > 0 && (
+        <ul class="tag-list" aria-label={t.blog.tags}>
+          {entry.data.tags.map((tag) => <li>{tag}</li>)}
+        </ul>
+      )}
+      <div class="prose">
+        <Content />
+      </div>
+      {project && (
+        <div class="panel panel--note">
+          <p class="small">
+            {t.blog.relatedProject} <a href={href(project.data.urls.overview, lang)}>{project.data.name}</a>
+            {project.data.urls.live && (
+              <>
+                {" · "}
+                <a href={project.data.urls.live} rel="noopener noreferrer">{t.blog.openLive}</a>
+              </>
+            )}
+          </p>
+        </div>
+      )}
+    </div>
+  </article>
+</BaseLayout>
+

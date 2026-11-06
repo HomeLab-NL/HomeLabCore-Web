@@ -378,6 +378,84 @@ function slugify(input) {
     .slice(0, 56);
 }
 
+function localizeReleaseText(text, targetLang) {
+  if (!text || typeof text !== "string") return text;
+  if (targetLang === "uk") {
+    return text
+      .replace(/Live Web Deployment & Features/gi, "онлайн-реліз та можливості")
+      .replace(/Android Launch & iOS Testing/gi, "реліз на Android та тест iOS")
+      .replace(/Release Candidate & iOS Prep/gi, "Android RC та підготовка iOS")
+      .replace(/Smart Notebook UI & Identity/gi, "інтерфейс Smart Notebook")
+      .replace(/Verified release update/gi, "Підтверджене оновлення релізу")
+      .replace(/Verified milestone update/gi, "Підтверджений етап розробки")
+      .replace(/Verified devlog update/gi, "Підтверджений запис журналу розробки")
+      .replace(/Released to Google Play production/gi, "Випущено в робочу версію Google Play")
+      .replace(/Released to Google Play/gi, "Випущено в Google Play")
+      .replace(/Currently in testing/gi, "Наразі проходить тестування")
+      .replace(/Closed testing is complete/gi, "Закрите тестування завершено")
+      .replace(/production access approved/gi, "доступ до публікації схвалено")
+      .replace(/Get ([a-zA-Z0-9_-]+) on Google Play/gi, "Завантажити $1 у Google Play")
+      .replace(/visit the ([a-zA-Z0-9_-]+) product page/gi, "відвідати сторінку продукту $1")
+      .replace(/Source reference/gi, "Джерело інформації")
+      .replace(/Verified changes/gi, "Підтверджені зміни");
+  }
+  if (targetLang === "nl") {
+    return text
+      .replace(/Live Web Deployment & Features/gi, "live webimplementatie & functies")
+      .replace(/Android Launch & iOS Testing/gi, "Android-launch & iOS-test")
+      .replace(/Release Candidate & iOS Prep/gi, "Android RC & iOS MVP")
+      .replace(/Smart Notebook UI & Identity/gi, "Smart Notebook-interface")
+      .replace(/Verified release update/gi, "Geverifieerde release-update")
+      .replace(/Verified milestone update/gi, "Geverifieerde mijlpaalupdate")
+      .replace(/Verified devlog update/gi, "Geverifieerd ontwikkeljournaal")
+      .replace(/Released to Google Play production/gi, "Uitgebracht naar Google Play-productie")
+      .replace(/Released to Google Play/gi, "Uitgebracht naar Google Play")
+      .replace(/Currently in testing/gi, "Momenteel in testfase")
+      .replace(/Closed testing is complete/gi, "Gesloten testen is afgerond")
+      .replace(/production access approved/gi, "productietoegang goedgekeurd")
+      .replace(/Get ([a-zA-Z0-9_-]+) on Google Play/gi, "Download $1 op Google Play")
+      .replace(/visit the ([a-zA-Z0-9_-]+) product page/gi, "bezoek de $1-productpagina")
+      .replace(/Source reference/gi, "Bronreferentie")
+      .replace(/Verified changes/gi, "Geverifieerde wijzigingen");
+  }
+  return text;
+}
+
+/**
+ * Validates that all three required language variants (EN, UK, NL) are present,
+ * properly formatted, non-empty, and share the identical publication ID.
+ * Throws an error to prevent partial publication if any translation is missing.
+ */
+export function assertTrilingualPublicationCompleteness(draft) {
+  if (!draft) {
+    throw new Error("Missing publication draft");
+  }
+  if (!draft.slug) {
+    throw new Error("Missing publication ID (slug)");
+  }
+  const variants = [
+    { lang: "en", path: draft.filePath, content: draft.markdown, title: draft.title },
+    { lang: "uk", path: draft.filePathUk, content: draft.markdownUk, title: draft.titleUk },
+    { lang: "nl", path: draft.filePathNl, content: draft.markdownNl, title: draft.titleNl },
+  ];
+
+  for (const v of variants) {
+    if (!v.path || typeof v.path !== "string" || !v.path.endsWith(".md")) {
+      throw new Error(`Missing or invalid file path for ${v.lang.toUpperCase()} translation in draft ${draft.slug}`);
+    }
+    if (!v.content || typeof v.content !== "string" || v.content.trim().length === 0) {
+      throw new Error(`Missing or empty markdown content for ${v.lang.toUpperCase()} translation in draft ${draft.slug}`);
+    }
+    if (!v.title || typeof v.title !== "string" || v.title.length === 0 || v.title.length > 56) {
+      throw new Error(`Invalid title length (${v.title?.length ?? 0}) for ${v.lang.toUpperCase()} translation in draft ${draft.slug}`);
+    }
+    if (!v.content.includes("---") || !v.content.includes("title:") || !v.content.includes("description:")) {
+      throw new Error(`Missing frontmatter metadata in ${v.lang.toUpperCase()} translation for draft ${draft.slug}`);
+    }
+  }
+  return true;
+}
+
 /**
  * Ensures the meta description is strictly between 50 and 230 characters
  * as required by scripts/check-meta.mjs.
@@ -444,6 +522,7 @@ export function generateArticleDraft(event) {
     event.category === "release" ? "Release" : "Milestone",
   ];
 
+  // English variant (canonical)
   const frontmatter = [
     "---",
     `title: ${JSON.stringify(fullTitle)}`,
@@ -452,6 +531,7 @@ export function generateArticleDraft(event) {
     `category: "${event.category}"`,
     ...(event.project?.id ? [`project: "${event.project.id}"`] : []),
     ...(event.version ? [`version: ${JSON.stringify(event.version)}`] : []),
+    `lang: "en"`,
     "tags:",
     ...tags.map((t) => `  - ${JSON.stringify(t)}`),
     `sourceEventId: ${JSON.stringify(event.sourceEventId)}`,
@@ -477,13 +557,101 @@ export function generateArticleDraft(event) {
   const markdown = `${frontmatter}\n\n${bodySections.join("\n")}\n`;
   assertNoSensitiveData(markdown);
 
-  return {
+  // Ukrainian localized variant
+  const rawTitleUk = localizeReleaseText(fullTitle, "uk");
+  const titleUk = rawTitleUk.length > 56 ? rawTitleUk.slice(0, 55).replace(/\s+\S*$/, "") : rawTitleUk;
+  const firstParaUk = localizeReleaseText(firstParagraph, "uk");
+  const bulletsUk = bullets.map((b) => localizeReleaseText(b, "uk"));
+  const descUk = normalizeSeoDescription(
+    `${projectName}${versionSuffix}: ${firstParaUk.replace(/^[-*]\s*/, "")}`,
+    projectName,
+    titleUk,
+  );
+  const frontmatterUk = [
+    "---",
+    `title: ${JSON.stringify(titleUk)}`,
+    `description: ${JSON.stringify(descUk)}`,
+    `published: "${datePrefix}"`,
+    `category: "${event.category}"`,
+    ...(event.project?.id ? [`project: "${event.project.id}"`] : []),
+    ...(event.version ? [`version: ${JSON.stringify(event.version)}`] : []),
+    `lang: "uk"`,
+    "tags:",
+    ...tags.map((t) => `  - ${JSON.stringify(t)}`),
+    `sourceEventId: ${JSON.stringify(event.sourceEventId)}`,
+    ...(event.sourceUrl ? [`sourceUrl: ${JSON.stringify(event.sourceUrl)}`] : []),
+    "---",
+  ].join("\n");
+  const bodySectionsUk = [
+    firstParaUk,
+    "",
+    "## Підтверджені зміни",
+    "",
+    ...(bulletsUk.length > 0 ? bulletsUk : [`- Опубліковано оновлення для ${projectName}${versionSuffix}.`]),
+  ];
+  if (event.sourceUrl) {
+    bodySectionsUk.push("", `Джерело інформації: [${refLabel}](${event.sourceUrl}).`);
+  }
+  const markdownUk = `${frontmatterUk}\n\n${bodySectionsUk.join("\n")}\n`;
+  assertNoSensitiveData(markdownUk);
+
+  // Dutch localized variant
+  const rawTitleNl = localizeReleaseText(fullTitle, "nl");
+  const titleNl = rawTitleNl.length > 56 ? rawTitleNl.slice(0, 55).replace(/\s+\S*$/, "") : rawTitleNl;
+  const firstParaNl = localizeReleaseText(firstParagraph, "nl");
+  const bulletsNl = bullets.map((b) => localizeReleaseText(b, "nl"));
+  const descNl = normalizeSeoDescription(
+    `${projectName}${versionSuffix}: ${firstParaNl.replace(/^[-*]\s*/, "")}`,
+    projectName,
+    titleNl,
+  );
+  const frontmatterNl = [
+    "---",
+    `title: ${JSON.stringify(titleNl)}`,
+    `description: ${JSON.stringify(descNl)}`,
+    `published: "${datePrefix}"`,
+    `category: "${event.category}"`,
+    ...(event.project?.id ? [`project: "${event.project.id}"`] : []),
+    ...(event.version ? [`version: ${JSON.stringify(event.version)}`] : []),
+    `lang: "nl"`,
+    "tags:",
+    ...tags.map((t) => `  - ${JSON.stringify(t)}`),
+    `sourceEventId: ${JSON.stringify(event.sourceEventId)}`,
+    ...(event.sourceUrl ? [`sourceUrl: ${JSON.stringify(event.sourceUrl)}`] : []),
+    "---",
+  ].join("\n");
+  const bodySectionsNl = [
+    firstParaNl,
+    "",
+    "## Geverifieerde wijzigingen",
+    "",
+    ...(bulletsNl.length > 0 ? bulletsNl : [`- Update gepubliceerd voor ${projectName}${versionSuffix}.`]),
+  ];
+  if (event.sourceUrl) {
+    bodySectionsNl.push("", `Bronreferentie: [${refLabel}](${event.sourceUrl}).`);
+  }
+  const markdownNl = `${frontmatterNl}\n\n${bodySectionsNl.join("\n")}\n`;
+  assertNoSensitiveData(markdownNl);
+
+  const files = [
+    { path: `src/content/blog/${slug}.md`, content: markdown, lang: "en" },
+    { path: `src/content/blog/uk/${slug}.md`, content: markdownUk, lang: "uk" },
+    { path: `src/content/blog/nl/${slug}.md`, content: markdownNl, lang: "nl" },
+  ];
+
+  const draftResult = {
     draftId,
     slug,
     filePath: `src/content/blog/${slug}.md`,
+    filePathUk: `src/content/blog/uk/${slug}.md`,
+    filePathNl: `src/content/blog/nl/${slug}.md`,
     projectName,
     title: fullTitle,
+    titleUk,
+    titleNl,
     description,
+    descriptionUk: descUk,
+    descriptionNl: descNl,
     shortSummary,
     summaryUa: shortSummary,
     publishedAt: datePrefix,
@@ -493,8 +661,16 @@ export function generateArticleDraft(event) {
     sourceEventId: event.sourceEventId,
     sourceUrl: event.sourceUrl,
     liveUrl: `https://homelabcore.dev/blog/${slug}/`,
+    liveUrlUk: `https://homelabcore.dev/uk/blog/${slug}/`,
+    liveUrlNl: `https://homelabcore.dev/nl/blog/${slug}/`,
     markdown,
+    markdownUk,
+    markdownNl,
+    files,
   };
+
+  assertTrilingualPublicationCompleteness(draftResult);
+  return draftResult;
 }
 
 /**
@@ -1064,13 +1240,21 @@ export function verifyTelegramApproval({
       draftRecord.unpublishedAt = new Date().toISOString();
     }
 
+    const targetSlug = draftRecord?.slug || draftId;
+    const targetFiles = [
+      `src/content/blog/${targetSlug}.md`,
+      `src/content/blog/uk/${targetSlug}.md`,
+      `src/content/blog/nl/${targetSlug}.md`,
+    ];
+
     return {
       authorized: true,
       decision: "unpublish_confirmed",
       draftId,
       actorUserId: userId,
-      slug: draftRecord?.slug || draftId,
-      filePath: draftRecord?.filePath || (draftRecord?.slug ? `src/content/blog/${draftRecord.slug}.md` : null),
+      slug: targetSlug,
+      filePath: draftRecord?.filePath || `src/content/blog/${targetSlug}.md`,
+      targetFiles,
       reviewedCommitSha: draftRecord?.reviewedCommitSha || null,
       shortSlug: draftId,
       callbackQueryId: cb.id ?? null,
@@ -1398,20 +1582,32 @@ export function buildUkrainianFinalNotification({
  * can read the exact full article before approving.
  */
 export function prepareIsolatedPullRequestSpec({ draft }) {
+  assertTrilingualPublicationCompleteness(draft);
   const branchName = `auton-pub/${draft.slug}`;
+  const files = draft.files || [
+    { filePath: draft.filePath, content: draft.markdown, lang: "en" },
+    { filePath: draft.filePathUk || `src/content/blog/uk/${draft.slug}.md`, content: draft.markdownUk || draft.markdown, lang: "uk" },
+    { filePath: draft.filePathNl || `src/content/blog/nl/${draft.slug}.md`, content: draft.markdownNl || draft.markdown, lang: "nl" },
+  ];
   return {
     baseBranch: "main",
     headBranch: branchName,
     filePath: draft.filePath,
+    filePathUk: draft.filePathUk || `src/content/blog/uk/${draft.slug}.md`,
+    filePathNl: draft.filePathNl || `src/content/blog/nl/${draft.slug}.md`,
+    files,
     isDraft: true,
-    commitMessage: `docs(blog): publish ${draft.title} [automated]`,
-    prTitle: `docs(blog): ${draft.title}`,
+    commitMessage: `docs(blog): publish ${draft.title} [automated trilingual]`,
+    prTitle: `docs(blog): ${draft.title} (EN/UK/NL)`,
     prBody: [
-      `## Чернетка публікації блогу / Automated Publication Draft`,
+      `## Чернетка публікації блогу / Automated Publication Draft (EN / UK / NL)`,
       ``,
       `- **Проєкт / Project:** ${draft.projectName || "HomeLabCore"}`,
       `- **Заголовок / Title:** ${draft.title}`,
-      `- **Файл / Target File:** \`${draft.filePath}\``,
+      `- **Файли публікації / Trilingual Target Files:**`,
+      `  - EN: \`${draft.filePath}\``,
+      `  - UK: \`${draft.filePathUk || `src/content/blog/uk/${draft.slug}.md`}\``,
+      `  - NL: \`${draft.filePathNl || `src/content/blog/nl/${draft.slug}.md`}\``,
       `- **Канал схвалення / Approval Channel:** HomeLab Info (\`@Home_Lab_info_bot\`)`,
       ``,
       `### Короткий зміст / Summary`,
@@ -1420,6 +1616,7 @@ export function prepareIsolatedPullRequestSpec({ draft }) {
       `### Перевірка та публікація / Validation & Merge Policy`,
       `- [x] Підпис GitHub Webhook HMAC-SHA256 перевірено`,
       `- [x] Перевірку безпеки (відсутність секретів та приватних IP) пройдено`,
+      `- [x] Усі три мовні версії (EN, UK, NL) згенеровані та перевірені`,
       `- [ ] Очікує схвалення власника або авторизованого члена родини в Telegram (\`@Home_Lab_info_bot\`)`,
       `- [ ] Перевірка точного SHA коміту та CI (\`build-and-test\`, \`Cloudflare Pages\`) перед автоматичним злиттям`,
     ].join("\n"),
@@ -1433,25 +1630,34 @@ export function prepareUnpublishPullRequestSpec({ draft, targetFilePath, initiat
   const slug = draft?.slug || (filePath ? filePath.split("/").pop().replace(/\.md$/, "") : "article");
   const branchName = `rollback/unpublish-${slug}`;
   const title = draft?.title || slug;
+  const targetFiles = [
+    `src/content/blog/${slug}.md`,
+    `src/content/blog/uk/${slug}.md`,
+    `src/content/blog/nl/${slug}.md`,
+  ];
   return {
     baseBranch: "main",
     headBranch: branchName,
     filePath,
     targetArticleSlug: slug,
+    targetFiles,
     isDraft: false,
     commitMessage: `fix(blog): unpublish ${title} [automated undo]`,
-    prTitle: `fix(blog): unpublish ${title}`,
+    prTitle: `fix(blog): unpublish ${title} (EN/UK/NL)`,
     prBody: [
       `## Відкликання публікації статті / Automated Article Unpublish`,
       ``,
       `- **Проєкт / Project:** ${draft?.projectName || "HomeLabCore"}`,
       `- **Заголовок / Title:** ${title}`,
-      `- **Цільовий файл для видалення / Target File:** \`${filePath}\``,
+      `- **Цільові файли для видалення / Target Files:**`,
+      `  - EN: \`src/content/blog/${slug}.md\``,
+      `  - UK: \`src/content/blog/uk/${slug}.md\``,
+      `  - NL: \`src/content/blog/nl/${slug}.md\``,
       `- **Ініціатор відкликання / Initiated By:** ${initiatedBy || "Authorized Family Member"}`,
       `- **Вихідна подія / Source Event:** \`${draft?.sourceEventId || "N/A"}\``,
       ``,
       `### Аудит та можливість відновлення / Audit & Restoration`,
-      `- Даний PR видаляє виключно зазначений файл статті, не зачіпаючи інший вміст сайту.`,
+      `- Даний PR видаляє всі три мовні версії (EN, UK, NL) зазначеної статті, не зачіпаючи інший вміст сайту.`,
       `- Історія та вміст збережені в історії комітів Git для можливості відновлення за потреби.`,
       `- Злиття виконується автоматично після успішного проходження CI тестів та деплою.`,
     ].join("\n"),
